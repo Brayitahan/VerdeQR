@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Árbol - VerdeQR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gestion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common_header.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="gestion-body">
+    {% include 'flash_messages.html' %}
+    <header class="header-principal">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR" class="logo" style="border-radius: 50%; width: 60px; height: 60px; object-fit: cover;">
+        </div>
+        <nav class="menu-principal">
+            <ul id="menu">
+                <li><a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
+                <li><a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
+                <li><a href="{{ url_for('centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
+                <li><a href="{{ url_for('especie') }}"><i class="fas fa-seedling"></i><span>Especies</span></a></li>
+                <li><a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
+                <li><a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
+                <li><a href="{{ url_for('medidas_arbol') }}"><i class="fas fa-ruler"></i><span>Medidas</span></a></li>
+                <li><a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
+                <li><a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
+                <li><a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <a href="{{ url_for('perfil') }}" class="user-profile-link">
+                {% if session['usuario'].get('Imagen') %}
+                    <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Usuario" class="user-avatar">
+                {% else %}
+                    {% if determinar_genero(session['usuario']['Nombres']) == 'femenino' %}
+                        <img src="{{ url_for('static', filename='css/js/img/avatarf.jpg') }}" alt="Usuario" class="user-avatar">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='css/js/img/avatarm.jpg') }}" alt="Usuario" class="user-avatar">
+                    {% endif %}
+                {% endif %}
+                <div class="user-info">
+                    <span class="user-name">{{ session['usuario']['Nombres'] }} {{ session['usuario']['Apellidos'] }}</span>
+                    <span class="user-email">{{ session['usuario']['Correo'] }}</span>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="contenedor-seccion">
+            <h2>Editar Árbol</h2>
+            <form method="POST" action="{{ url_for('editar_arbol', id=arbol.IDArbol) }}" class="formulario-gestion" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="especie">Especie:</label>
+                    <select id="especie" name="especie" class="form-control" required>
+                        {% for esp in especies %}
+                        <option value="{{ esp.IDEspecie }}" {% if esp.IDEspecie == arbol.Especie %}selected{% endif %}>
+                            {{ esp.NombreCientifico }} ({{ esp.NombreVulgar }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="caracteristicas">Características:</label>
+                    <textarea id="caracteristicas" name="caracteristicas" class="form-control">{{ arbol.Caracteristicas }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="servicios_ecosistemicos">Servicios Ecosistémicos:</label>
+                    <textarea id="servicios_ecosistemicos" name="servicios_ecosistemicos" class="form-control">{{ arbol.ServiciosEcosistemicos }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="tipo_bosque">Tipo de Bosque:</label>
+                    <select id="tipo_bosque" name="tipo_bosque" class="form-control" required>
+                        {% for bosque in tipos_bosque %}
+                        <option value="{{ bosque.IDTipoBosque }}" {% if bosque.IDTipoBosque == arbol.TipoBosque %}selected{% endif %}>
+                            {{ bosque.Nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="centro">Centro:</label>
+                    <select id="centro" name="centro" class="form-control" required>
+                        {% for centro in centros %}
+                        <option value="{{ centro.IDCentro }}" {% if centro.IDCentro == arbol.Centro %}selected{% endif %}>
+                            {{ centro.NombreCentro }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen">Imagen del Árbol:</label>
+                    {% if arbol.Imagen %}
+                    <div class="imagen-preview mb-2">
+                        <img src="{{ url_for('static', filename=arbol.Imagen) }}" alt="{{ arbol.NombreCientifico }}" style="max-width: 200px; max-height: 200px;">
+                        <p class="mt-1">Imagen actual</p>
+                    </div>
+                    {% endif %}
+                    <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
+                    <small class="form-text text-muted">Selecciona una nueva imagen para reemplazar la actual (opcional).</small>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" placeholder="Breve descripción del árbol">{{ arbol.Descripcion }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="estado">Estado:</label>
+                    <select id="estado" name="estado" class="form-control" required>
+                        <option value="1" {% if arbol.Estado == 1 %}selected{% endif %}>Activo</option>
+                        <option value="2" {% if arbol.Estado == 2 %}selected{% endif %}>Inactivo</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+                <a href="{{ url_for('arbol') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

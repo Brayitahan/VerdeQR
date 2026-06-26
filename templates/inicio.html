@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - VerdeQR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inicio.css') }}">
+    <!-- CSS mejorado que complementa el original -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inicio_enhanced.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive_large.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/qr-scanner.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/button_alignment_fix.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/unified_buttons.css') }}">
+    <!-- Nuevo CSS para pantallas ultra anchas -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ultra_wide_responsive.css') }}">
+    <!-- CSS específico para la sección de especies en pantallas grandes -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/especies_large.css') }}">
+    <!-- Corrección responsiva específica para la sección "Explora árboles por especie" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/especies_responsive_fix.css') }}">
+    <!-- Correcciones responsive adicionales -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Estilos para el modal de bienvenida */
+        .welcome-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .welcome-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .welcome-modal {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .welcome-modal-overlay.active .welcome-modal {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .welcome-modal-header {
+            position: relative;
+            padding: 30px;
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .welcome-modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+            animation: pulse-light 4s infinite;
+        }
+
+        @keyframes pulse-light {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.1; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .welcome-modal-title {
+            position: relative;
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .welcome-modal-subtitle {
+            position: relative;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .welcome-modal-body {
+            padding: 30px;
+            background-color: white;
+            color: #333;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .welcome-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(52, 152, 219, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .welcome-modal-overlay.active .welcome-feature {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .welcome-feature:nth-child(1) { transition-delay: 0.1s; }
+        .welcome-feature:nth-child(2) { transition-delay: 0.2s; }
+        .welcome-feature:nth-child(3) { transition-delay: 0.3s; }
+
+        .welcome-feature:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-feature-icon {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .welcome-feature-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .welcome-feature-text {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .welcome-modal-footer {
+            padding: 20px 30px;
+            background-color: #f8f9fa;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .welcome-cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .welcome-cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
+        }
+
+        .welcome-cta-button.secondary {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .welcome-cta-button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+        }
+
+        .welcome-close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .welcome-close-button:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: rotate(90deg);
+        }
+
+        .welcome-close-button::before,
+        .welcome-close-button::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 2px;
+            background-color: white;
+        }
+
+        .welcome-close-button::before {
+            transform: rotate(45deg);
+        }
+
+        .welcome-close-button::after {
+            transform: rotate(-45deg);
+        }
+
+        .welcome-decoration {
+            position: absolute;
+            font-size: 8rem;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 0;
+        }
+
+        .welcome-decoration.top-left {
+            top: -20px;
+            left: -20px;
+            transform: rotate(-15deg);
+        }
+
+        .welcome-decoration.bottom-right {
+            bottom: -20px;
+            right: -20px;
+            transform: rotate(15deg);
+        }
+
+        @media (max-width: 768px) {
+            .welcome-modal-title {
+                font-size: 2rem;
+            }
+
+            .welcome-modal-subtitle {
+                font-size: 1rem;
+            }
+
+            .welcome-features {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-feature {
+                padding: 10px;
+            }
+
+            .welcome-feature-icon {
+                font-size: 2rem;
+            }
+
+            .welcome-cta-button {
+                padding: 10px 20px;
+                font-size: 1rem;
+                display: block;
+                margin: 10px auto;
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body class="gestion-body">
+    {% include 'flash_messages.html' %}
+
+    <!-- Modal de Bienvenida -->
+    <div class="welcome-modal-overlay" id="welcomeModal">
+        <div class="welcome-modal">
+            <button class="welcome-close-button" id="closeWelcomeModal"></button>
+
+            <div class="welcome-modal-header">
+                <i class="fas fa-tree welcome-decoration top-left"></i>
+                <h1 class="welcome-modal-title">¡Bienvenido a VerdeQR!</h1>
+                <p class="welcome-modal-subtitle">Un dendrólogo en tu bolsillo</p>
+                <i class="fas fa-leaf welcome-decoration bottom-right"></i>
+            </div>
+
+            <div class="welcome-modal-body">
+                <p style="font-size: 1.1rem; line-height: 1.6; text-align: center; margin-bottom: 20px;">
+                    VerdeQR es una plataforma innovadora que te permite identificar árboles silvestres mediante códigos QR,
+                    brindándote información detallada sobre cada especie y promoviendo la conservación de la biodiversidad.
+                </p>
+
+                <div class="welcome-features">
+                    <div class="welcome-feature">
+                        <i class="fas fa-qrcode welcome-feature-icon"></i>
+                        <h3 class="welcome-feature-title">Escaneo Instantáneo</h3>
+                        <p class="welcome-feature-text">Identifica árboles al instante escaneando códigos QR con tu dispositivo móvil.</p>
+                    </div>
+
+                    <div class="welcome-feature">
+                        <i class="fas fa-book-open welcome-feature-icon"></i>
+                        <h3 class="welcome-feature-title">Información Detallada</h3>
+                        <p class="welcome-feature-text">Accede a datos completos sobre características, usos y conservación de cada especie.</p>
+                    </div>
+
+                    <div class="welcome-feature">
+                        <i class="fas fa-globe-americas welcome-feature-icon"></i>
+                        <h3 class="welcome-feature-title">Conservación Ambiental</h3>
+                        <p class="welcome-feature-text">Contribuye al conocimiento y preservación de la biodiversidad de tu entorno.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="welcome-modal-footer">
+                {% if not 'usuario' in session %}
+                    <a href="{{ url_for('registro') }}" class="welcome-cta-button">Registrarme Ahora</a>
+                    <a href="{{ url_for('iniciar_sesion') }}" class="welcome-cta-button secondary">Iniciar Sesión</a>
+                {% else %}
+                    <a href="{{ url_for('principal') }}" class="welcome-cta-button">Explorar Árboles</a>
+                    <button class="welcome-cta-button secondary" id="closeModalButton">Continuar</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Menú superior fijo -->
+    <header class="menu-superior">
+        <!-- Primera fila: Logo y Buscador (visible en móviles) -->
+        <div class="header-top-row">
+            <div class="logo" id="logoVerdeQR" style="cursor: pointer;" title="Haz clic para ver información sobre VerdeQR">
+                <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
+            </div>
+            <div class="buscador">
+                <form id="searchForm" action="{{ url_for('buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
+                    <input type="text" name="q" id="searchInput" placeholder="Buscar árboles silvestres...">
+                    <button type="submit" title="Buscar"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Segunda fila: Botones y Avatar (visible en móviles) -->
+        <div class="header-bottom-row">
+            <div class="botones">
+                {% if 'usuario' in session %}
+                    <a href="{{ url_for('principal') }}" class="btn">Ver Árboles</a>
+                    {% if session['usuario']['Correo'] == 'jhon123@gmail.com' %}
+                        <a href="{{ url_for('gestion') }}" class="btn">Ir a Gestión</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('principal') }}" class="btn">Ver Árboles</a>
+                    <a href="{{ url_for('registro') }}" class="btn">Registrarse</a>
+                    <a href="{{ url_for('iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
+                {% endif %}
+            </div>
+
+            {% if 'usuario' in session %}
+                <div class="usuario" onclick="window.location.href='{{ url_for('perfil') }}';" style="cursor: pointer; display: flex; align-items: center; background: linear-gradient(135deg, #2c3e50, #3498db); border-radius: 10px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; animation: pulse 2s infinite; margin-left: 10px;">
+                    {% if session['usuario'].get('Imagen') %}
+                        <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                    {% else %}
+                        {% if determinar_genero(session['usuario']['Nombres']) == 'femenino' %}
+                            <img src="{{ url_for('static', filename='css/js/img/avatarf.jpg') }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='css/js/img/avatarm.jpg') }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                        {% endif %}
+                    {% endif %}
+                    <div class="info-usuario" style="margin-left: 10px; color: white;">
+                        <div class="nombre-usuario" style="font-weight: bold; font-size: 0.9rem;">{{ session['usuario']['Nombres'] }} {{ session['usuario']['Apellidos'] }}</div>
+                        <div class="correo-usuario" style="font-size: 0.8rem; opacity: 0.8;">{{ session['usuario']['Correo'] }}</div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <script>
+            function validateSearch() {
+                const searchInput = document.getElementById('searchInput');
+                if (!searchInput.value.trim()) {
+                    // Si el campo está vacío, no envía el formulario
+                    return false;
+                }
+                return true;
+            }
+        </script>
+
+        <style>
+            @keyframes pulse {
+                0% { box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                50% { box-shadow: 0 4px 20px rgba(52, 152, 219, 0.4); }
+                100% { box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+            }
+            .usuario:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+            }
+
+            /* Estilos por defecto para desktop */
+            .header-top-row, .header-bottom-row {
+                display: contents;
+            }
+
+            /* En desktop mantener el layout original */
+            @media (min-width: 481px) {
+                .menu-superior {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .header-top-row {
+                    display: contents;
+                }
+
+                .header-bottom-row {
+                    display: contents;
+                }
+            }
+        </style>
+    </header>
+
+    <!-- Navegación rápida -->
+    <div class="navegacion-rapida">
+        <a href="#inicio" class="nav-btn active">Inicio</a>
+        <a href="#beneficios" class="nav-btn">Beneficios</a>
+        <a href="#arboles" class="nav-btn">Árboles</a>
+        <a href="#centros" class="nav-btn">Únete</a>
+    </div>
+
+    <!-- Primera pantalla: Código QR -->
+    <div id="inicio" class="contenido-principal">
+        <h1 style="margin-top: 60px;">¡Identificar árboles silvestres!</h1>
+        <h3>Identifica árboles silvestres al instante. Explora consejos e información sobre la vida de los árboles que te rodean.</h3>
+        <p style="margin-top: 20px; color: #666; font-size: 1rem;">
+            Con VerdeQR, puedes escanear códigos QR para obtener información detallada sobre los árboles que encuentres en tu camino.
+        </p>
+
+        <!-- Cuadro con código QR -->
+        <div class="cuadro-qr animate-on-scroll">
+            <div class="qr-container">
+                <img src="{{ url_for('static', filename='css/js/img/qr.png') }}" alt="Código QR">
+                <div class="scan-effect"></div>
+            </div>
+            <button type="button" id="scanButton" class="btn-scan">Identificar aquí</button>
+            <p>Abre la cámara de tu dispositivo y escanea el código QR.</p>
+            <p class="nota">Asegúrate de que la imagen del código QR sea lo más nítida posible.</p>
+        </div>
+    </div>
+
+
+
+    <!-- Segunda pantalla: Información con imagen a la derecha -->
+    <div class="segunda-pantalla animate-on-scroll">
+        <div class="texto animated-info-section">
+            <div class="animated-title">
+                <h1 class="gradient-text">Identifica árboles al instante con QR</h1>
+                <div class="animated-icons">
+                    <i class="fas fa-qrcode icon-animated"></i>
+                    <i class="fas fa-tree icon-animated"></i>
+                    <i class="fas fa-mobile-alt icon-animated"></i>
+                    <i class="fas fa-leaf icon-animated"></i>
+                </div>
+            </div>
+            <div class="animated-description">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Escanea el código QR para identificar árboles al instante</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Obtén información detallada sobre características y usos</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Conoce el nombre científico y datos de conservación</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Contribuye al conocimiento y preservación de especies</p>
+                </div>
+            </div>
+        </div>
+        <div class="imagen animated-image">
+            <img src="{{ url_for('static', filename='css/js/img/cel.jpg') }}" alt="Celular con QR">
+        </div>
+    </div>
+
+    <style>
+        .animated-info-section {
+            position: relative;
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #2c3e50, #3498db, #2ecc71);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 3s ease infinite;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+            100% { background-position: 0% center; }
+        }
+
+        .animated-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .icon-animated {
+            font-size: 1.8rem;
+            color: #3498db;
+            animation: bounce 2s infinite;
+        }
+
+        .icon-animated:nth-child(1) { animation-delay: 0s; }
+        .icon-animated:nth-child(2) { animation-delay: 0.5s; }
+        .icon-animated:nth-child(3) { animation-delay: 1s; }
+        .icon-animated:nth-child(4) { animation-delay: 1.5s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animated-description {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInRight 0.5s ease-out both;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .feature-item:nth-child(2) { animation-delay: 0.3s; }
+        .feature-item:nth-child(3) { animation-delay: 0.5s; }
+        .feature-item:nth-child(4) { animation-delay: 0.7s; }
+
+        .feature-item i {
+            color: #2ecc71;
+            font-size: 1.2rem;
+        }
+
+        .feature-item p {
+            margin: 0;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .animated-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .animated-image img {
+            transform: scale(1.02);
+            transition: transform 0.5s ease;
+        }
+
+        .animated-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .cuadro-qr {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .qr-container {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin: 0 auto 15px auto;
+        }
+
+        .scan-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3498db, transparent);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.8);
+            animation: scanLine 2.5s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes scanLine {
+            0% {
+                top: 0;
+                opacity: 0.8;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                top: calc(100% - 3px);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive para móviles - Header mejorado */
+        @media (max-width: 480px) {
+            .menu-superior {
+                flex-direction: column;
+                padding: 6px 12px;
+                gap: 6px;
+                min-height: auto;
+            }
+
+            /* Primera fila: Logo y Buscador */
+            .header-top-row {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .logo {
+                flex-shrink: 0;
+                width: auto;
+            }
+
+            .logo img {
+                height: 28px;
+                width: auto;
+            }
+
+            /* Buscador estilo principal.html - blanco, ajustado al espacio */
+            .buscador {
+                flex: 1;
+                background-color: white;
+                border-radius: 20px;
+                padding: 1px 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                min-width: 0; /* Permite que se comprima */
+            }
+
+            .buscador form {
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+
+            .buscador input {
+                background: transparent;
+                border: none;
+                color: #2c3e50;
+                padding: 5px;
+                width: 100%;
+                font-size: 12px;
+                outline: none;
+                min-width: 0; /* Permite que se comprima */
+            }
+
+            .buscador input::placeholder {
+                color: #666;
+                font-size: 12px;
+            }
+
+            .buscador button {
+                background: none;
+                border: none;
+                color: #2c3e50;
+                cursor: pointer;
+                font-size: 12px;
+                padding: 3px;
+                flex-shrink: 0;
+            }
+
+            /* Segunda fila: Botones y Avatar */
+            .header-bottom-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                gap: 6px;
+            }
+
+            .botones {
+                display: flex;
+                gap: 4px;
+                flex: 1;
+                justify-content: flex-start;
+            }
+
+            .botones .btn {
+                padding: 5px 8px;
+                font-size: 11px;
+                border-radius: 12px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            /* Avatar solo en móviles */
+            .usuario {
+                margin-left: 0 !important;
+                padding: 3px !important;
+                border-radius: 50% !important;
+                min-width: 36px !important;
+                height: 36px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex-shrink: 0;
+            }
+
+            .usuario .info-usuario {
+                display: none !important;
+            }
+
+            .usuario img {
+                width: 30px !important;
+                height: 30px !important;
+            }
+
+            /* Navegación rápida responsive */
+            .navegacion-rapida {
+                padding: 4px 12px;
+                gap: 3px;
+            }
+
+            .nav-btn {
+                padding: 4px 8px;
+                font-size: 11px;
+                border-radius: 10px;
+            }
+
+            /* Contenido principal */
+            .contenido-principal {
+                padding: 10px 15px;
+                margin-top: 0px;
+            }
+
+            .contenido-principal h1 {
+                font-size: 1.5rem !important;
+                margin-top: 8px !important;
+                text-align: center;
+                line-height: 1.2;
+            }
+
+            .contenido-principal h3 {
+                font-size: 0.95rem;
+                text-align: center;
+                margin: 10px 0;
+                line-height: 1.3;
+            }
+
+            .contenido-principal p {
+                font-size: 0.8rem !important;
+                text-align: center;
+                margin: 6px 0 !important;
+                line-height: 1.4;
+            }
+
+            /* QR Container responsive - centrado */
+            .cuadro-qr {
+                text-align: center;
+                margin: 12px auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .qr-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+            }
+
+            .qr-container img {
+                max-width: 170px;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            }
+
+            .btn-scan {
+                padding: 8px 18px;
+                font-size: 12px;
+                margin: 10px auto;
+                border-radius: 18px;
+                display: block;
+                width: fit-content;
+            }
+        }
+
+        @media (max-width: 768px) and (min-width: 481px) {
+            .menu-superior {
+                flex-wrap: wrap;
+                padding: 12px 20px;
+                gap: 15px;
+            }
+
+            .logo img {
+                height: 40px;
+            }
+
+            .buscador {
+                flex: 1;
+                min-width: 250px;
+            }
+
+            .botones {
+                gap: 10px;
+            }
+
+            .botones .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .usuario {
+                padding: 8px 12px !important;
+            }
+
+            .usuario .info-usuario {
+                margin-left: 8px !important;
+            }
+
+            .nombre-usuario {
+                font-size: 0.8rem !important;
+            }
+
+            .correo-usuario {
+                font-size: 0.7rem !important;
+            }
+
+            .animated-icons {
+                gap: 10px;
+            }
+
+            .icon-animated {
+                font-size: 1.5rem;
+            }
+
+            .gradient-text {
+                font-size: 1.8rem;
+            }
+
+            .feature-item {
+                padding: 8px 12px;
+            }
+
+            .feature-item p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+
+
+
+    <!-- Tercera pantalla: Árboles Populares -->
+    <div id="arboles" class="tercera-pantalla">
+        <h1 style="text-align: center;">Árboles Populares</h1>
+        <h3 style="text-align: center;">Explora árboles populares y aprende a identificarlos</h3>
+
+        <!-- Contenedor de columnas -->
+        <div class="grid-container-arboles animate-on-scroll">
+            {% if arboles_populares %}
+                {% for arbol in arboles_populares %}
+                    <div class="grid-item-arbol">
+                        <div class="imagen-arbol-inicio">
+                            {% if arbol.Imagen %}
+                                <img src="{{ url_for('static', filename=arbol.Imagen) }}" alt="{{ arbol.NombreVulgar }}">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='css/js/img/arbol-default.jpg') }}" alt="Árbol">
+                            {% endif %}
+                        </div>
+                        <h2><strong>{{ arbol.NombreVulgar }} ({{ arbol.NombreCientifico }})</strong></h2>
+                        <p>{{ arbol.Descripcion|truncate(100) if arbol.Descripcion else 'Sin descripción disponible...' }}</p>
+                        {% if 'usuario' in session %}
+                            <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="btn">Leer más</a>
+                        {% else %}
+                            <a href="{{ url_for('iniciar_sesion') }}" class="btn">Iniciar sesión para ver</a>
+                        {% endif %}
+                        {% if 'usuario' in session %}
+                            <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="overlay-link" title="Ver detalles de {{ arbol.NombreVulgar }}"></a>
+                        {% else %}
+                            <a href="{{ url_for('iniciar_sesion') }}" class="overlay-link" title="Iniciar sesión para ver detalles"></a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Contenido estático de respaldo si no hay árboles en la base de datos -->
+                <div class="grid-item-arbol">
+                    <img src="{{ url_for('static', filename='css/js/img/ceiba.png') }}" alt="Ceiba">
+                    <h2><strong>Árbol de Ceiba (Ceiba Pentandra)</strong></h2>
+                    <p>Uno de los árboles más grandes y emblemáticos de Colombia...</p>
+                    <a href="#" class="btn">Leer más</a>
+                </div>
+                <div class="grid-item-arbol">
+                    <img src="{{ url_for('static', filename='css/js/img/guayacan.jpg') }}" alt="Guayacán">
+                    <h2><strong>Guayacán (Tabebuia chrysantha)</strong></h2>
+                    <p>Conocido por sus flores amarillas y su madera dura...</p>
+                    <a href="#" class="btn">Leer más</a>
+                </div>
+                <div class="grid-item-arbol">
+                    <img src="{{ url_for('static', filename='css/js/img/roble.jpg') }}" alt="Roble">
+                    <h2><strong>Roble (Quercus humboldtii)</strong></h2>
+                    <p>Un árbol nativo de los Andes colombianos...</p>
+                    <a href="#" class="btn">Leer más</a>
+                </div>
+                <div class="grid-item-arbol">
+                    <img src="{{ url_for('static', filename='css/js/img/palma.jpg') }}" alt="Palma de Cera">
+                    <h2><strong>Palma de Cera (Ceroxylon quindiuense)</strong></h2>
+                    <p>El árbol nacional de Colombia y la palma más alta del mundo...</p>
+                    <a href="#" class="btn">Leer más</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Cuarta pantalla: Identifica árboles al instante con QR -->
+    <div id="centros" class="quinta-pantalla">
+        <div class="nature-hero-section animate-on-scroll">
+            <div class="nature-content">
+                <div class="nature-header">
+                    <h1 class="nature-title">Identifica árboles al instante con QR</h1>
+                    <h3 class="nature-subtitle">Accede a información completa sobre árboles silvestres. Escanea códigos QR y descubre la biodiversidad que te rodea.</h3>
+                </div>
+
+                <div class="nature-stats">
+                    <div class="nature-stat">
+                        <div class="stat-icon">🌳</div>
+                        <div class="stat-info">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-text">Árboles Catalogados</div>
+                        </div>
+                    </div>
+                    <div class="nature-stat">
+                        <div class="stat-icon">🔬</div>
+                        <div class="stat-info">
+                            <div class="stat-number">150+</div>
+                            <div class="stat-text">Especies Documentadas</div>
+                        </div>
+                    </div>
+                    <div class="nature-stat">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-text">Consultas Realizadas</div>
+                        </div>
+                    </div>
+                    <div class="nature-stat">
+                        <div class="stat-icon">📱</div>
+                        <div class="stat-info">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-text">Acceso Disponible</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nature-features">
+                    <div class="nature-feature">
+                        <div class="feature-visual">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Escaneo QR Instantáneo</h4>
+                            <p>Escanea códigos QR con tu dispositivo móvil y obtén información detallada sobre cualquier árbol silvestre al instante</p>
+                        </div>
+                    </div>
+                    <div class="nature-feature">
+                        <div class="feature-visual">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Base de Datos Completa</h4>
+                            <p>Accede a información científica detallada: nombres, características, usos medicinales y datos de conservación</p>
+                        </div>
+                    </div>
+                    <div class="nature-feature">
+                        <div class="feature-visual">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4>Educación Ambiental</h4>
+                            <p>Aprende sobre la biodiversidad local y contribuye al conocimiento de los ecosistemas forestales</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nature-visual">
+                <div class="floating-nature">
+                    <div class="floating-element tree">🌲</div>
+                    <div class="floating-element leaf1">🍃</div>
+                    <div class="floating-element leaf2">🌿</div>
+                    <div class="floating-element flower">🌸</div>
+                    <div class="floating-element seed">🌰</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .nature-hero-section {
+            min-height: 100vh;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 80px 0;
+        }
+
+        .nature-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .nature-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .nature-title {
+            font-size: 4.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #2c3e50, #3498db, #2ecc71, #2c3e50);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            line-height: 1.1;
+            animation: titleGradient 4s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes titleGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .nature-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #2ecc71, #3498db, #2ecc71);
+            border-radius: 2px;
+            animation: underlineGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes underlineGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(52, 152, 219, 0.8); }
+        }
+
+        .nature-subtitle {
+            font-size: 1.6rem;
+            color: #555;
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 400;
+            margin-top: 35px;
+        }
+
+        .nature-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .nature-stat {
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            border-radius: 25px;
+            padding: 35px 25px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .nature-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nature-stat:hover::before {
+            left: 100%;
+        }
+
+        .nature-stat:hover {
+            transform: translateY(-15px) scale(1.02);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15), 0 0 30px rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.4);
+        }
+
+        .stat-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #2c3e50, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-text {
+            font-size: 1.1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .nature-features {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-bottom: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .nature-feature {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            border-radius: 25px;
+            padding: 35px;
+            border: 2px solid #e9ecef;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .nature-feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .nature-feature:hover::before {
+            left: 100%;
+        }
+
+        .nature-feature:hover {
+            transform: translateX(15px) translateY(-5px);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 25px rgba(46, 204, 113, 0.3);
+            border-color: rgba(46, 204, 113, 0.4);
+        }
+
+        .feature-visual {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60, #16a085);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: white;
+            box-shadow: 0 15px 30px rgba(46, 204, 113, 0.4), inset 0 2px 10px rgba(255,255,255,0.2);
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .feature-visual::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #2ecc71, #3498db, #2ecc71);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nature-feature:hover .feature-visual::before {
+            opacity: 1;
+        }
+
+        .nature-feature:hover .feature-visual {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 20px 40px rgba(46, 204, 113, 0.6), inset 0 2px 15px rgba(255,255,255,0.3);
+        }
+
+        .feature-content h4 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #2c3e50, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-content p {
+            font-size: 1.05rem;
+            color: #666;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+
+
+        .nature-visual {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-nature {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .floating-element {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.6;
+            animation: floatNature 6s ease-in-out infinite;
+        }
+
+        .floating-element.tree {
+            top: 15%;
+            right: 10%;
+            font-size: 4rem;
+            animation-delay: 0s;
+        }
+
+        .floating-element.leaf1 {
+            top: 30%;
+            right: 25%;
+            animation-delay: 1s;
+        }
+
+        .floating-element.leaf2 {
+            bottom: 40%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element.flower {
+            bottom: 25%;
+            right: 30%;
+            animation-delay: 3s;
+        }
+
+        .floating-element.seed {
+            top: 60%;
+            right: 5%;
+            animation-delay: 4s;
+        }
+
+        @keyframes floatNature {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-30px) rotate(5deg);
+                opacity: 0.8;
+            }
+        }
+
+        /* Media query específica para pantallas medianas (939px - 1371px) */
+        @media (min-width: 939px) and (max-width: 1371px) {
+            .nature-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+                margin-bottom: 70px;
+            }
+
+            .nature-stat {
+                padding: 30px 20px;
+            }
+
+            .stat-icon {
+                font-size: 3.2rem;
+                margin-bottom: 18px;
+            }
+
+            .stat-number {
+                font-size: 2.4rem;
+                margin-bottom: 6px;
+            }
+
+            .stat-text {
+                font-size: 1rem;
+                letter-spacing: 1.2px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nature-content {
+                padding: 50px 20px;
+            }
+
+            .nature-title {
+                font-size: 2.8rem;
+                margin-bottom: 20px;
+            }
+
+            .nature-title::after {
+                width: 80px;
+                height: 3px;
+            }
+
+            .nature-subtitle {
+                font-size: 1.3rem;
+                margin-top: 25px;
+                max-width: 100%;
+            }
+
+            .nature-stats {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin-bottom: 50px;
+            }
+
+            .nature-stat {
+                padding: 25px 20px;
+            }
+
+            .stat-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+
+            .stat-number {
+                font-size: 2.3rem;
+            }
+
+            .stat-text {
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+            }
+
+            .nature-features {
+                gap: 25px;
+            }
+
+            .nature-feature {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+                gap: 20px;
+            }
+
+            .feature-visual {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+
+            .feature-content h4 {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
+
+            .feature-content p {
+                font-size: 1rem;
+            }
+
+            .floating-element {
+                font-size: 2rem;
+            }
+
+            .floating-element.tree {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+
+
+
+    <!-- Sección de Beneficios -->
+    <div id="beneficios" class="beneficios-pantalla">
+        <h1>Beneficios de la Identificación de Árboles Silvestres con Códigos QR</h1>
+        <h3>Descubre cómo esta tecnología puede ayudar al medio ambiente y a la educación</h3>
+
+        <div class="grid-container-beneficios animate-on-scroll">
+            <!-- Beneficio 1 -->
+            <div class="grid-item-beneficio">
+                <div class="beneficio-icono">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h2>Conciencia Ambiental</h2>
+                <p>Este proyecto fomenta la conciencia ambiental al permitir que las personas conozcan las especies de árboles que los rodean.</p>
+                <div class="tooltip-beneficio">
+                    <h3>Conciencia Ambiental</h3>
+                    <p>Interactúa con el código QR y descubre datos fascinantes sobre cada árbol para aumentar tu conocimiento del entorno natural.</p>
+                </div>
+            </div>
+
+            <!-- Beneficio 2 -->
+            <div class="grid-item-beneficio">
+                <div class="beneficio-icono">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h2>Educación y Aprendizaje</h2>
+                <p>La aplicación web ofrece información detallada sobre cada especie, incluyendo su nombre científico, usos y características.</p>
+                <div class="tooltip-beneficio">
+                    <h3>Educación y Aprendizaje</h3>
+                    <p>Explora los datos técnicos de los árboles de manera sencilla y accesible para enriquecer tu conocimiento de la flora local.</p>
+                </div>
+            </div>
+
+            <!-- Beneficio 3 -->
+            <div class="grid-item-beneficio">
+                <div class="beneficio-icono">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h2>Conservación de la Biodiversidad</h2>
+                <p>Al identificar y caracterizar los árboles, se promueve su conservación y se evita la degradación de los ecosistemas.</p>
+                <div class="tooltip-beneficio">
+                    <h3>Conservación de la Biodiversidad</h3>
+                    <p>Descubre cómo cada árbol contribuye a la biodiversidad y los importantes servicios ecosistémicos que proporciona.</p>
+                </div>
+            </div>
+
+            <!-- Beneficio 4 -->
+            <div class="grid-item-beneficio">
+                <div class="beneficio-icono">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h2>Tecnología al Servicio del Medio Ambiente</h2>
+                <p>El uso de códigos QR hace que la identificación de árboles sea rápida, eficiente y accesible para todos.</p>
+                <div class="tooltip-beneficio">
+                    <h3>Tecnología al Servicio del Medio Ambiente</h3>
+                    <p>Escanea y obtén información al instante sobre cualquier árbol, aprovechando la tecnología para conocer mejor tu entorno.</p>
+                </div>
+            </div>
+
+            <!-- Beneficio 5 -->
+            <div class="grid-item-beneficio">
+                <div class="beneficio-icono">
+                    <i class="fas fa-universal-access"></i>
+                </div>
+                <h2>Inclusión y Accesibilidad</h2>
+                <p>La aplicación incluye módulos inclusivos para que personas con distintas capacidades puedan disfrutar del aprendizaje.</p>
+                <div class="tooltip-beneficio">
+                    <h3>Inclusión y Accesibilidad</h3>
+                    <p>Diseñada para ser accesible y fácil de usar por personas de todas las edades y capacidades, facilitando el aprendizaje universal.</p>
+                </div>
+            </div>
+
+            <!-- Beneficio 6 -->
+            <div class="grid-item-beneficio">
+                <div class="beneficio-icono">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                <h2>Contribución a la Comunidad</h2>
+                <p>Al capacitar a los usuarios en el uso de la plataforma, se fomenta la participación comunitaria en la protección del medio ambiente.</p>
+                <div class="tooltip-beneficio">
+                    <h3>Contribución a la Comunidad</h3>
+                    <p>Aprende a usar la aplicación y contribuye al cuidado de los árboles de tu comunidad a través de la educación y la concientización.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer con redes sociales y derechos -->
+    <footer class="footer" style="background-color: #2c3e50;">
+        <div class="footer-contenido">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
+            </div>
+
+            <div class="footer-redes">
+                <a href="#" class="footer-red" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="footer-red" title="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="footer-red" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="footer-red" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="#" class="footer-red" title="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+
+            <div class="footer-enlaces">
+                <a href="{{ url_for('politica_privacidad') }}">Política de Privacidad</a>
+                <a href="{{ url_for('terminos_condiciones') }}">Términos y Condiciones</a>
+                <a href="{{ url_for('contacto') }}">Contacto</a>
+                <a href="{{ url_for('acerca_de') }}">Acerca de Nosotros</a>
+            </div>
+
+            <div class="footer-derechos">
+                <p>© 2023 VerdeQR - Un dendrólogo en tu bolsillo. Todos los derechos reservados.</p>
+                <p>Desarrollado con <i class="fas fa-heart" style="color: var(--color-acento);"></i> por el equipo de VerdeQR</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botones flotantes -->
+    <div class="botones-flotantes">
+        {% if 'usuario' in session %}
+        <a href="{{ url_for('principal') }}" class="btn-flotante btn-principal">
+            <i class="fas fa-tree"></i> Ir a Principal
+        </a>
+        {% else %}
+        <a href="{{ url_for('iniciar_sesion') }}" class="btn-flotante btn-principal">
+            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+        </a>
+        {% endif %}
+        {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
+        <a href="{{ url_for('gestion') }}" class="btn-flotante btn-gestion">
+            <i class="fas fa-cog"></i> Ir a Gestión
+        </a>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si hay un parámetro de cierre de sesión exitoso
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('logout_success')) {
+                showModalNotification(
+                    'Sesión Cerrada',
+                    'Has cerrado sesión exitosamente',
+                    'success',
+                    'fas fa-check-circle'
+                );
+                // Limpiar la URL para evitar que se muestre la notificación al refrescar
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+    <script>
+        // Script para la navegación rápida
+        document.addEventListener('DOMContentLoaded', function() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = [
+                document.getElementById('inicio'),
+                document.getElementById('beneficios'),
+                document.getElementById('arboles'),
+                document.getElementById('centros')
+            ];
+
+            // Función para activar el botón correcto según la sección visible
+            function setActiveButton() {
+                const scrollPosition = window.scrollY;
+
+                // Encontrar la sección visible actualmente
+                let activeIndex = -1;
+
+                for (let i = 0; i < sections.length; i++) {
+                    if (sections[i]) {
+                        const sectionTop = sections[i].offsetTop - 150;
+                        const sectionBottom = sectionTop + sections[i].offsetHeight;
+
+                        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                            activeIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Si no se encontró ninguna sección activa, usar la primera
+                if (activeIndex === -1) activeIndex = 0;
+
+                // Actualizar clases de los botones
+                navBtns.forEach((btn, index) => {
+                    if (index === activeIndex) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Escuchar el evento de scroll
+            window.addEventListener('scroll', setActiveButton);
+
+            // Inicializar
+            setActiveButton();
+
+            // Scroll suave al hacer clic en los botones
+            navBtns.forEach((btn, index) => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        // Remover la clase active de todos los botones
+                        navBtns.forEach(b => b.classList.remove('active'));
+                        // Agregar la clase active al botón clickeado
+                        this.classList.add('active');
+
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- jsQR Library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+    <!-- QR Scanner Script -->
+    <script src="{{ url_for('static', filename='js/qr-scanner.js') }}"></script>
+
+    <!-- Search Autocomplete Script -->
+    <script src="{{ url_for('static', filename='js/search-autocomplete.js') }}"></script>
+    <!-- Script para animaciones al hacer scroll -->
+    <script src="{{ url_for('static', filename='js/scroll-animations.js') }}"></script>
+
+
+
+    <!-- Script para el modal de bienvenida -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeModal = document.getElementById('welcomeModal');
+            const closeWelcomeModal = document.getElementById('closeWelcomeModal');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const logoVerdeQR = document.getElementById('logoVerdeQR');
+
+            // Función para mostrar el modal
+            function showModal() {
+                welcomeModal.style.display = 'flex';
+                setTimeout(function() {
+                    welcomeModal.classList.add('active');
+                }, 10);
+            }
+
+            // Función para cerrar el modal
+            function closeModal() {
+                welcomeModal.classList.remove('active');
+                setTimeout(function() {
+                    welcomeModal.style.display = 'none';
+                }, 500);
+
+                // Guardar en localStorage que el usuario ya vio el modal
+                localStorage.setItem('welcomeModalShown', 'true');
+            }
+
+            // Mostrar el modal al hacer clic en el logo
+            logoVerdeQR.addEventListener('click', function() {
+                showModal();
+            });
+
+            // Cerrar el modal al hacer clic en el botón de cierre
+            closeWelcomeModal.addEventListener('click', closeModal);
+
+            // Cerrar el modal al hacer clic en el botón de continuar (si existe)
+            if (closeModalButton) {
+                closeModalButton.addEventListener('click', closeModal);
+            }
+
+            // Cerrar el modal al hacer clic fuera de él
+            welcomeModal.addEventListener('click', function(e) {
+                if (e.target === welcomeModal) {
+                    closeModal();
+                }
+            });
+
+            // Verificar si el usuario ya vio el modal anteriormente
+            const hasSeenModal = localStorage.getItem('welcomeModalShown');
+            if (hasSeenModal !== 'true') {
+                // Solo mostrar automáticamente si es la primera vez
+                setTimeout(function() {
+                    showModal();
+                }, 500);
+            } else {
+                // Asegurarse de que el modal esté oculto inicialmente
+                welcomeModal.style.display = 'none';
+            }
+        });
+    </script>
+
+
+</body>
+</html>

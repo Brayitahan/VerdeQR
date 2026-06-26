@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Gestión - VerdeQR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gestion.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common_header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gestion_responsive.css') }}">
+    <!-- Correcciones responsive adicionales -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="gestion-body">
+    {% include 'flash_messages.html' %}
+    <header class="header-principal">
+        <!-- Menú desplegable solo para móviles -->
+        <div class="dropdown-menu">
+            <button type="button" class="dropdown-toggle" onclick="toggleDropdown()">
+                <i class="fas fa-bars"></i> Menú
+            </button>
+            <div class="dropdown-content" id="dropdownContent">
+                <a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i>Inicio</a>
+                <a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i>Árboles</a>
+                <a href="{{ url_for('centro') }}"><i class="fas fa-university"></i>Centros</a>
+                <a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i>Especies</a>
+                <a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i>Usos</a>
+                <a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i>Tipos de Bosque</a>
+                <a href="{{ url_for('curiosidades') }}"><i class="fas fa-lightbulb"></i>Curiosidades</a>
+                <a href="{{ url_for('interacciones') }}"><i class="fas fa-network-wired"></i>Interacciones Ecológicas</a>
+                <a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i>QR</a>
+                <a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i>Sugerencias</a>
+                <a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i>Usuarios</a>
+            </div>
+        </div>
+
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR" class="logo" style="border-radius: 50%; width: 60px; height: 60px; object-fit: cover;">
+        </div>
+        <nav class="menu-principal">
+            <ul id="menu">
+                <li><a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
+                <li><a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
+                <li><a href="{{ url_for('centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
+                <li><a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
+                <li><a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
+                <li><a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
+                <li><a href="{{ url_for('curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
+                <li><a href="{{ url_for('interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
+                <li><a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
+                <li><a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
+                <li><a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
+            </ul>
+        </nav>
+        <div class="user-section">
+            <a href="{{ url_for('perfil') }}" class="user-profile-link">
+                {% if session['usuario'].get('Imagen') %}
+                    <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Usuario" class="user-avatar">
+                {% else %}
+                    {% if determinar_genero(session['usuario']['Nombres']) == 'femenino' %}
+                        <img src="{{ url_for('static', filename='css/js/img/avatarf.jpg') }}" alt="Usuario" class="user-avatar">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='css/js/img/avatarm.jpg') }}" alt="Usuario" class="user-avatar">
+                    {% endif %}
+                {% endif %}
+                <div class="user-info">
+                    <span class="user-name">{{ session['usuario']['Nombres'] }} {{ session['usuario']['Apellidos'] }}</span>
+                    <span class="user-email">{{ session['usuario']['Correo'] }}</span>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="welcome" class="welcome-section active">
+            <h1 class="titulo-centrado">Bienvenido al Panel de Gestión</h1>
+            <p>Desde aquí podrás administrar todos los aspectos de la aplicación VerdeQR.</p>
+            <div class="features">
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Gestiona los árboles registrados en el sistema</li>
+                    <li><i class="fas fa-check-circle"></i> Administra los centros educativos</li>
+                    <li><i class="fas fa-check-circle"></i> Configura los tipos de árbol y sus usos</li>
+                    <li><i class="fas fa-check-circle"></i> Genera códigos QR para los árboles</li>
+                    <li><i class="fas fa-check-circle"></i> Revisa y responde sugerencias de usuarios</li>
+                    <li><i class="fas fa-check-circle"></i> Administra los usuarios del sistema</li>
+                </ul>
+            </div>
+            <div class="back-to-main">
+                <a href="{{ url_for('principal') }}" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver a la página principal
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Función para el menú desplegable (solo móviles)
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownContent');
+            dropdown.classList.toggle('show');
+        }
+
+        // Cerrar el dropdown si se hace clic fuera de él
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-toggle') && !event.target.matches('.dropdown-toggle i')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuLinks = document.querySelectorAll('#menu a');
+            const welcomeSection = document.getElementById('welcome');
+
+            // Manejar clics en los enlaces del menú
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.getAttribute('data-section') === 'welcome') {
+                        e.preventDefault();
+                        welcomeSection.classList.add('active');
+                    }
+                });
+            });
+
+            // Mostrar la sección de bienvenida por defecto si estamos en la página de gestión
+            if (window.location.pathname === '/gestion') {
+                welcomeSection.classList.add('active');
+            }
+        });
+
+        function confirmarEliminacion(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
+                fetch(`/eliminar/${id}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessModal('Elemento Eliminado', 'El elemento ha sido eliminado correctamente.');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        showErrorModal('Error al Eliminar', data.message);
+                    }
+                })
+                .catch(error => {
+                    showErrorModal('Error al Eliminar', 'Error al procesar la eliminación. Por favor, intenta nuevamente.');
+                });
+            }
+        }
+
+        function editarElemento(id) {
+            // Aquí iría la lógica para editar el elemento
+            showInfoModal('Editar Elemento', 'Funcionalidad de edición en desarrollo.');
+        }
+
+        function registrarElemento() {
+            // Aquí iría la lógica para registrar un nuevo elemento
+            showInfoModal('Registrar Elemento', 'Funcionalidad de registro en desarrollo.');
+        }
+    </script>
+</body>
+</html>

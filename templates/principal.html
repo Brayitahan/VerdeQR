@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Principal - VerdeQR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/principal.css') }}?v={{ range(1, 10000) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive_improved.css') }}?v={{ range(1, 10000) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive_fullwidth.css') }}?v={{ range(1, 10000) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout_improvements.css') }}?v={{ range(1, 10000) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel_animation.css') }}?v={{ range(1, 10000) | random }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}?v={{ range(1, 10000) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_buttons.css') }}?v={{ range(1, 10000) | random }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/unified_buttons.css') }}?v={{ range(1, 10000) | random }}">
+    <!-- Correcciones responsive adicionales -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+    {% include 'flash_messages.html' %}
+    <!-- Barra Superior -->
+    <header class="header-principal">
+        <div class="header-container">
+            <div class="logo" onclick="window.location.href='{{ url_for('principal') }}'">
+                <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
+            </div>
+            <div class="buscador">
+                <form id="searchForm" action="{{ url_for('buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
+                    <input type="text" name="q" id="searchInput" placeholder="Buscar árboles silvestres...">
+                    <button type="submit" title="Buscar"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <script>
+                function validateSearch() {
+                    const searchInput = document.getElementById('searchInput');
+                    if (!searchInput.value.trim()) {
+                        return false;
+                    }
+                    return true;
+                }
+            </script>
+            <nav class="menu-principal">
+                <ul class="menu-list">
+                    <li><a href="{{ url_for('inicio') }}">Inicio</a></li>
+                    <li><a href="#arboles">Árboles</a></li>
+                    <li><a href="#centros">Centros</a></li>
+                    <li><a href="#sugerencias">Sugerencias</a></li>
+                    {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
+                    <li><a href="{{ url_for('gestion') }}">Gestión</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="usuario" onclick="window.location.href='{{ url_for('perfil') }}';" style="cursor: pointer; display: flex; align-items: center; background: linear-gradient(135deg, #2c3e50, #3498db); border-radius: 10px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; animation: pulse 2s infinite;">
+                {% if session['usuario'].get('Imagen') %}
+                    <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                {% else %}
+                    {% if determinar_genero(session['usuario']['Nombres']) == 'femenino' %}
+                        <img src="{{ url_for('static', filename='css/js/img/avatarf.jpg') }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='css/js/img/avatarm.jpg') }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
+                    {% endif %}
+                {% endif %}
+                <div class="info-usuario" style="margin-left: 10px; color: white;">
+                    <div class="nombre-usuario" style="font-weight: bold; font-size: 0.9rem;">{{ session['usuario']['Nombres'] }} {{ session['usuario']['Apellidos'] }}</div>
+                    <div class="correo-usuario" style="font-size: 0.8rem; opacity: 0.8;">{{ session['usuario']['Correo'] }}</div>
+                </div>
+            </div>
+            <style>
+                @keyframes pulse {
+                    0% { box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                    50% { box-shadow: 0 4px 20px rgba(52, 152, 219, 0.4); }
+                    100% { box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                }
+                .usuario:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+                }
+            </style>
+
+            <!-- Segunda fila móvil: Perfil y menú desplegable -->
+            <div class="mobile-menu-row">
+                <div class="mobile-user" onclick="window.location.href='{{ url_for('perfil') }}';">
+                    {% if session['usuario'].get('Imagen') %}
+                        <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Icono de Usuario">
+                    {% else %}
+                        {% if determinar_genero(session['usuario']['Nombres']) == 'femenino' %}
+                            <img src="{{ url_for('static', filename='css/js/img/avatarf.jpg') }}" alt="Icono de Usuario">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='css/js/img/avatarm.jpg') }}" alt="Icono de Usuario">
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="mobile-dropdown">
+                    <button type="button" class="mobile-dropdown-toggle" onclick="toggleMobileDropdown()">
+                        <i class="fas fa-bars"></i> Menú
+                    </button>
+                    <div class="mobile-dropdown-content" id="mobileDropdownContent">
+                        <a href="{{ url_for('inicio') }}">Inicio</a>
+                        <a href="#arboles">Árboles</a>
+                        <a href="#centros">Centros</a>
+                        <a href="#sugerencias">Sugerencias</a>
+                        {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
+                        <a href="{{ url_for('gestion') }}">Gestión</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Sección de Bienvenida -->
+    <section class="bienvenida">
+        <div class="contenido-bienvenida">
+            <h1>Bienvenido, <span>{{ session['usuario']['Nombres'] }}</span></h1>
+            <div class="texto-destacado">
+                <p>Explora el fascinante mundo de los árboles con VerdeQR. Nuestra plataforma te permite descubrir, aprender y contribuir al conocimiento y conservación de la flora colombiana.</p>
+                <p>Conoce las características, usos y curiosidades de cada especie, y únete a nuestra comunidad de amantes de la naturaleza.</p>
+            </div>
+            <div class="estadisticas">
+                <div class="estadistica">
+                    <h3>{{ total_arboles }}</h3>
+                    <p>Árboles registrados</p>
+                </div>
+                <div class="estadistica">
+                    <h3>{{ total_usuarios }}</h3>
+                    <p>Usuarios</p>
+                </div>
+                <div class="estadistica">
+                    <h3>{{ total_centros }}</h3>
+                    <p>Centros participantes</p>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <!-- Sección de Árboles Destacados -->
+    <section id="arboles" class="arboles-destacados">
+        <div class="titulo-seccion">
+            <h2>Árboles Destacados</h2>
+            <p>Descubre nuestra colección de árboles nativos y sus características únicas</p>
+        </div>
+        <div class="grid-arboles">
+            <!-- Árboles dinámicos de la base de datos -->
+            {% for arbol in arboles %}
+            <div class="arbol-card">
+                <div class="imagen-arbol">
+                    {% if arbol.Imagen %}
+                    <img src="{{ url_for('static', filename=arbol.Imagen) }}" alt="{{ arbol.EspecieNombreCientifico }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='css/js/img/arbol-default.jpg') }}" alt="{{ arbol.EspecieNombreCientifico }}">
+                    {% endif %}
+                    <div class="hover-info">
+                        <h4>{{ arbol.EspecieNombreCientifico }}</h4>
+                        <p>{{ arbol.Caracteristicas[:50] + '...' if arbol.Caracteristicas and arbol.Caracteristicas|length > 50 else arbol.Caracteristicas if arbol.Caracteristicas else 'Especie nativa de Colombia' }}</p>
+                    </div>
+                </div>
+                <div class="info-arbol">
+                    <h3>{{ arbol.EspecieNombreVulgar if arbol.EspecieNombreVulgar else arbol.EspecieNombreCientifico }}
+                        <span>({{ arbol.EspecieNombreCientifico }})</span>
+                    </h3>
+                    <div class="detalles">
+                        <p><i class="fas fa-tree"></i> {{ arbol.Caracteristicas|truncate(50) if arbol.Caracteristicas else 'Características no disponibles' }}</p>
+                        <p><i class="fas fa-leaf"></i> {{ arbol.ServiciosEcosistemicos|truncate(50) if arbol.ServiciosEcosistemicos else 'Servicios ecosistémicos no disponibles' }}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> {{ arbol.CentroNombre if arbol.CentroNombre else 'Centro no especificado' }}</p>
+                    </div>
+                    <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="btn">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            {% else %}
+            <div class="sin-arboles">
+                <i class="fas fa-tree"></i>
+                <h3>No hay árboles registrados</h3>
+                <p>Aún no se han registrado árboles en la plataforma.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Botón para ver todos los árboles -->
+        <div class="ver-todos-container" style="text-align: center; margin-top: 40px;">
+            <a href="{{ url_for('todos_los_arboles') }}" class="btn-ver-todos">
+                <i class="fas fa-tree"></i> Ver todos los árboles
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Sección de Centros -->
+    <section id="centros" class="centros">
+        <div class="titulo-seccion">
+            <h2>Nuestros Centros</h2>
+            <p>Conoce los centros SENA que participan en este proyecto de conservación</p>
+        </div>
+        <div class="info-centros">
+            <div class="texto-centros">
+                <h3>Una red de conocimiento y conservación</h3>
+                <p>El Servicio Nacional de Aprendizaje (SENA) es la institución pública más importante de Colombia en formación técnica y tecnológica. Con más de 117 centros de formación en todo el país, el SENA se ha unido a VerdeQR para promover la conservación de la biodiversidad arbórea colombiana.</p>
+                <p>Nuestros centros participantes cuentan con viveros, laboratorios y equipos especializados para la investigación y propagación de especies nativas. Los aprendices SENA desarrollan proyectos innovadores en silvicultura, ecología y manejo sostenible de bosques.</p>
+                <div class="estadisticas-centros">
+                    <div class="estadistica">
+                        <i class="fas fa-graduation-cap"></i>
+                        <div>
+                            <h4>+500</h4>
+                            <p>Aprendices involucrados</p>
+                        </div>
+                    </div>
+                    <div class="estadistica">
+                        <i class="fas fa-seedling"></i>
+                        <div>
+                            <h4>+5,000</h4>
+                            <p>Árboles sembrados</p>
+                        </div>
+                    </div>
+                    <div class="estadistica">
+                        <i class="fas fa-book"></i>
+                        <div>
+                            <h4>+20</h4>
+                            <p>Proyectos de investigación</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="imagen-centros">
+                <img src="{{ url_for('static', filename='css/js/img/cdi.jpg') }}" alt="Centro SENA">
+            </div>
+        </div>
+        <div class="grid-centros">
+            <div class="centro-card">
+                <div class="imagen-centro">
+                    <img src="{{ url_for('static', filename='css/js/img/cdi.jpg') }}" alt="Centro de Innovación">
+                    <div class="overlay">
+                        <h4>Centro de Innovación</h4>
+                    </div>
+                </div>
+                <div class="info-centro">
+                    <h3>Centro de Innovación de Gestión Empresarial y Cultural</h3>
+                    <div class="ubicacion">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>Valledupar, Cesar</p>
+                    </div>
+                    <p>Especializado en desarrollo sostenible y tecnologías ambientales. Cuenta con laboratorios de biotecnología y viveros experimentales.</p>
+                    <a href="https://www.midiario.co/2024/09/27/el-centro-de-innovacion-y-gestion-empresarial-y-cultural-cigec-rindio-cuentas-a-aprendices-y-comunidad-en-general/" class="btn" target="_blank" rel="noopener">Ver centro <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="centro-card">
+                <div class="imagen-centro">
+                    <img src="{{ url_for('static', filename='css/js/img/cbc.jpg') }}" alt="Centro Biotecnológico">
+                    <div class="overlay">
+                        <h4>Centro Biotecnológico</h4>
+                    </div>
+                </div>
+                <div class="info-centro">
+                    <h3>Centro Biotecnológico del Caribe</h3>
+                    <div class="ubicacion">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>Barranquilla, Atlántico</p>
+                    </div>
+                    <p>Pionero en investigación de especies nativas y propagación vegetativa. Desarrolla técnicas innovadoras de cultivo in vitro.</p>
+                    <a href="https://centrobiotecnologicodelcaribe.blogspot.com/" class="btn" target="_blank" rel="noopener">Ver centro <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Sugerencias -->
+    <section id="sugerencias" class="sugerencias">
+        <div class="titulo-seccion">
+            <h2>Sugerencias de la Comunidad</h2>
+            <p>Comparte tus ideas y experiencias con otros amantes de la naturaleza</p>
+        </div>
+
+        <div class="contenedor-sugerencias">
+            <!-- Formulario para enviar sugerencias -->
+            <div class="formulario-sugerencias">
+                <div class="formulario-contenido">
+                    <h3>Comparte tu Sugerencia</h3>
+                    <form id="formSugerencia" method="POST" action="{{ url_for('registrar_sugerencia') }}">
+                        <div class="form-group">
+                            <label for="sugerencia">Tu Sugerencia:</label>
+                            <textarea id="sugerencia" name="sugerencia" placeholder="Comparte tus ideas, experiencias o sugerencias para mejorar nuestra comunidad..." maxlength="200" required></textarea>
+                            <div class="contador-caracteres"><span id="contador">0</span>/200 caracteres</div>
+                        </div>
+                        <button type="submit" class="btn-enviar">
+                            <i class="fas fa-paper-plane"></i> Enviar Sugerencia
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Lista de sugerencias -->
+            <div class="sugerencias-lista">
+                <h3>Últimas Sugerencias</h3>
+                <div class="carrusel-container">
+                    <button type="button" class="carrusel-btn prev" title="Sugerencias anteriores" onclick="cambiarSugerencias(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="carrusel-sugerencias">
+                        {% if sugerencias %}
+                            {% for sugerencia in sugerencias %}
+                            <div class="sugerencia-card" data-delay="{{ loop.index0 * 0.1 }}">
+                                <div class="sugerencia-header">
+                                    <div class="usuario-info">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span class="nombre">{{ sugerencia.Nombre }}</span>
+                                    </div>
+                                    <div class="fecha">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        {{ sugerencia.Fecha.strftime('%d/%m/%Y') }}
+                                    </div>
+                                </div>
+                                <div class="sugerencia-contenido">
+                                    {{ sugerencia.Sugerencia }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="sin-sugerencias">
+                                <i class="fas fa-comments"></i>
+                                <p>Aún no hay sugerencias. ¡Sé el primero en compartir una!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="carrusel-btn next" title="Siguientes sugerencias" onclick="cambiarSugerencias(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search-autocomplete.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formSugerencia = document.getElementById('formSugerencia');
+            const textareaSugerencia = document.getElementById('sugerencia');
+            const contadorElement = document.getElementById('contador');
+
+            // Función para actualizar el contador de caracteres
+            function actualizarContador() {
+                const caracteresActuales = textareaSugerencia.value.length;
+                contadorElement.textContent = caracteresActuales;
+
+                // Cambiar color si se acerca al límite
+                if (caracteresActuales > 180) {
+                    contadorElement.style.color = '#ff4500';
+                } else {
+                    contadorElement.style.color = '';
+                }
+            }
+
+            // Escuchar eventos de entrada en el textarea
+            textareaSugerencia.addEventListener('input', actualizarContador);
+            textareaSugerencia.addEventListener('keyup', actualizarContador);
+            textareaSugerencia.addEventListener('paste', function() {
+                setTimeout(actualizarContador, 10);
+            });
+
+            formSugerencia.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showModalNotification(
+                            'Sugerencia Enviada',
+                            '¡Gracias por tu sugerencia!',
+                            'success',
+                            'fas fa-tree'
+                        );
+                        // Agregar la nueva sugerencia al carrusel
+                        const carrusel = document.querySelector('.carrusel-sugerencias');
+                        const nuevaSugerencia = document.createElement('div');
+                        nuevaSugerencia.className = 'sugerencia-card';
+                        nuevaSugerencia.innerHTML = `
+                            <div class="sugerencia-header">
+                                <div class="usuario-info">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span class="nombre">${data.nuevaSugerencia.Nombre}</span>
+                                </div>
+                                <div class="fecha">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    ${data.nuevaSugerencia.Fecha}
+                                </div>
+                            </div>
+                            <div class="sugerencia-contenido">
+                                ${data.nuevaSugerencia.Sugerencia}
+                            </div>
+                        `;
+                        carrusel.insertBefore(nuevaSugerencia, carrusel.firstChild);
+                        // Limpiar el formulario
+                        formSugerencia.reset();
+                        // Resetear contador
+                        contadorElement.textContent = '0';
+                        contadorElement.style.color = '';
+                    } else {
+                        showModalNotification(
+                            'Error al Enviar Sugerencia',
+                            data.message,
+                            'error',
+                            'fas fa-exclamation-circle'
+                        );
+                    }
+                })
+                .catch(error => {
+                    showModalNotification(
+                        'Error al Enviar Sugerencia',
+                        'Error al procesar la sugerencia. Por favor, intenta nuevamente.',
+                        'error',
+                        'fas fa-exclamation-circle'
+                    );
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .formulario-sugerencias {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            color: white;
+        }
+
+        .logo-circular {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1rem auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .logo-circular img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+
+        .formulario-contenido {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .formulario-sugerencias h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .formulario-sugerencias label {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .formulario-sugerencias textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .formulario-sugerencias textarea:focus {
+            border-color: white;
+            outline: none;
+        }
+
+        .formulario-sugerencias textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-enviar {
+            background: white;
+            color: #2c3e50;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1.5rem auto 0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-enviar:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .carrusel-container {
+            position: relative;
+            overflow: hidden;
+            padding: 0 40px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+        }
+
+        .carrusel-sugerencias {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s ease-in-out;
+            will-change: transform;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+
+        .sugerencia-card {
+            flex: 0 0 calc(20% - 20px);
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+            opacity: 1;
+            transform: none;
+            position: relative;
+            min-width: 200px;
+        }
+
+        .sin-arboles {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .sin-arboles i {
+            font-size: 4rem;
+            color: var(--color-acento);
+            margin-bottom: 20px;
+        }
+
+        .sin-arboles h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--color-primario);
+        }
+
+        .sin-arboles p {
+            font-size: 1.1rem;
+            color: var(--color-texto-claro);
+        }
+
+        .sugerencia-card.active {
+            opacity: 1;
+            transform: translateX(0);
+            position: relative;
+        }
+
+        .carrusel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #2c3e50;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            margin: 0;
+        }
+
+        .carrusel-btn:hover {
+            background: #3498db;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carrusel-btn.prev {
+            left: 0;
+        }
+
+        .carrusel-btn.next {
+            right: 0;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+        }
+
+        .alert-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out, fadeOut 0.5s ease-out 4.5s forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Estilos para el botón de usuario */
+        .usuario {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .usuario img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .info-usuario {
+            text-align: left;
+        }
+
+        .nombre-usuario {
+            font-weight: bold;
+        }
+
+        .correo-usuario {
+            font-size: 0.8em;
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/simple_carousel.js') }}?v={{ range(1, 10000) | random }}" defer></script>
+    <script src="{{ url_for('static', filename='js/fullwidth_fix.js') }}?v={{ range(1, 10000) | random }}" defer></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}?v={{ range(1, 10000) | random }}" defer></script>
+
+    <!-- Script para menú desplegable móvil -->
+    <script>
+        function toggleMobileDropdown() {
+            const dropdown = document.getElementById('mobileDropdownContent');
+            dropdown.classList.toggle('show');
+        }
+
+        // Cerrar el dropdown si se hace clic fuera de él
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.mobile-dropdown-toggle') && !event.target.matches('.mobile-dropdown-toggle i')) {
+                const dropdown = document.getElementById('mobileDropdownContent');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
+
+    <!-- Pie de Página -->
+    <footer class="footer-principal" style="background-color: #2c3e50;">
+        <div class="contenido-footer">
+            <div class="logo-footer">
+                <div class="logo-circular">
+                    <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
+                </div>
+                <p>Plataforma de conservación y conocimiento de la flora colombiana</p>
+            </div>
+            <div class="enlaces-footer">
+                <div class="columna">
+                    <h4>Enlaces rápidos</h4>
+                    <ul>
+                        <li><a href="{{ url_for('inicio') }}">Inicio</a></li>
+                        <li><a href="#arboles">Árboles</a></li>
+                        <li><a href="#centros">Centros</a></li>
+                        <li><a href="#sugerencias">Sugerencias</a></li>
+                    </ul>
+                </div>
+                <div class="columna">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><a href="{{ url_for('soporte_tecnico') }}">Soporte técnico</a></li>
+                        <li><a href="{{ url_for('preguntas_frecuentes') }}">Preguntas frecuentes</a></li>
+                        <li><a href="{{ url_for('reportar_problema') }}">Reportar problema</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="redes-sociales">
+                <h4>Síguenos</h4>
+                <div class="iconos-redes">
+                    <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="derechos">
+            <p>&copy; 2024 VerdeQR. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Botones flotantes -->
+    <div class="botones-flotantes">
+        <button type="button" id="scanButton" class="btn-flotante btn-scan">
+            <i class="fas fa-qrcode"></i> Identificar QR
+        </button>
+        {% if session['usuario']['Correo'] == 'jhon123@gmail.com' %}
+        <a href="{{ url_for('gestion') }}" class="btn-flotante btn-gestion">
+            <i class="fas fa-cog"></i> Ir a Gestión
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- jsQR Library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+    <!-- QR Scanner Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scanButton = document.getElementById('scanButton');
+
+            if (scanButton) {
+                scanButton.addEventListener('click', function() {
+                    // Crear elementos para el escáner
+                    const scannerContainer = document.createElement('div');
+                    scannerContainer.className = 'scanner-container';
+                    scannerContainer.innerHTML = `
+                        <div class="scanner-overlay">
+                            <div class="scanner-content">
+                                <h3>Escanear Código QR</h3>
+                                <video id="qr-video" playsinline></video>
+                                <div class="scanner-controls">
+                                    <button id="close-scanner" class="btn btn-danger">Cerrar</button>
+                                </div>
+                                <div id="scan-status">Esperando cámara...</div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.body.appendChild(scannerContainer);
+
+                    // Configurar el escáner
+                    const video = document.getElementById('qr-video');
+                    const scanStatus = document.getElementById('scan-status');
+                    const closeButton = document.getElementById('close-scanner');
+
+                    let canvasElement = document.createElement('canvas');
+                    let canvas = canvasElement.getContext('2d');
+                    let scanning = false;
+
+                    // Función para cerrar el escáner
+                    function closeScanner() {
+                        if (video.srcObject) {
+                            video.srcObject.getTracks().forEach(track => track.stop());
+                        }
+                        if (scannerContainer.parentElement) {
+                            document.body.removeChild(scannerContainer);
+                        }
+                        scanning = false;
+                    }
+
+                    closeButton.addEventListener('click', closeScanner);
+
+                    // Función para escanear el frame actual
+                    function scanFrame() {
+                        if (!scanning) return;
+
+                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                            scanStatus.textContent = 'Escaneando...';
+
+                            canvasElement.height = video.videoHeight;
+                            canvasElement.width = video.videoWidth;
+                            canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+
+                            const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts: "dontInvert",
+                            });
+
+                            if (code) {
+                                scanStatus.textContent = 'QR detectado! Redirigiendo...';
+                                console.log('QR Code detected:', code.data);
+
+                                // Verificar si la URL es del formato esperado
+                                if (code.data.includes('/ver_arbol/')) {
+                                    closeScanner();
+                                    window.location.href = code.data;
+                                } else {
+                                    scanStatus.textContent = 'QR no válido. Intente con un QR de VerdeQR.';
+                                    setTimeout(() => {
+                                        scanStatus.textContent = 'Escaneando...';
+                                    }, 2000);
+                                }
+                            }
+                        }
+
+                        requestAnimationFrame(scanFrame);
+                    }
+
+                    // Iniciar la cámara
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                        .then(function(stream) {
+                            video.srcObject = stream;
+                            video.setAttribute('playsinline', true);
+                            video.play();
+                            scanning = true;
+                            scanStatus.textContent = 'Cámara lista. Apunte al código QR.';
+                            requestAnimationFrame(scanFrame);
+                        })
+                        .catch(function(error) {
+                            scanStatus.textContent = 'Error al acceder a la cámara: ' + error.message;
+                            console.error('Error accessing camera:', error);
+                        });
+                });
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilos para el escáner QR */
+        .scanner-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
+
+        .scanner-overlay {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scanner-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #qr-video {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border: 2px solid #1e5631;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .scanner-controls {
+            margin: 15px 0;
+        }
+
+        #scan-status {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+
+    <style>
+        /* Estilos para los botones flotantes */
+        .botones-flotantes {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .btn-flotante {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-flotante:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-flotante i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .btn-scan {
+            background-color: #3498db;
+        }
+
+        .btn-scan:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-gestion {
+            background-color: #1e5631;
+        }
+
+        .btn-gestion:hover {
+            background-color: #164023;
+        }
+
+        /* Estilos para el botón Ver todos los árboles */
+        .btn-ver-todos {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-ver-todos:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-ver-todos i:last-child {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-ver-todos:hover i:last-child {
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 768px) {
+            .btn-ver-todos {
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Responsive mejorado para móviles */
+        @media (max-width: 768px) {
+            .arbol-card {
+                margin-bottom: 20px;
+            }
+
+            .imagen-arbol {
+                height: 180px;
+            }
+
+            .info-arbol {
+                padding: 15px;
+            }
+
+            .info-arbol h3 {
+                font-size: 1rem;
+                line-height: 1.2;
+                margin-bottom: 8px;
+            }
+
+            .info-arbol h3 span {
+                font-size: 0.85rem;
+                display: block;
+                margin-top: 2px;
+                font-weight: normal;
+                opacity: 0.8;
+            }
+
+            .detalles {
+                margin-bottom: 12px;
+            }
+
+            .detalles p {
+                font-size: 0.75rem;
+                line-height: 1.3;
+                margin-bottom: 6px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .detalles i {
+                font-size: 0.7rem;
+                margin-right: 6px;
+                flex-shrink: 0;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-arboles {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .arbol-card {
+                margin-bottom: 15px;
+            }
+
+            .imagen-arbol {
+                height: 150px;
+            }
+
+            .info-arbol {
+                padding: 12px;
+            }
+
+            .info-arbol h3 {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }
+
+            .info-arbol h3 span {
+                font-size: 0.8rem;
+            }
+
+            .detalles p {
+                font-size: 0.7rem;
+                margin-bottom: 4px;
+                -webkit-line-clamp: 1;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</body>
+</html>
