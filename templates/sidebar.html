@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú - VerdeQR</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/avatars.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+                    
 </head>
 <body class="gestion-body">
     <!-- Menú lateral -->
@@ -17,20 +17,20 @@
 
         <nav class="menu-principal">
             <ul id="menu">
-                <li><a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i> Inicio</a></li>
-                <li><a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i> Árbol</a></li>
-                <li><a href="{{ url_for('centro') }}"><i class="fas fa-school"></i> Centros</a></li>
-                <li><a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i> Especies</a></li>
-                <li><a href="{{ url_for('uso_arbol') }}"><i class="fas fa-recycle"></i> Usos de Árbol</a></li>
-                <li><a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-forest"></i> Tipos de Bosque</a></li>
-                <li><a href="{{ url_for('medidas_arbol') }}"><i class="fas fa-ruler-combined"></i> Medidas</a></li>
-                <li><a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i> QR</a></li>
-                <li><a href="{{ url_for('sugerencias') }}"><i class="fas fa-comment"></i> Sugerencias</a></li>
+                <li><a href="{{ url_for('admin.gestion') }}"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="{{ url_for('arboles.arbol') }}"><i class="fas fa-tree"></i> Árbol</a></li>
+                <li><a href="{{ url_for('arboles.centro') }}"><i class="fas fa-school"></i> Centros</a></li>
+                <li><a href="{{ url_for('especies.especie') }}"><i class="fas fa-leaf"></i> Especies</a></li>
+                <li><a href="{{ url_for('usos.uso_arbol') }}"><i class="fas fa-recycle"></i> Usos de Árbol</a></li>
+                <li><a href="{{ url_for('especies.tipo_bosque') }}"><i class="fas fa-forest"></i> Tipos de Bosque</a></li>
+                <li><a href="{{ url_for('arboles.medidas_arbol') }}"><i class="fas fa-ruler-combined"></i> Medidas</a></li>
+                <li><a href="{{ url_for('qr.qr') }}"><i class="fas fa-qrcode"></i> QR</a></li>
+                <li><a href="{{ url_for('admin.sugerencias') }}"><i class="fas fa-comment"></i> Sugerencias</a></li>
             </ul>
         </nav>
 
         <div class="user-section">
-            <a href="{{ url_for('perfil') }}" class="user-profile-link">
+            <a href="{{ url_for('auth.perfil') }}" class="user-profile-link">
                 {% if session['usuario'].get('Imagen') %}
                     <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Usuario" class="user-avatar">
                 {% else %}
@@ -47,5 +47,6 @@
             </a>
         </div>
     </header>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

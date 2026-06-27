@@ -3,16 +3,16 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 
 :root {
-  --color-primario: #2c3e50;
-  --color-secundario: #34495e;
-  --color-acento: #28a745;
-  --color-texto: #333;
-  --color-texto-claro: #666;
-  --color-fondo: #f8f9fa;
+  --color-primario: #059669;
+  --color-secundario: #047857;
+  --color-acento: #059669;
+  --color-texto: #0f172a;
+  --color-texto-claro: #475569;
+  --color-fondo: #ecfdf5;
   --color-tarjeta: #ffffff;
-  --sombra: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --transicion: all 0.2s ease;
-  --contenedor-ancho-max: 1400px; /* Ancho máximo para contenedores */
+  --sombra: 0 4px 12px rgba(5, 150, 105, 0.12);
+  --transicion: all 0.25s ease;
+  --contenedor-ancho-max: 1400px;
 }
 
 /* Reset y estilos base */
@@ -58,7 +58,7 @@ img {
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background-color: #1e5631;
+   background-color: var(--color-primario);
   color: white;
   position: sticky;
   top: 0;
@@ -716,7 +716,7 @@ img {
 
 /* Pie de Página */
 .footer-principal {
-  background-color: #1e5631;
+   background-color: var(--color-primario);
   color: white;
   padding: 40px 20px 20px;
   width: 100%;

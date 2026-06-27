@@ -247,10 +247,11 @@
   animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   animation-delay: calc(var(--item-index, 0) * 0.1s);
   opacity: 0;
+  transition: box-shadow 0.3s ease;
 }
 
 .arbol-card:hover, .centro-card:hover {
-  animation: pulseGlow 2s infinite;
+  box-shadow: 0 5px 30px rgba(52, 152, 219, 0.3);
 }
 
 /* Responsive para diferentes tamaños de pantalla */

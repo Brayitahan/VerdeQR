@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive_large.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
     <style>
         .todos-arboles-container {
             max-width: 1200px;
@@ -188,8 +189,6 @@
             opacity: 0.6;
         }
 
-
-
         /* Responsive */
         @media (max-width: 768px) {
             .todos-arboles-container {
@@ -282,11 +281,11 @@
     
     <!-- Menú superior fijo -->
     <header class="menu-superior">
-        <div class="logo" onclick="window.location.href='{{ url_for('principal') }}'" style="cursor: pointer;">
+        <div class="logo" onclick="window.location.href='{{ url_for('arboles.principal') }}'" style="cursor: pointer;">
             <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
         </div>
         <div class="buscador">
-            <form id="searchForm" action="{{ url_for('buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
+            <form id="searchForm" action="{{ url_for('arboles.buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
                 <input type="text" name="q" id="searchInput" placeholder="Buscar árboles silvestres...">
                 <button type="submit" title="Buscar"><i class="fas fa-search"></i></button>
             </form>
@@ -302,14 +301,14 @@
         </script>
         <div class="botones">
             {% if 'usuario' in session %}
-                <a href="{{ url_for('inicio') }}" class="btn">Inicio</a>
-                <a href="{{ url_for('principal') }}" class="btn">Principal</a>
-                {% if session['usuario']['Correo'] == 'jhon123@gmail.com' %}
-                    <a href="{{ url_for('gestion') }}" class="btn btn-gestion">Ir a Gestión</a>
+                <a href="{{ url_for('arboles.inicio') }}" class="btn">Inicio</a>
+                <a href="{{ url_for('arboles.principal') }}" class="btn">Principal</a>
+                {% if 'Administrador' in session['usuario'].get('roles', []) %}
+                    <a href="{{ url_for('admin.gestion') }}" class="btn btn-gestion">Ir a Gestión</a>
                 {% endif %}
             {% else %}
-                <a href="{{ url_for('iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
-                <a href="{{ url_for('registro') }}" class="btn">Registrarse</a>
+                <a href="{{ url_for('auth.iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
+                <a href="{{ url_for('auth.registro') }}" class="btn">Registrarse</a>
             {% endif %}
         </div>
     </header>
@@ -334,7 +333,7 @@
                             <h3>{{ arbol.EspecieNombreVulgar if arbol.EspecieNombreVulgar else arbol.EspecieNombreCientifico }}</h3>
                             <p class="cientifico">{{ arbol.EspecieNombreCientifico }}</p>
                             <p class="descripcion">{{ arbol.Descripcion|truncate(120) if arbol.Descripcion else 'Sin descripción disponible' }}</p>
-                            <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="ver-mas">Leer más</a>
+                            <a href="{{ url_for('arboles.ver_arbol', id=arbol.IDArbol) }}" class="ver-mas">Leer más</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -344,10 +343,10 @@
             {% if pagination.total_pages > 1 %}
                 <div class="pagination">
                     {% if pagination.has_prev %}
-                        <a href="{{ url_for('todos_los_arboles', page=1) }}" title="Primera página">
+                        <a href="{{ url_for('arboles.todos_los_arboles', page=1) }}" title="Primera página">
                             <i class="fas fa-angle-double-left"></i>
                         </a>
-                        <a href="{{ url_for('todos_los_arboles', page=pagination.prev_num) }}" title="Página anterior">
+                        <a href="{{ url_for('arboles.todos_los_arboles', page=pagination.prev_num) }}" title="Página anterior">
                             <i class="fas fa-angle-left"></i>
                         </a>
                     {% else %}
@@ -363,7 +362,7 @@
                         {% if page_num == pagination.page %}
                             <span class="current">{{ page_num }}</span>
                         {% elif page_num <= 3 or page_num > pagination.total_pages - 3 or (page_num >= pagination.page - 1 and page_num <= pagination.page + 1) %}
-                            <a href="{{ url_for('todos_los_arboles', page=page_num) }}">{{ page_num }}</a>
+                            <a href="{{ url_for('arboles.todos_los_arboles', page=page_num) }}">{{ page_num }}</a>
                         {% elif page_num == 4 and pagination.page > 5 %}
                             <span class="disabled">...</span>
                         {% elif page_num == pagination.total_pages - 3 and pagination.page < pagination.total_pages - 4 %}
@@ -372,10 +371,10 @@
                     {% endfor %}
 
                     {% if pagination.has_next %}
-                        <a href="{{ url_for('todos_los_arboles', page=pagination.next_num) }}" title="Página siguiente">
+                        <a href="{{ url_for('arboles.todos_los_arboles', page=pagination.next_num) }}" title="Página siguiente">
                             <i class="fas fa-angle-right"></i>
                         </a>
-                        <a href="{{ url_for('todos_los_arboles', page=pagination.total_pages) }}" title="Última página">
+                        <a href="{{ url_for('arboles.todos_los_arboles', page=pagination.total_pages) }}" title="Última página">
                             <i class="fas fa-angle-double-right"></i>
                         </a>
                     {% else %}
@@ -396,5 +395,6 @@
             </div>
         {% endif %}
     </div>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

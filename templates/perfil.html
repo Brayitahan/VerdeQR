@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+                    
     <style>
         :root {
             --color-primario: #28a745;
@@ -40,11 +41,11 @@
 
             <!-- Controles de navegación flotantes -->
             <div class="perfil-controls">
-                <a href="{{ url_for('principal') }}" class="btn-control">
+                <a href="{{ url_for('arboles.principal') }}" class="btn-control">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
-                <a href="{{ url_for('gestion') }}" class="btn-control admin-only">
+                {% if 'usuario' in session and 'Administrador' in session['usuario'].get('roles', []) %}
+                <a href="{{ url_for('admin.gestion') }}" class="btn-control admin-only">
                     <i class="fas fa-cog"></i>
                 </a>
                 {% endif %}
@@ -91,9 +92,6 @@
             </div>
         </div>
 
-
-
-
         <!-- Información principal -->
         <div class="perfil-content">
             <div class="perfil-info">
@@ -101,7 +99,7 @@
                 <div class="user-meta">
                     <span class="user-role">
                         <i class="fas fa-user-tag"></i>
-                        {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
+                        {% if 'usuario' in session and 'Administrador' in session['usuario'].get('roles', []) %}
                         Administrador
                         {% else %}
                         Usuario
@@ -114,8 +112,6 @@
                     <span class="user-date"><i class="far fa-calendar-alt"></i> Registrado el {{ fecha_registro }}</span>
                 </div>
             </div>
-
-
 
             <!-- Pestañas de navegación -->
             <div class="profile-tabs">
@@ -151,7 +147,7 @@
             <div class="tab-content" id="settings-tab">
                 <div class="settings-section">
                     <h2><i class="fas fa-user-edit"></i> Editar perfil</h2>
-                    <form class="profile-form" method="POST" action="{{ url_for('perfil') }}" enctype="multipart/form-data">
+                    <form class="profile-form" method="POST" action="{{ url_for('auth.perfil') }}" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="nombres">Nombres</label>
                             <input type="text" id="nombres" name="nombres" value="{{ session['usuario']['Nombres'] }}" required>
@@ -232,7 +228,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="cerrarModal('password-modal')">&times;</span>
             <h2><i class="fas fa-key"></i> Cambiar contraseña</h2>
-            <form id="password-form" method="POST" action="{{ url_for('cambiar_contrasena') }}">
+            <form id="password-form" method="POST" action="{{ url_for('auth.cambiar_contrasena') }}">
                 <div class="form-group">
                     <label for="current-password">Contraseña actual</label>
                     <input type="password" id="current-password" name="contrasena_actual" required>
@@ -357,7 +353,7 @@
             // Función para cerrar sesión
             window.cerrarSesion = function() {
                 if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    window.location.href = "{{ url_for('cerrar_sesion') }}";
+                    window.location.href = "{{ url_for('auth.cerrar_sesion') }}";
                 }
             };
 
@@ -395,7 +391,7 @@
             // Función para eliminar el avatar
             window.eliminarAvatar = function() {
                 if (confirm('¿Estás seguro de que deseas eliminar tu foto de perfil? Se asignará un avatar predeterminado.')) {
-                    fetch('{{ url_for("eliminar_avatar") }}', {
+                    fetch('{{ url_for("auth.eliminar_avatar") }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -456,7 +452,7 @@
                         showNotification('Subiendo imagen...', 'info');
 
                         // Enviar la imagen al servidor mediante AJAX
-                        fetch('{{ url_for("actualizar_avatar") }}', {
+                        fetch('{{ url_for("auth.actualizar_avatar") }}', {
                             method: 'POST',
                             body: formData,
                             credentials: 'same-origin'
@@ -507,5 +503,6 @@
         });
     </script>
     <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

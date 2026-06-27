@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/gestion.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common_header.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
 </head>
 <body class="gestion-body">
     {% include 'flash_messages.html' %}
@@ -16,21 +17,21 @@
         </div>
         <nav class="menu-principal">
             <ul id="menu">
-                <li><a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
-                <li><a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
-                <li><a href="{{ url_for('centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
-                <li><a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
-                <li><a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
-                <li><a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
-                <li><a href="{{ url_for('curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
-                <li><a href="{{ url_for('interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
-                <li><a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
-                <li><a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
-                <li><a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
+                <li><a href="{{ url_for('admin.gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
+                <li><a href="{{ url_for('arboles.arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
+                <li><a href="{{ url_for('arboles.centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
+                <li><a href="{{ url_for('especies.especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
+                <li><a href="{{ url_for('usos.uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
+                <li><a href="{{ url_for('especies.tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
+                <li><a href="{{ url_for('admin.curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
+                <li><a href="{{ url_for('admin.interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
+                <li><a href="{{ url_for('qr.qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
+                <li><a href="{{ url_for('admin.sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
+                <li><a href="{{ url_for('admin.gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
             </ul>
         </nav>
         <div class="user-section">
-            <a href="{{ url_for('perfil') }}" class="user-profile-link">
+            <a href="{{ url_for('auth.perfil') }}" class="user-profile-link">
                 {% if session['usuario'].get('Imagen') %}
                     <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Usuario" class="user-avatar">
                 {% else %}
@@ -51,7 +52,7 @@
     <main class="container">
         <div class="contenedor-seccion">
             <h2>Editar Centro</h2>
-            <form method="POST" action="{{ url_for('editar_centro', id=centro.IDCentro) }}" class="formulario-gestion">
+            <form method="POST" action="{{ url_for('arboles.editar_centro', id=centro.IDCentro) }}" class="formulario-gestion">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
                     <input type="text" id="nombre" name="nombre" class="form-control" value="{{ centro.NombreCentro }}" required>
@@ -70,11 +71,12 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Guardar Cambios
                 </button>
-                <a href="{{ url_for('centro') }}" class="btn btn-secondary">
+                <a href="{{ url_for('arboles.centro') }}" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Cancelar
                 </a>
             </form>
         </div>
     </main>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

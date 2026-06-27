@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/qr-scanner.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/button_alignment_fix.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/menu_buttons.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/unified_buttons.css') }}">
     <!-- Nuevo CSS para pantallas ultra anchas -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ultra_wide_responsive.css') }}">
     <!-- CSS específico para la sección de especies en pantallas grandes -->
@@ -24,7 +23,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+                    
     <style>
         /* Estilos para el modal de bienvenida */
         .welcome-modal-overlay {
@@ -343,10 +342,10 @@
 
             <div class="welcome-modal-footer">
                 {% if not 'usuario' in session %}
-                    <a href="{{ url_for('registro') }}" class="welcome-cta-button">Registrarme Ahora</a>
-                    <a href="{{ url_for('iniciar_sesion') }}" class="welcome-cta-button secondary">Iniciar Sesión</a>
+                    <a href="{{ url_for('auth.registro') }}" class="welcome-cta-button">Registrarme Ahora</a>
+                    <a href="{{ url_for('auth.iniciar_sesion') }}" class="welcome-cta-button secondary">Iniciar Sesión</a>
                 {% else %}
-                    <a href="{{ url_for('principal') }}" class="welcome-cta-button">Explorar Árboles</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="welcome-cta-button">Explorar Árboles</a>
                     <button class="welcome-cta-button secondary" id="closeModalButton">Continuar</button>
                 {% endif %}
             </div>
@@ -360,7 +359,7 @@
                 <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
             </div>
             <div class="buscador">
-                <form id="searchForm" action="{{ url_for('buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
+                <form id="searchForm" action="{{ url_for('arboles.buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
                     <input type="text" name="q" id="searchInput" placeholder="Buscar árboles silvestres...">
                     <button type="submit" title="Buscar"><i class="fas fa-search"></i></button>
                 </form>
@@ -371,19 +370,19 @@
         <div class="header-bottom-row">
             <div class="botones">
                 {% if 'usuario' in session %}
-                    <a href="{{ url_for('principal') }}" class="btn">Ver Árboles</a>
-                    {% if session['usuario']['Correo'] == 'jhon123@gmail.com' %}
-                        <a href="{{ url_for('gestion') }}" class="btn">Ir a Gestión</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="btn">Ver Árboles</a>
+                    {% if 'Administrador' in session['usuario'].get('roles', []) %}
+                        <a href="{{ url_for('admin.gestion') }}" class="btn">Ir a Gestión</a>
                     {% endif %}
                 {% else %}
-                    <a href="{{ url_for('principal') }}" class="btn">Ver Árboles</a>
-                    <a href="{{ url_for('registro') }}" class="btn">Registrarse</a>
-                    <a href="{{ url_for('iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="btn">Ver Árboles</a>
+                    <a href="{{ url_for('auth.registro') }}" class="btn">Registrarse</a>
+                    <a href="{{ url_for('auth.iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
                 {% endif %}
             </div>
 
             {% if 'usuario' in session %}
-                <div class="usuario" onclick="window.location.href='{{ url_for('perfil') }}';" style="cursor: pointer; display: flex; align-items: center; background: linear-gradient(135deg, #2c3e50, #3498db); border-radius: 10px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; animation: pulse 2s infinite; margin-left: 10px;">
+                <div class="usuario" onclick="window.location.href='{{ url_for('auth.perfil') }}';" style="cursor: pointer; display: flex; align-items: center; background: linear-gradient(135deg, #2c3e50, #3498db); border-radius: 10px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; animation: pulse 2s infinite; margin-left: 10px;">
                     {% if session['usuario'].get('Imagen') %}
                         <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
                     {% else %}
@@ -474,8 +473,6 @@
             <p class="nota">Asegúrate de que la imagen del código QR sea lo más nítida posible.</p>
         </div>
     </div>
-
-
 
     <!-- Segunda pantalla: Información con imagen a la derecha -->
     <div class="segunda-pantalla animate-on-scroll">
@@ -932,8 +929,6 @@
         }
     </style>
 
-
-
     <!-- Tercera pantalla: Árboles Populares -->
     <div id="arboles" class="tercera-pantalla">
         <h1 style="text-align: center;">Árboles Populares</h1>
@@ -954,14 +949,14 @@
                         <h2><strong>{{ arbol.NombreVulgar }} ({{ arbol.NombreCientifico }})</strong></h2>
                         <p>{{ arbol.Descripcion|truncate(100) if arbol.Descripcion else 'Sin descripción disponible...' }}</p>
                         {% if 'usuario' in session %}
-                            <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="btn">Leer más</a>
+                            <a href="{{ url_for('arboles.ver_arbol', id=arbol.IDArbol) }}" class="btn">Leer más</a>
                         {% else %}
-                            <a href="{{ url_for('iniciar_sesion') }}" class="btn">Iniciar sesión para ver</a>
+                            <a href="{{ url_for('auth.iniciar_sesion') }}" class="btn">Iniciar sesión para ver</a>
                         {% endif %}
                         {% if 'usuario' in session %}
-                            <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="overlay-link" title="Ver detalles de {{ arbol.NombreVulgar }}"></a>
+                            <a href="{{ url_for('arboles.ver_arbol', id=arbol.IDArbol) }}" class="overlay-link" title="Ver detalles de {{ arbol.NombreVulgar }}"></a>
                         {% else %}
-                            <a href="{{ url_for('iniciar_sesion') }}" class="overlay-link" title="Iniciar sesión para ver detalles"></a>
+                            <a href="{{ url_for('auth.iniciar_sesion') }}" class="overlay-link" title="Iniciar sesión para ver detalles"></a>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -971,33 +966,33 @@
                     <img src="{{ url_for('static', filename='css/js/img/ceiba.png') }}" alt="Ceiba">
                     <h2><strong>Árbol de Ceiba (Ceiba Pentandra)</strong></h2>
                     <p>Uno de los árboles más grandes y emblemáticos de Colombia...</p>
-                    <a href="#" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="overlay-link" title="Ver más información"></a>
                 </div>
                 <div class="grid-item-arbol">
                     <img src="{{ url_for('static', filename='css/js/img/guayacan.jpg') }}" alt="Guayacán">
                     <h2><strong>Guayacán (Tabebuia chrysantha)</strong></h2>
                     <p>Conocido por sus flores amarillas y su madera dura...</p>
-                    <a href="#" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="overlay-link" title="Ver más información"></a>
                 </div>
                 <div class="grid-item-arbol">
                     <img src="{{ url_for('static', filename='css/js/img/roble.jpg') }}" alt="Roble">
                     <h2><strong>Roble (Quercus humboldtii)</strong></h2>
                     <p>Un árbol nativo de los Andes colombianos...</p>
-                    <a href="#" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="overlay-link" title="Ver más información"></a>
                 </div>
                 <div class="grid-item-arbol">
                     <img src="{{ url_for('static', filename='css/js/img/palma.jpg') }}" alt="Palma de Cera">
                     <h2><strong>Palma de Cera (Ceroxylon quindiuense)</strong></h2>
                     <p>El árbol nacional de Colombia y la palma más alta del mundo...</p>
-                    <a href="#" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="btn">Leer más</a>
+                    <a href="{{ url_for('arboles.principal') }}" class="overlay-link" title="Ver más información"></a>
                 </div>
             {% endif %}
         </div>
     </div>
-
-
-
-
 
     <!-- Cuarta pantalla: Identifica árboles al instante con QR -->
     <div id="centros" class="quinta-pantalla">
@@ -1327,8 +1322,6 @@
             font-weight: 400;
         }
 
-
-
         .nature-visual {
             position: absolute;
             bottom: 0;
@@ -1503,8 +1496,6 @@
         }
     </style>
 
-
-
     <!-- Sección de Beneficios -->
     <div id="beneficios" class="beneficios-pantalla">
         <h1>Beneficios de la Identificación de Árboles Silvestres con Códigos QR</h1>
@@ -1617,10 +1608,10 @@
             </div>
 
             <div class="footer-enlaces">
-                <a href="{{ url_for('politica_privacidad') }}">Política de Privacidad</a>
-                <a href="{{ url_for('terminos_condiciones') }}">Términos y Condiciones</a>
-                <a href="{{ url_for('contacto') }}">Contacto</a>
-                <a href="{{ url_for('acerca_de') }}">Acerca de Nosotros</a>
+                <a href="{{ url_for('info.politica_privacidad') }}">Política de Privacidad</a>
+                <a href="{{ url_for('info.terminos_condiciones') }}">Términos y Condiciones</a>
+                <a href="{{ url_for('info.contacto') }}">Contacto</a>
+                <a href="{{ url_for('info.acerca_de') }}">Acerca de Nosotros</a>
             </div>
 
             <div class="footer-derechos">
@@ -1633,16 +1624,16 @@
     <!-- Botones flotantes -->
     <div class="botones-flotantes">
         {% if 'usuario' in session %}
-        <a href="{{ url_for('principal') }}" class="btn-flotante btn-principal">
+        <a href="{{ url_for('arboles.principal') }}" class="btn-flotante btn-principal">
             <i class="fas fa-tree"></i> Ir a Principal
         </a>
         {% else %}
-        <a href="{{ url_for('iniciar_sesion') }}" class="btn-flotante btn-principal">
+        <a href="{{ url_for('auth.iniciar_sesion') }}" class="btn-flotante btn-principal">
             <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
         </a>
         {% endif %}
-        {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
-        <a href="{{ url_for('gestion') }}" class="btn-flotante btn-gestion">
+        {% if 'usuario' in session and 'Administrador' in session['usuario'].get('roles', []) %}
+        <a href="{{ url_for('admin.gestion') }}" class="btn-flotante btn-gestion">
             <i class="fas fa-cog"></i> Ir a Gestión
         </a>
         {% endif %}
@@ -1737,7 +1728,6 @@
     </script>
 
     <!-- jsQR Library from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <!-- QR Scanner Script -->
     <script src="{{ url_for('static', filename='js/qr-scanner.js') }}"></script>
@@ -1746,8 +1736,6 @@
     <script src="{{ url_for('static', filename='js/search-autocomplete.js') }}"></script>
     <!-- Script para animaciones al hacer scroll -->
     <script src="{{ url_for('static', filename='js/scroll-animations.js') }}"></script>
-
-
 
     <!-- Script para el modal de bienvenida -->
     <script>
@@ -1810,6 +1798,6 @@
         });
     </script>
 
-
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

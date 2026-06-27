@@ -1,12 +1,12 @@
 :root {
-    --primary-color: #27ae60;
-    --secondary-color: #e8f5e9;
-    --text-color: #2c3e50;
-    --border-color: #e0e0e0;
-    --background-light: #f5f5f5;
-    --menu-bg: #2c3e50;
+    --primary-color: #059669;
+    --secondary-color: #f0fdf4;
+    --text-color: #0f172a;
+    --border-color: #a7f3d0;
+    --background-light: #ecfdf5;
+    --menu-bg: #059669;
     --menu-text: #ffffff;
-    --menu-hover: #34495e;
+    --menu-hover: #047857;
 }
 
 /* Estilos generales */
@@ -57,7 +57,7 @@ body::before {
     left: 0;
     width: 200px;
     height: 100vh;
-    background: var(--menu-bg);
+    background: linear-gradient(180deg, var(--menu-bg), #047857);
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -12,6 +12,7 @@
     <!-- Correcciones responsive adicionales -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
     <style>
         .contenido-pagina {
             max-width: 1200px;
@@ -163,10 +164,10 @@
                 <i class="fas fa-bars"></i> Menú
             </button>
             <div class="dropdown-content" id="dropdownContent">
-                <a href="{{ url_for('soporte_tecnico') }}"><i class="fas fa-headset"></i>Soporte técnico</a>
-                <a href="{{ url_for('preguntas_frecuentes') }}"><i class="fas fa-question-circle"></i>Preguntas frecuentes</a>
-                <a href="{{ url_for('reportar_problema') }}"><i class="fas fa-bug"></i>Reportar problema</a>
-                <a href="{{ url_for('inicio') }}"><i class="fas fa-home"></i>Volver a inicio</a>
+                <a href="{{ url_for('info.soporte_tecnico') }}"><i class="fas fa-headset"></i>Soporte técnico</a>
+                <a href="{{ url_for('info.preguntas_frecuentes') }}"><i class="fas fa-question-circle"></i>Preguntas frecuentes</a>
+                <a href="{{ url_for('info.reportar_problema') }}"><i class="fas fa-bug"></i>Reportar problema</a>
+                <a href="{{ url_for('arboles.inicio') }}"><i class="fas fa-home"></i>Volver a inicio</a>
             </div>
         </div>
 
@@ -175,14 +176,14 @@
         </div>
 
         <div class="botones" style="display: flex; align-items: center; gap: 15px; margin-right: auto; margin-left: 20px;">
-            <a href="{{ url_for('preguntas_frecuentes') }}" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;"><i class="fas fa-question-circle"></i> Preguntas frecuentes</a>
-            <a href="{{ url_for('reportar_problema') }}" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;"><i class="fas fa-bug"></i> Reportar problema</a>
-            <a href="{{ url_for('inicio') }}" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;"><i class="fas fa-home"></i> Volver a inicio</a>
+            <a href="{{ url_for('info.preguntas_frecuentes') }}" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;"><i class="fas fa-question-circle"></i> Preguntas frecuentes</a>
+            <a href="{{ url_for('info.reportar_problema') }}" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;"><i class="fas fa-bug"></i> Reportar problema</a>
+            <a href="{{ url_for('arboles.inicio') }}" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;"><i class="fas fa-home"></i> Volver a inicio</a>
         </div>
 
         <div class="usuario-botones" style="display: flex; align-items: center; gap: 10px;">
             {% if 'usuario' in session %}
-                <div class="usuario" onclick="window.location.href='{{ url_for('perfil') }}';" style="cursor: pointer; display: flex; align-items: center; background: linear-gradient(135deg, #2c3e50, #3498db); border-radius: 10px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                <div class="usuario" onclick="window.location.href='{{ url_for('auth.perfil') }}';" style="cursor: pointer; display: flex; align-items: center; background: linear-gradient(135deg, #2c3e50, #3498db); border-radius: 10px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease;">
                     {% if session['usuario'].get('Imagen') %}
                         <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Icono de Usuario" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
                     {% else %}
@@ -198,8 +199,8 @@
                     </div>
                 </div>
             {% else %}
-                <a href="{{ url_for('iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
-                <a href="{{ url_for('registro_usuario') }}" class="btn btn-registro">Registrarse</a>
+                <a href="{{ url_for('auth.iniciar_sesion') }}" class="btn">Iniciar Sesión</a>
+                <a href="{{ url_for('auth.registro') }}" class="btn btn-registro">Registrarse</a>
             {% endif %}
         </div>
     </header>
@@ -228,13 +229,13 @@
             <div class="soporte-card">
                 <h3><i class="fas fa-book"></i> Documentación</h3>
                 <p>Consulta nuestra documentación detallada sobre cómo utilizar todas las funciones de VerdeQR, incluyendo guías paso a paso y tutoriales en video.</p>
-                <a href="{{ url_for('preguntas_frecuentes') }}" class="btn">Ver documentación</a>
+                <a href="{{ url_for('info.preguntas_frecuentes') }}" class="btn">Ver documentación</a>
             </div>
 
             <div class="soporte-card">
                 <h3><i class="fas fa-bug"></i> Reportar problemas</h3>
                 <p>¿Encontraste un error o problema en la plataforma? Repórtalo para que podamos solucionarlo lo antes posible.</p>
-                <a href="{{ url_for('reportar_problema') }}" class="btn">Reportar problema</a>
+                <a href="{{ url_for('info.reportar_problema') }}" class="btn">Reportar problema</a>
             </div>
         </div>
 
@@ -285,19 +286,19 @@
                 <div class="columna">
                     <h4>Enlaces rápidos</h4>
                     <ul>
-                        <li><a href="{{ url_for('inicio') }}">Inicio</a></li>
-                        <li><a href="{{ url_for('principal') }}#arboles">Árboles</a></li>
-                        <li><a href="{{ url_for('principal') }}#centros">Centros</a></li>
-                        <li><a href="{{ url_for('principal') }}#sugerencias">Sugerencias</a></li>
+                        <li><a href="{{ url_for('arboles.inicio') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('arboles.principal') }}#arboles">Árboles</a></li>
+                        <li><a href="{{ url_for('arboles.principal') }}#centros">Centros</a></li>
+                        <li><a href="{{ url_for('arboles.principal') }}#sugerencias">Sugerencias</a></li>
                     </ul>
                 </div>
                 <div class="columna">
                     <h4>Contacto</h4>
                     <ul>
-                        <li><a href="{{ url_for('soporte_tecnico') }}">Soporte técnico</a></li>
-                        <li><a href="{{ url_for('preguntas_frecuentes') }}">Preguntas frecuentes</a></li>
-                        <li><a href="{{ url_for('reportar_problema') }}">Reportar problema</a></li>
-                        <li><a href="{{ url_for('inicio') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('info.soporte_tecnico') }}">Soporte técnico</a></li>
+                        <li><a href="{{ url_for('info.preguntas_frecuentes') }}">Preguntas frecuentes</a></li>
+                        <li><a href="{{ url_for('info.reportar_problema') }}">Reportar problema</a></li>
+                        <li><a href="{{ url_for('arboles.inicio') }}">Inicio</a></li>
                     </ul>
                 </div>
             </div>
@@ -337,5 +338,6 @@
             }
         }
     </script>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

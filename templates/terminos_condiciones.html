@@ -9,6 +9,7 @@
     <!-- Correcciones responsive adicionales -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -250,14 +251,14 @@
                 <i class="fas fa-bars"></i> Menú
             </button>
             <div class="dropdown-content" id="dropdownContent">
-                <a href="{{ url_for('inicio') }}"><i class="fas fa-home"></i>Inicio</a>
-                <a href="{{ url_for('principal') }}"><i class="fas fa-tree"></i>Ver Árboles</a>
-                <a href="{{ url_for('contacto') }}"><i class="fas fa-envelope"></i>Contacto</a>
-                <a href="{{ url_for('acerca_de') }}"><i class="fas fa-info-circle"></i>Acerca de Nosotros</a>
-                <a href="{{ url_for('politica_privacidad') }}"><i class="fas fa-shield-alt"></i>Política de Privacidad</a>
-                <a href="{{ url_for('terminos_condiciones') }}"><i class="fas fa-file-contract"></i>Términos y Condiciones</a>
-                {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
-                    <a href="{{ url_for('gestion') }}"><i class="fas fa-cog"></i>Gestión</a>
+                <a href="{{ url_for('arboles.inicio') }}"><i class="fas fa-home"></i>Inicio</a>
+                <a href="{{ url_for('arboles.principal') }}"><i class="fas fa-tree"></i>Ver Árboles</a>
+                <a href="{{ url_for('info.contacto') }}"><i class="fas fa-envelope"></i>Contacto</a>
+                <a href="{{ url_for('info.acerca_de') }}"><i class="fas fa-info-circle"></i>Acerca de Nosotros</a>
+                <a href="{{ url_for('info.politica_privacidad') }}"><i class="fas fa-shield-alt"></i>Política de Privacidad</a>
+                <a href="{{ url_for('info.terminos_condiciones') }}"><i class="fas fa-file-contract"></i>Términos y Condiciones</a>
+                {% if 'usuario' in session and 'Administrador' in session['usuario'].get('roles', []) %}
+                    <a href="{{ url_for('admin.gestion') }}"><i class="fas fa-cog"></i>Gestión</a>
                 {% endif %}
             </div>
         </div>
@@ -266,13 +267,13 @@
             <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
         </div>
         <div class="botones">
-            <a href="{{ url_for('inicio') }}"><i class="fas fa-home"></i> Inicio</a>
-            <a href="{{ url_for('principal') }}"><i class="fas fa-tree"></i> Ver Árboles</a>
-            <a href="{{ url_for('contacto') }}"><i class="fas fa-envelope"></i> Contacto</a>
-            <a href="{{ url_for('acerca_de') }}"><i class="fas fa-info-circle"></i> Acerca de Nosotros</a>
-            <a href="{{ url_for('politica_privacidad') }}"><i class="fas fa-shield-alt"></i> Política de Privacidad</a>
-            {% if 'usuario' in session and session['usuario']['Correo'] == 'jhon123@gmail.com' %}
-                <a href="{{ url_for('gestion') }}"><i class="fas fa-cog"></i> Gestión</a>
+            <a href="{{ url_for('arboles.inicio') }}"><i class="fas fa-home"></i> Inicio</a>
+            <a href="{{ url_for('arboles.principal') }}"><i class="fas fa-tree"></i> Ver Árboles</a>
+            <a href="{{ url_for('info.contacto') }}"><i class="fas fa-envelope"></i> Contacto</a>
+            <a href="{{ url_for('info.acerca_de') }}"><i class="fas fa-info-circle"></i> Acerca de Nosotros</a>
+            <a href="{{ url_for('info.politica_privacidad') }}"><i class="fas fa-shield-alt"></i> Política de Privacidad</a>
+            {% if 'usuario' in session and 'Administrador' in session['usuario'].get('roles', []) %}
+                <a href="{{ url_for('admin.gestion') }}"><i class="fas fa-cog"></i> Gestión</a>
             {% endif %}
         </div>
     </header>
@@ -340,17 +341,17 @@
 
         <p class="fecha-actualizacion">Estos términos y condiciones fueron actualizados por última vez el 15 de mayo de 2023.</p>
 
-        <a href="{{ url_for('inicio') }}" class="volver-btn"><i class="fas fa-arrow-left"></i> Volver a inicio</a>
+        <a href="{{ url_for('arboles.inicio') }}" class="volver-btn"><i class="fas fa-arrow-left"></i> Volver a inicio</a>
     </div>
 
     <!-- Footer simple -->
     <footer class="footer-simple">
         <div>
-            <a href="{{ url_for('inicio') }}">Inicio</a>
-            <a href="{{ url_for('politica_privacidad') }}">Política de Privacidad</a>
-            <a href="{{ url_for('terminos_condiciones') }}">Términos y Condiciones</a>
-            <a href="{{ url_for('contacto') }}">Contacto</a>
-            <a href="{{ url_for('acerca_de') }}">Acerca de Nosotros</a>
+            <a href="{{ url_for('arboles.inicio') }}">Inicio</a>
+            <a href="{{ url_for('info.politica_privacidad') }}">Política de Privacidad</a>
+            <a href="{{ url_for('info.terminos_condiciones') }}">Términos y Condiciones</a>
+            <a href="{{ url_for('info.contacto') }}">Contacto</a>
+            <a href="{{ url_for('info.acerca_de') }}">Acerca de Nosotros</a>
         </div>
         <p>© 2023 VerdeQR - Un dendrólogo en tu bolsillo. Todos los derechos reservados.</p>
         <p>Desarrollado con <i class="fas fa-heart heart-icon"></i> por el equipo de VerdeQR</p>
@@ -359,10 +360,10 @@
     <!-- Botones flotantes -->
     {% if 'usuario' in session %}
     <div class="botones-flotantes">
-        <a href="{{ url_for('inicio') }}" class="btn-flotante btn-principal">
+        <a href="{{ url_for('arboles.inicio') }}" class="btn-flotante btn-principal">
             <i class="fas fa-home"></i> Ir a Inicio
         </a>
-        <a href="{{ url_for('principal') }}" class="btn-flotante btn-gestion">
+        <a href="{{ url_for('arboles.principal') }}" class="btn-flotante btn-gestion">
             <i class="fas fa-tree"></i> Ir a Principal
         </a>
     </div>
@@ -388,5 +389,6 @@
             }
         }
     </script>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

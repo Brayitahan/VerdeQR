@@ -184,14 +184,14 @@
             }
         }
     </style>
-</head>
+                    </head>
 <body class="login-page">
     {% include 'flash_messages.html' %}
     <div class="contenedor-auth">
         <div class="formulario-auth">
             <h1>Restablecer Contraseña</h1>
-            <a href="{{ url_for('inicio') }}" class="btn-inicio">Inicio</a>
-            <form method="POST" action="{{ url_for('restablecer_contrasena') }}" id="restablecerForm">
+            <a href="{{ url_for('arboles.inicio') }}" class="btn-inicio">Inicio</a>
+            <form method="POST" action="{{ url_for('auth.restablecer_contrasena') }}" id="restablecerForm">
                 <div class="form-group">
                     <label for="codigo">Código de verificación:</label>
                     <input type="text" id="codigo" name="codigo" required>
@@ -209,7 +209,7 @@
                 <button type="submit" class="btn">Restablecer Contraseña</button>
             </form>
             <button id="testButton" class="btn" style="margin-top: 10px; background-color: #007bff;" onclick="testSubmit()">Probar Envío</button>
-            <p><a href="{{ url_for('iniciar_sesion') }}">Volver a Iniciar Sesión</a></p>
+            <p><a href="{{ url_for('auth.iniciar_sesion') }}">Volver a Iniciar Sesión</a></p>
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
@@ -307,5 +307,6 @@
             });
         });
     </script>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

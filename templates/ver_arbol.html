@@ -248,6 +248,54 @@
         transform: translateX(5px);
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
+
+    /* Footer verde oscuro */
+    .footer-verde {
+        background-color: #1e5631;
+        color: white;
+    }
+
+    .footer-verde a {
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .footer-verde a:hover {
+        color: white;
+    }
+
+    .bg-dark-green {
+        background-color: #143d22;
+    }
+
+    .logo-container-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .logo-container-footer .footer-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--color-acento, #28a745);
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 8px;
+    }
+
+    .heart-icon {
+        color: #e74c3c;
+    }
 </style>
 {% endblock %}
 
@@ -257,7 +305,7 @@
     <!-- Botón para volver -->
     <div class="row mb-3">
         <div class="col-12">
-            <a href="{{ url_for('principal') }}" class="btn btn-secondary">
+            <a href="{{ url_for('arboles.principal') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>
@@ -352,7 +400,6 @@
                 </button>
                 <div class="collapse" id="descripcion">
                     <div class="card card-body">
-
 
                         <!-- Descripción con mejor estilo y leer más -->
                         {% if arbol.Descripcion|length > 300 %}
@@ -795,9 +842,9 @@
             <div class="col-md-4 p-4">
                 <h5 class="mb-3">Enlaces rápidos</h5>
                 <ul class="footer-links">
-                    <li><a href="{{ url_for('inicio') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('principal') }}">Principal</a></li>
-                    <li><a href="{{ url_for('arbol') }}">Gestión de Árboles</a></li>
+                    <li><a href="{{ url_for('arboles.inicio') }}">Inicio</a></li>
+                    <li><a href="{{ url_for('arboles.principal') }}">Principal</a></li>
+                    <li><a href="{{ url_for('arboles.arbol') }}">Gestión de Árboles</a></li>
                 </ul>
             </div>
             <div class="col-md-4 p-4">
@@ -1070,7 +1117,6 @@
         padding-left: 15px;
     }
 
-
 </style>
 
 <!-- Script para la interactividad de textos expandibles -->
@@ -1122,7 +1168,6 @@
             previewElement.style.display = 'block';
         }
     }
-
 
 </script>
 

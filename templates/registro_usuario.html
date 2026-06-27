@@ -10,6 +10,7 @@
     <!-- Correcciones responsive adicionales -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
 </head>
 <body class="gestion-body">
     {% include 'flash_messages.html' %}
@@ -20,17 +21,17 @@
                 <i class="fas fa-bars"></i> Menú
             </button>
             <div class="dropdown-content" id="dropdownContent">
-                <a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i>Inicio</a>
-                <a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i>Árboles</a>
-                <a href="{{ url_for('centro') }}"><i class="fas fa-university"></i>Centros</a>
-                <a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i>Especies</a>
-                <a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i>Usos</a>
-                <a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i>Tipos de Bosque</a>
-                <a href="{{ url_for('curiosidades') }}"><i class="fas fa-lightbulb"></i>Curiosidades</a>
-                <a href="{{ url_for('interacciones') }}"><i class="fas fa-network-wired"></i>Interacciones Ecológicas</a>
-                <a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i>QR</a>
-                <a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i>Sugerencias</a>
-                <a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i>Usuarios</a>
+                <a href="{{ url_for('admin.gestion') }}"><i class="fas fa-home"></i>Inicio</a>
+                <a href="{{ url_for('arboles.arbol') }}"><i class="fas fa-tree"></i>Árboles</a>
+                <a href="{{ url_for('arboles.centro') }}"><i class="fas fa-university"></i>Centros</a>
+                <a href="{{ url_for('especies.especie') }}"><i class="fas fa-leaf"></i>Especies</a>
+                <a href="{{ url_for('usos.uso_arbol') }}"><i class="fas fa-tags"></i>Usos</a>
+                <a href="{{ url_for('especies.tipo_bosque') }}"><i class="fas fa-mountain"></i>Tipos de Bosque</a>
+                <a href="{{ url_for('admin.curiosidades') }}"><i class="fas fa-lightbulb"></i>Curiosidades</a>
+                <a href="{{ url_for('admin.interacciones') }}"><i class="fas fa-network-wired"></i>Interacciones Ecológicas</a>
+                <a href="{{ url_for('qr.qr') }}"><i class="fas fa-qrcode"></i>QR</a>
+                <a href="{{ url_for('admin.sugerencias') }}"><i class="fas fa-comments"></i>Sugerencias</a>
+                <a href="{{ url_for('admin.gestion_usuarios') }}"><i class="fas fa-users"></i>Usuarios</a>
             </div>
         </div>
 
@@ -39,21 +40,21 @@
         </div>
         <nav class="menu-principal">
             <ul id="menu">
-                <li><a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
-                <li><a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
-                <li><a href="{{ url_for('centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
-                <li><a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
-                <li><a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
-                <li><a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
-                <li><a href="{{ url_for('curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
-                <li><a href="{{ url_for('interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
-                <li><a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
-                <li><a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
-                <li><a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
+                <li><a href="{{ url_for('admin.gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
+                <li><a href="{{ url_for('arboles.arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
+                <li><a href="{{ url_for('arboles.centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
+                <li><a href="{{ url_for('especies.especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
+                <li><a href="{{ url_for('usos.uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
+                <li><a href="{{ url_for('especies.tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
+                <li><a href="{{ url_for('admin.curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
+                <li><a href="{{ url_for('admin.interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
+                <li><a href="{{ url_for('qr.qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
+                <li><a href="{{ url_for('admin.sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
+                <li><a href="{{ url_for('admin.gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
             </ul>
         </nav>
         <div class="user-section">
-            <a href="{{ url_for('perfil') }}" class="user-profile-link">
+            <a href="{{ url_for('auth.perfil') }}" class="user-profile-link">
                 {% if session['usuario'].get('Imagen') %}
                     <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Usuario" class="user-avatar">
                 {% else %}
@@ -75,7 +76,7 @@
         <!-- Formulario para registrar usuarios -->
         <div class="contenedor-seccion">
             <h2>Registro de Usuario</h2>
-            <form id="registroForm" method="POST" action="{{ url_for('gestion_usuarios') }}" class="formulario-gestion">
+            <form id="registroForm" method="POST" action="{{ url_for('admin.gestion_usuarios') }}" class="formulario-gestion">
                 <div class="form-group">
                     <label for="nombres">Nombre completo:</label>
                     <input type="text" id="nombres" name="nombres" class="form-control" required>
@@ -128,10 +129,10 @@
                             <td>{% if usuario.Estado == 1 %}Activo{% else %}Inactivo{% endif %}</td>
                             <td class="acciones-cell">
                                 <div class="acciones-botones">
-                                    <a href="{{ url_for('editar_usuario', id=usuario.IDUsuario) }}" class="btn btn-primary btn-sm">
+                                    <a href="{{ url_for('admin.editar_usuario', id=usuario.IDUsuario) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <a href="{{ url_for('eliminar_usuario', id=usuario.IDUsuario) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                    <a href="{{ url_for('admin.eliminar_usuario', id=usuario.IDUsuario) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este usuario?');">
                                         <i class="fas fa-trash"></i> Eliminar
                                     </a>
                                 </div>
@@ -188,5 +189,6 @@
         }
     </script>
 
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

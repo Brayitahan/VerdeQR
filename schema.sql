@@ -5,10 +5,11 @@ USE VerdeQR;
 -- Estado
 CREATE TABLE Estado (
     IDEstado INT AUTO_INCREMENT PRIMARY KEY,
-    NombreEstado VARCHAR(50) NOT NULL
+    NombreEstado VARCHAR(50) NOT NULL,
+    Descripcion VARCHAR(100)
 );
 
-INSERT INTO Estado (NombreEstado) VALUES ('Activo'), ('Inactivo');
+INSERT INTO Estado (IDEstado, NombreEstado, Descripcion) VALUES (1, 'Activo', 'Registro activo'), (2, 'Inactivo', 'Registro inactivo');
 
 -- Usuario
 CREATE TABLE Usuario (
@@ -17,8 +18,9 @@ CREATE TABLE Usuario (
     Correo VARCHAR(100) NOT NULL,
     Telefono VARCHAR(20),
     Imagen VARCHAR(255),
-    Contraseña VARCHAR(100) NOT NULL,
+    Contraseña VARCHAR(255) NOT NULL,
     Estado INT NOT NULL,
+    FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
 );
 
@@ -60,169 +62,68 @@ CREATE TABLE UsoArbol (
     FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
 );
 
--- UsoMedicinal
-CREATE TABLE UsoMedicinal (
-    IDUsoMedicinal INT AUTO_INCREMENT PRIMARY KEY,
+-- DetalleUso: unifica los 13 tipos de uso en una sola tabla
+CREATE TABLE DetalleUso (
+    IDDetalle INT AUTO_INCREMENT PRIMARY KEY,
     Uso INT NOT NULL,
-    ParteUtilizada VARCHAR(100),
-    Preparacion TEXT,
-    EnfermedadesTratadas TEXT,
     Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- UsoComestible
-CREATE TABLE UsoComestible (
-    IDUsoComestible INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
-    ParteComestible VARCHAR(100),
-    FormaConsumo TEXT,
-    ValorNutricional TEXT,
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- UsoMaderable
-CREATE TABLE UsoMaderable (
-    IDUsoMaderable INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- Maderable
     Dureza VARCHAR(50),
     Resistencia VARCHAR(50),
     UsoFinal VARCHAR(150),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Ornamental
-CREATE TABLE UsoOrnamental (
-    IDUsoOrnamental INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- Comestible
+    ParteComestible VARCHAR(100),
+    FormaConsumo TEXT,
+    ValorNutricional TEXT,
+    -- Medicinal
+    ParteUtilizada VARCHAR(100),
+    Preparacion TEXT,
+    EnfermedadesTratadas TEXT,
+    -- Ornamental
     CaracteristicasEsteticas VARCHAR(255),
     UbicacionRecomendada VARCHAR(255),
     TipoJardineria VARCHAR(100),
     ColoracionEstacional TEXT,
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Artesanal
-CREATE TABLE UsoArtesanal (
-    IDUsoArtesanal INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
-    ParteUtilizada VARCHAR(100),
+    -- Artesanal
     TipoArtesania VARCHAR(150),
     TecnicasElaboracion TEXT,
     ComunidadesArtesanales VARCHAR(255),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Agroforestal
-CREATE TABLE UsoAgroforestal (
-    IDUsoAgroforestal INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- Agroforestal
     SistemaAgroforestal VARCHAR(100),
     BeneficiosAsociados TEXT,
     CultivosCompatibles VARCHAR(255),
     FuncionPrincipal VARCHAR(150),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso para Restauración Ecológica
-CREATE TABLE UsoRestauracionEcologica (
-    IDUsoRestauracion INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- RestauracionEcologica
     EcosistemaObjetivo VARCHAR(150),
     FuncionEcologica TEXT,
     EspeciesAsociadas VARCHAR(255),
     TasaCrecimiento VARCHAR(50),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Cultural/Ceremonial
-CREATE TABLE UsoCulturalCeremonial (
-    IDUsoCultural INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- CulturalCeremonial
     GrupoEtnico VARCHAR(100),
     TipoCeremonia VARCHAR(150),
     SignificadoCultural TEXT,
-    ParteUtilizada VARCHAR(100),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Melífero
-CREATE TABLE UsoMelifero (
-    IDUsoMelifero INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- Melifero
     TipoMiel VARCHAR(100),
     EpocaFloracion VARCHAR(100),
     CalidadPolen VARCHAR(50),
     AtraccionPolinizadores TEXT,
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso para Protección Ambiental
-CREATE TABLE UsoProteccionAmbiental (
-    IDUsoProteccion INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- ProteccionAmbiental
     TipoProteccion VARCHAR(100),
     BeneficiosAmbientales TEXT,
     ZonasAplicacion VARCHAR(255),
     CapacidadCapturaCarbon VARCHAR(100),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Tintóreo
-CREATE TABLE UsoTintoreo (
-    IDUsoTintoreo INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
-    ParteUtilizada VARCHAR(100),
+    -- Tintoreo
     ColorObtenido VARCHAR(100),
     MetodoExtraccion TEXT,
     UsosTintes VARCHAR(255),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso Oleaginoso
-CREATE TABLE UsoOleaginoso (
-    IDUsoOleaginoso INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
-    ParteUtilizada VARCHAR(100),
+    -- Oleaginoso
     TipoAceite VARCHAR(100),
-    MetodoExtraccion TEXT,
     PropiedadesAceite TEXT,
     AplicacionesAceite VARCHAR(255),
-    Estado INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
-    FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
-);
-
--- Uso para Biocombustible
-CREATE TABLE UsoBiocombustible (
-    IDUsoBiocombustible INT AUTO_INCREMENT PRIMARY KEY,
-    Uso INT NOT NULL,
+    -- Biocombustible
     TipoBiocombustible VARCHAR(100),
     PoderCalorifico VARCHAR(100),
-    TasaCrecimiento VARCHAR(50),
     RendimientoPorHectarea VARCHAR(100),
-    Estado INT NOT NULL DEFAULT 1,
     FOREIGN KEY (Uso) REFERENCES UsoArbol(IDUso),
     FOREIGN KEY (Estado) REFERENCES Estado(IDEstado)
 );

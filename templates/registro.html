@@ -166,14 +166,14 @@
             }
         }
     </style>
-</head>
+                    </head>
 <body class="register-page">
     {% include 'flash_messages.html' %}
     <div class="contenedor-auth">
         <div class="formulario-auth">
             <h1>Registro</h1>
-            <a href="{{ url_for('inicio') }}" class="btn-inicio">Inicio</a>
-            <form method="POST" action="{{ url_for('registro') }}" id="registroForm">
+            <a href="{{ url_for('arboles.inicio') }}" class="btn-inicio">Inicio</a>
+            <form method="POST" action="{{ url_for('auth.registro') }}" id="registroForm">
                 <div class="form-columns">
                     <div class="form-group">
                         <label for="nombres">Nombres:</label>
@@ -202,7 +202,7 @@
                 </div>
                 <button type="submit" class="btn">Registrarse</button>
             </form>
-            <p>¿Ya tienes una cuenta? <a href="{{ url_for('iniciar_sesion') }}">Inicia sesión aquí</a></p>
+            <p>¿Ya tienes una cuenta? <a href="{{ url_for('auth.iniciar_sesion') }}">Inicia sesión aquí</a></p>
         </div>
     </div>
 
@@ -250,5 +250,6 @@
             });
         });
     </script>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

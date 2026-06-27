@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive_large.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
     <style>
         .especie-card {
             background-color: rgba(255, 255, 255, 0.9);
@@ -104,22 +105,22 @@
         </div>
         <nav class="menu-principal">
             <ul id="menu">
-                <li><a href="{{ url_for('gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
-                <li><a href="{{ url_for('arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
-                <li><a href="{{ url_for('centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
-                <li><a href="{{ url_for('especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
-                <li><a href="{{ url_for('uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
-                <li><a href="{{ url_for('usos_por_especie') }}" class="active"><i class="fas fa-sitemap"></i><span>Usos por Especie</span></a></li>
-                <li><a href="{{ url_for('tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
-                <li><a href="{{ url_for('curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
-                <li><a href="{{ url_for('interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
-                <li><a href="{{ url_for('qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
-                <li><a href="{{ url_for('sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
-                <li><a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
+                <li><a href="{{ url_for('admin.gestion') }}"><i class="fas fa-home"></i><span>Inicio</span></a></li>
+                <li><a href="{{ url_for('arboles.arbol') }}"><i class="fas fa-tree"></i><span>Árboles</span></a></li>
+                <li><a href="{{ url_for('arboles.centro') }}"><i class="fas fa-university"></i><span>Centros</span></a></li>
+                <li><a href="{{ url_for('especies.especie') }}"><i class="fas fa-leaf"></i><span>Especies</span></a></li>
+                <li><a href="{{ url_for('usos.uso_arbol') }}"><i class="fas fa-tags"></i><span>Usos</span></a></li>
+                <li><a href="{{ url_for('especies.usos_por_especie') }}" class="active"><i class="fas fa-sitemap"></i><span>Usos por Especie</span></a></li>
+                <li><a href="{{ url_for('especies.tipo_bosque') }}"><i class="fas fa-mountain"></i><span>Tipos de Bosque</span></a></li>
+                <li><a href="{{ url_for('admin.curiosidades') }}"><i class="fas fa-lightbulb"></i><span>Curiosidades</span></a></li>
+                <li><a href="{{ url_for('admin.interacciones') }}"><i class="fas fa-network-wired"></i><span>Interacciones Ecológicas</span></a></li>
+                <li><a href="{{ url_for('qr.qr') }}"><i class="fas fa-qrcode"></i><span>QR</span></a></li>
+                <li><a href="{{ url_for('admin.sugerencias') }}"><i class="fas fa-comments"></i><span>Sugerencias</span></a></li>
+                <li><a href="{{ url_for('admin.gestion_usuarios') }}"><i class="fas fa-users"></i><span>Usuarios</span></a></li>
             </ul>
         </nav>
         <div class="user-section">
-            <a href="{{ url_for('perfil') }}" class="user-profile-link">
+            <a href="{{ url_for('auth.perfil') }}" class="user-profile-link">
                 {% if session['usuario'].get('Imagen') %}
                     <img src="{{ url_for('static', filename=session['usuario']['Imagen']) }}" alt="Usuario" class="user-avatar">
                 {% else %}
@@ -153,7 +154,7 @@
                 <div class="especie-card">
                     <div class="especie-header">
                         <h3 class="especie-title">{{ especie.NombreCientifico }}</h3>
-                        <a href="{{ url_for('agregar_uso', especie_id=especie.IDEspecie) }}" class="btn btn-primary btn-sm add-uso-btn">
+                        <a href="{{ url_for('especies.agregar_uso', especie_id=especie.IDEspecie) }}" class="btn btn-primary btn-sm add-uso-btn">
                             <i class="fas fa-plus"></i> Agregar uso
                         </a>
                     </div>
@@ -169,10 +170,10 @@
                                     <strong>{{ uso.Nombre }}</strong>
                                 </div>
                                 <div class="uso-actions">
-                                    <a href="{{ url_for('completar_uso_especifico', id=uso.IDUso, categoria=uso.TipoUsoDetectado) }}" class="btn btn-info btn-sm">
+                                    <a href="{{ url_for('usos.completar_uso_especifico', id=uso.IDUso, categoria=uso.TipoUsoDetectado) }}" class="btn btn-info btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{{ url_for('eliminar_uso_arbol', id=uso.IDUso) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este uso?');">
+                                    <a href="{{ url_for('usos.eliminar_uso_arbol', id=uso.IDUso) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este uso?');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -197,9 +198,9 @@
             <div class="footer-section">
                 <h3>Enlaces</h3>
                 <ul>
-                    <li><a href="{{ url_for('principal') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('contacto') }}">Contacto</a></li>
-                    <li><a href="{{ url_for('acerca_de') }}">Acerca de</a></li>
+                    <li><a href="{{ url_for('arboles.principal') }}">Inicio</a></li>
+                    <li><a href="{{ url_for('info.contacto') }}">Contacto</a></li>
+                    <li><a href="{{ url_for('info.acerca_de') }}">Acerca de</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -242,5 +243,6 @@
             });
         });
     </script>
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

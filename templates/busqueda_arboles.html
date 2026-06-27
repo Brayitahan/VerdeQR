@@ -10,17 +10,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}?v={{ range(1, 10000) | random }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                    
 </head>
 <body class="gestion-body">
     {% include 'flash_messages.html' %}
     <!-- Barra Superior -->
     <header class="header-principal">
         <div class="header-container">
-            <div class="logo" onclick="window.location.href='{{ url_for('principal') }}'" style="cursor: pointer;">
+            <div class="logo" onclick="window.location.href='{{ url_for('arboles.principal') }}'" style="cursor: pointer;">
                 <img src="{{ url_for('static', filename='css/js/img/logo.png') }}" alt="Logo VerdeQR">
             </div>
             <div class="buscador">
-                <form id="searchForm" action="{{ url_for('buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
+                <form id="searchForm" action="{{ url_for('arboles.buscar_arbol') }}" method="GET" onsubmit="return validateSearch()">
                     <input type="text" name="q" id="searchInput" placeholder="Buscar árboles silvestres..." value="{{ query }}">
                     <button type="submit" title="Buscar"><i class="fas fa-search"></i></button>
                 </form>
@@ -37,18 +38,18 @@
             </script>
             <nav class="menu-principal">
                 <ul>
-                    <li><a href="{{ url_for('inicio') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('principal') }}#arboles">Árboles</a></li>
-                    <li><a href="{{ url_for('principal') }}#centros">Centros</a></li>
-                    <li><a href="{{ url_for('principal') }}#sugerencias">Sugerencias</a></li>
+                    <li><a href="{{ url_for('arboles.inicio') }}">Inicio</a></li>
+                    <li><a href="{{ url_for('arboles.principal') }}#arboles">Árboles</a></li>
+                    <li><a href="{{ url_for('arboles.principal') }}#centros">Centros</a></li>
+                    <li><a href="{{ url_for('arboles.principal') }}#sugerencias">Sugerencias</a></li>
                     {% if 'usuario' in session %}
-                    <li><a href="{{ url_for('gestion') }}">Gestión</a></li>
+                    <li><a href="{{ url_for('admin.gestion') }}">Gestión</a></li>
                     {% endif %}
                 </ul>
             </nav>
             <div class="usuario">
-                <a href="{{ url_for('inicio') }}" class="btn-menu">Inicio</a>
-                <a href="{{ url_for('principal') }}" class="btn-menu">Ver Árboles</a>
+                <a href="{{ url_for('arboles.inicio') }}" class="btn-menu">Inicio</a>
+                <a href="{{ url_for('arboles.principal') }}" class="btn-menu">Ver Árboles</a>
             </div>
         </div>
     </header>
@@ -85,7 +86,7 @@
                             <p><i class="fas fa-leaf"></i> {{ arbol.ServicioEcosistemico[:50] + '...' if arbol.ServicioEcosistemico and arbol.ServicioEcosistemico|length > 50 else arbol.ServicioEcosistemico if arbol.ServicioEcosistemico else 'Servicios ecosistémicos no disponibles' }}</p>
                             <p><i class="fas fa-map-marker-alt"></i> {{ arbol.UbicacionGeografica if arbol.UbicacionGeografica else 'Ubicación no especificada' }}</p>
                         </div>
-                        <a href="{{ url_for('ver_arbol', id=arbol.IDArbol) }}" class="btn">Explorar <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ url_for('arboles.ver_arbol', id=arbol.IDArbol) }}" class="btn">Explorar <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
                 {% endfor %}
@@ -95,7 +96,7 @@
                 <i class="fas fa-search"></i>
                 <h2>No se encontraron resultados</h2>
                 <p>Intenta con otros términos de búsqueda o explora nuestro catálogo completo de árboles.</p>
-                <a href="{{ url_for('inicio') }}" class="btn">Volver a inicio</a>
+                <a href="{{ url_for('arboles.inicio') }}" class="btn">Volver a inicio</a>
             </div>
             {% endif %}
         </div>
@@ -113,10 +114,10 @@
             <div class="enlaces-footer" style="display: flex; flex-direction: column;">
                 <h4 style="color: white; margin-bottom: 20px; border-bottom: 2px solid #28a745; padding-bottom: 10px; display: inline-block;">Enlaces rápidos</h4>
                 <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li style="margin-bottom: 10px;"><a href="{{ url_for('inicio') }}" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Inicio</a></li>
-                    <li style="margin-bottom: 10px;"><a href="{{ url_for('principal') }}" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Árboles</a></li>
-                    <li style="margin-bottom: 10px;"><a href="{{ url_for('principal') }}#centros" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Centros</a></li>
-                    <li style="margin-bottom: 10px;"><a href="{{ url_for('principal') }}#sugerencias" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Sugerencias</a></li>
+                    <li style="margin-bottom: 10px;"><a href="{{ url_for('arboles.inicio') }}" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Inicio</a></li>
+                    <li style="margin-bottom: 10px;"><a href="{{ url_for('arboles.principal') }}" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Árboles</a></li>
+                    <li style="margin-bottom: 10px;"><a href="{{ url_for('arboles.principal') }}#centros" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Centros</a></li>
+                    <li style="margin-bottom: 10px;"><a href="{{ url_for('arboles.principal') }}#sugerencias" style="color: #ccc; text-decoration: none; transition: color 0.3s;">Sugerencias</a></li>
                 </ul>
             </div>
 
@@ -217,13 +218,14 @@
     <!-- Botones flotantes -->
     {% if 'usuario' in session %}
     <div class="botones-flotantes" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
-        <a href="{{ url_for('inicio') }}" class="btn-flotante" style="padding: 12px 20px; border-radius: 30px; background-color: #3498db; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s;">
+        <a href="{{ url_for('arboles.inicio') }}" class="btn-flotante" style="padding: 12px 20px; border-radius: 30px; background-color: #3498db; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s;">
             <i class="fas fa-home" style="margin-right: 8px;"></i> Ir a Inicio
         </a>
-        <a href="{{ url_for('principal') }}" class="btn-flotante" style="padding: 12px 20px; border-radius: 30px; background-color: #28a745; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s;">
+        <a href="{{ url_for('arboles.principal') }}" class="btn-flotante" style="padding: 12px 20px; border-radius: 30px; background-color: #28a745; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s;">
             <i class="fas fa-tree" style="margin-right: 8px;"></i> Ir a Principal
         </a>
     </div>
     {% endif %}
+                <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>
