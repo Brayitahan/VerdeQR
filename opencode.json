@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "touchpoint": {
+      "type": "local",
+      "command": [
+        "C:\\Users\\yaira daniela\\AppData\\Roaming\\Python\\Python314\\Scripts\\touchpoint-mcp.exe"
+      ],
+      "enabled": true
+    }
+  }
+}

@@ -454,6 +454,162 @@
         <a href="#centros" class="nav-btn">Únete</a>
     </div>
 
+    <!-- Tarjeta de bienvenida (cerrable) -->
+    {% if not 'usuario' in session %}
+    <div class="bienvenida-card" id="bienvenidaCard">
+        <button type="button" class="bienvenida-card-close" onclick="cerrarBienvenida()" title="Cerrar">&times;</button>
+        <div class="bienvenida-card-content">
+            <div class="bienvenida-card-icon">
+                <i class="fas fa-tree"></i>
+            </div>
+            <div class="bienvenida-card-text">
+                <h2>Bienvenido a <span>VerdeQR</span></h2>
+                <p>Un dendrólogo en tu bolsillo. Escanea códigos QR, identifica árboles silvestres y contribuye a la conservación de la biodiversidad colombiana.</p>
+                <div class="bienvenida-card-stats">
+                    <span><i class="fas fa-check-circle"></i> Identifica árboles al instante</span>
+                    <span><i class="fas fa-book-open"></i> Información detallada de cada especie</span>
+                    <span><i class="fas fa-leaf"></i> Contribuye a la conservación</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .bienvenida-card {
+            max-width: 900px;
+            margin: 15px auto;
+            background: linear-gradient(135deg, #059669, #047857);
+            border-radius: 16px;
+            padding: 20px 25px;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.25);
+            transition: all 0.4s ease;
+        }
+        .bienvenida-card.dismissed {
+            opacity: 0;
+            transform: translateY(-20px);
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        .bienvenida-card-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.4rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            line-height: 1;
+        }
+        .bienvenida-card-close:hover {
+            background: rgba(255,255,255,0.35);
+        }
+        .bienvenida-card-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .bienvenida-card-icon {
+            flex-shrink: 0;
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        .bienvenida-card-text h2 {
+            color: white;
+            font-size: 1.4rem;
+            margin: 0 0 6px;
+        }
+        .bienvenida-card-text h2 span {
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,0.4);
+            text-underline-offset: 4px;
+        }
+        .bienvenida-card-text p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin: 0 0 10px;
+            line-height: 1.5;
+        }
+        .bienvenida-card-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 18px;
+        }
+        .bienvenida-card-stats span {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .bienvenida-card-stats span i {
+            color: rgba(255,255,255,0.9);
+        }
+        @media (max-width: 768px) {
+            .bienvenida-card {
+                margin: 10px 12px;
+                padding: 16px;
+            }
+            .bienvenida-card-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            .bienvenida-card-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+            .bienvenida-card-text h2 {
+                font-size: 1.15rem;
+            }
+            .bienvenida-card-text p {
+                font-size: 0.82rem;
+            }
+            .bienvenida-card-stats {
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .bienvenida-card-stats span {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+    <script>
+        function cerrarBienvenida() {
+            const card = document.getElementById('bienvenidaCard');
+            card.classList.add('dismissed');
+            try { localStorage.setItem('bienvenidaCerrada', 'true'); } catch(e) {}
+        }
+        (function() {
+            try {
+                if (localStorage.getItem('bienvenidaCerrada') === 'true') {
+                    document.getElementById('bienvenidaCard').classList.add('dismissed');
+                }
+            } catch(e) {}
+        })();
+    </script>
+    {% endif %}
+
     <!-- Primera pantalla: Código QR -->
     <div id="inicio" class="contenido-principal">
         <h1 style="margin-top: 60px;">¡Identificar árboles silvestres!</h1>

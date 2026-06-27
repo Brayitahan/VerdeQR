@@ -522,6 +522,24 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
+        /* Responsive: Bienvenida en móviles */
+        @media (max-width: 768px) {
+            .bienvenida { padding: 20px 15px !important; }
+            .bienvenida h1 { font-size: 1.3rem !important; margin-bottom: 8px !important; }
+            .texto-destacado p { font-size: 0.85rem !important; line-height: 1.4 !important; margin-bottom: 6px !important; }
+            .texto-destacado p:last-child { display: none; }
+            .estadisticas { gap: 8px !important; margin-top: 15px !important; }
+            .estadistica { padding: 10px 6px !important; }
+            .estadistica h3 { font-size: 1.2rem !important; margin-bottom: 0 !important; }
+            .estadistica p { font-size: 0.65rem !important; }
+        }
+        @media (max-width: 480px) {
+            .bienvenida { padding: 12px 10px !important; }
+            .bienvenida h1 { font-size: 1.1rem !important; }
+            .texto-destacado p { font-size: 0.75rem !important; }
+            .estadistica h3 { font-size: 1rem !important; }
+            .estadistica p { font-size: 0.6rem !important; }
+        }
         .carrusel-container {
             position: relative;
             overflow: hidden;
