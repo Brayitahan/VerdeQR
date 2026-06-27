@@ -96,7 +96,7 @@ MAIL_PASSWORD=clave_app_gmail
 
 ## Credenciales por Defecto
 
-- **Admin**: jhon123@gmail.com / CONTRASEÑA_REMOVIDA (rol Administrador)
+- **Admin**: jhon123@gmail.com (contraseña en gestor de contraseñas)
 - Los nuevos usuarios se registran con rol Visitante
 
 ## Licencia

@@ -19,7 +19,7 @@ def create_app():
     app.config['MAIL_USERNAME'] = 'verdeqr.app@gmail.com'
     app.config['MAIL_PASSWORD'] = 'clave_de_aplicacion'
     app.config['MAIL_DEFAULT_SENDER'] = 'verdeqr.app@gmail.com'
-    app.config['MAIL_SUPPRESS_SEND'] = True
+    app.config['MAIL_SUPPRESS_SEND'] = os.environ.get('MAIL_SUPPRESS_SEND', 'True').lower() not in ('false', '0', 'no')
 
     mail.init_app(app)
 

@@ -70,6 +70,7 @@ Thumbs.db
 # Archivos de backup
 *.bak
 *.backup
+templates_backup/
 
 # Archivos específicos de Windows
 desktop.ini

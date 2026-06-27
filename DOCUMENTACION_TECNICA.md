@@ -619,6 +619,6 @@ print(traceback.format_exc())
 **Tecnologías**: Flask 2.3 + MySQL + QR + Responsive Design
 **Despliegue**: Railway.app con auto-deploy desde GitHub
 **Repo**: GitHub (master branch)
-**Admin**: jhon123@gmail.com (pass: CONTRASEÑA_REMOVIDA)
+**Admin**: jhon123@gmail.com (contraseña en gestor de contraseñas)
 **BD Local**: XAMPP MySQL puerto 3306, root sin contraseña, BD `VerdeQR`
 **Licencia**: MIT License
