@@ -268,32 +268,91 @@
         }
 
         @media (max-width: 768px) {
+            .welcome-modal {
+                max-width: 95%;
+                border-radius: 16px;
+            }
+            .welcome-modal-header {
+                padding: 20px 15px;
+            }
             .welcome-modal-title {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
-
             .welcome-modal-subtitle {
-                font-size: 1rem;
+                font-size: 0.9rem;
+                margin-top: 5px;
             }
-
+            .welcome-modal-body {
+                padding: 15px;
+            }
+            .welcome-modal-body p {
+                font-size: 0.9rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 12px !important;
+            }
             .welcome-features {
                 grid-template-columns: 1fr;
+                gap: 10px;
+                margin-top: 10px;
             }
-
             .welcome-feature {
                 padding: 10px;
             }
-
             .welcome-feature-icon {
-                font-size: 2rem;
+                font-size: 1.5rem;
+                margin-bottom: 8px;
             }
-
+            .welcome-feature-title {
+                font-size: 1rem;
+                margin-bottom: 5px;
+            }
+            .welcome-feature-text {
+                font-size: 0.8rem;
+            }
+            .welcome-modal-footer {
+                padding: 12px 15px;
+            }
             .welcome-cta-button {
                 padding: 10px 20px;
                 font-size: 1rem;
                 display: block;
-                margin: 10px auto;
+                margin: 8px auto;
                 width: 80%;
+            }
+            .welcome-decoration {
+                display: none;
+            }
+            .welcome-close-button {
+                top: 10px;
+                right: 10px;
+                width: 26px;
+                height: 26px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .welcome-modal-title {
+                font-size: 1.2rem;
+            }
+            .welcome-modal-subtitle {
+                font-size: 0.8rem;
+            }
+            .welcome-modal-body p {
+                font-size: 0.8rem !important;
+            }
+            .welcome-feature-icon {
+                font-size: 1.2rem;
+                margin-bottom: 4px;
+            }
+            .welcome-feature-title {
+                font-size: 0.85rem;
+            }
+            .welcome-feature-text {
+                font-size: 0.72rem;
+            }
+            .welcome-cta-button {
+                font-size: 0.85rem;
+                padding: 8px 16px;
             }
         }
     </style>
@@ -564,33 +623,39 @@
         }
         @media (max-width: 768px) {
             .bienvenida-card {
-                margin: 10px 12px;
-                padding: 16px;
+                margin: 8px 8px 4px;
+                padding: 8px 12px;
+                border-radius: 10px;
             }
             .bienvenida-card-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 12px;
+                flex-direction: row;
+                text-align: left;
+                gap: 8px;
+                align-items: center;
             }
             .bienvenida-card-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.4rem;
+                width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+                flex-shrink: 0;
             }
             .bienvenida-card-text h2 {
-                font-size: 1.15rem;
+                font-size: 0.85rem;
+                margin-bottom: 0;
             }
             .bienvenida-card-text p {
-                font-size: 0.82rem;
+                display: none;
             }
             .bienvenida-card-stats {
-                justify-content: center;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
+                display: none;
             }
-            .bienvenida-card-stats span {
-                font-size: 0.75rem;
+            .bienvenida-card-close {
+                top: 4px;
+                right: 6px;
+                width: 24px;
+                height: 24px;
+                font-size: 1rem;
+                background: rgba(255,255,255,0.3);
             }
         }
     </style>

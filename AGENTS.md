@@ -27,6 +27,8 @@
 
 7. **Bitácora máxima 30 entradas**: Cuando la tabla de `## Bitácora de Cambios` llegue a 30 entradas, mover las más antiguas a `BITACORA_HISTORICO.md` (crearlo si no existe), dejando solo las más recientes en `AGENTS.md`. Mantener el formato de tabla exacto.
 
+8. **Auto-recuperación en loops o glitches**: Si te quedas en un loop, se tilda, o algo no responde, reinicia automáticamente la acción que estabas ejecutando y continúa. No esperes a que el usuario te lo indique — detecta el bloqueo y resuelve solo.
+
 ## Bitácora de Cambios
 
 | Fecha | Descripción | Archivos | Estado |
@@ -43,4 +45,6 @@
 | 2026-06-26 | Corregido cierre de sesión: url_for('inicio') cambiado a url_for('arboles.inicio'). | app/auth.py | Completado |
 | 2026-06-26 | Corregido layout del header: hamburger movido a la izquierda con .header-left (flex). Items del nav panel cambiados a borde izquierdo sin márgenes ni border-radius. | templates/base_sin_menu.html | Completado |
 | 2026-06-26 | Commit y push a GitHub (c6d2abc). Creado BITACORA_HISTORICO.md con entradas antiguas. Límite de bitácora reducido a 30. | AGENTS.md, BITACORA_HISTORICO.md | Completado |
-| 2026-06-27 | Documentación técnica actualizada (DOCUMENTACION_TECNICA.md, README.md). Creados y eliminados archivos Docker. Intento de deploy a PythonAnywhere — MySQL no disponible gratis. Instalado MCP Touchpoint (touchpoint-py v0.3.0 + opencode.json). Instalado y configurado ngrok (túnel activo en https://effective-brutishly-spooky.ngrok-free.dev). Creado DB_DIAGRAMA.md (diagrama ER Mermaid). Pendiente elegir hosting: Railway.app, db4free.net o Azure for Students. | DOCUMENTACION_TECNICA.md, README.md, opencode.json, DB_DIAGRAMA.md, Dockerfile (creado/eliminado), docker-compose.yml (creado/eliminado), .dockerignore (creado/eliminado) | Pendiente |
+| 2026-06-27 | Documentación técnica actualizada (DOCUMENTACION_TECNICA.md, README.md). Creados y eliminados archivos Docker. Intento de deploy a PythonAnywhere — MySQL no disponible gratis. Instalado MCP Touchpoint (touchpoint-py v0.3.0 + opencode.json). Instalado y configurado ngrok (túnel activo en https://effective-brutishly-spooky.ngrok-free.dev). Creado DB_DIAGRAMA.md (diagrama ER Mermaid). Pendiente elegir hosting: Railway.app, db4free.net o Azure for Students. | DOCUMENTACION_TECNICA.md, README.md, opencode.json, DB_DIAGRAMA.md, Dockerfile (creado/eliminado), docker-compose.yml (creado/eliminado), .dockerignore (creado/eliminado) | Completado |
+| 2026-06-27 | Agregada tarjeta de bienvenida cerrable en inicio.html (público sin login). Responsive mobile: compactada a layout horizontal con X visible, stats ocultos, párrafo oculto, padding mínimo. Verificada con Touchpoint + Brave (414x896). | templates/inicio.html | Completado |
+| 2026-06-27 | Agregado responsive CSS para welcome modal en móvil (padding reducido, fonts más pequeños, decoraciones ocultas, breakpoint 400px). Compactada bienvenida-card con X más visible. | templates/inicio.html | Completado |
