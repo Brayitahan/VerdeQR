@@ -76,6 +76,12 @@ templates_backup/
 desktop.ini
 $RECYCLE.BIN/
 
+# Lock files
+skills-lock.json
+
+# MySQL Workbench
+*.mwb
+
 # Archivos específicos de macOS
 .DS_Store
 .AppleDouble
