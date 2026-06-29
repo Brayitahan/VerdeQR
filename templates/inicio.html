@@ -1948,7 +1948,7 @@
                 }, 500);
 
                 // Guardar en localStorage que el usuario ya vio el modal
-                localStorage.setItem('welcomeModalShown', 'true');
+                localStorage.setItem('welcomeModalV2', 'true');
             }
 
             // Mostrar el modal al hacer clic en el logo
@@ -1972,8 +1972,8 @@
             });
 
             // Mostrar modal automáticamente en primera visita
-            const hasSeenModal = localStorage.getItem('welcomeModalShown');
-            if (hasSeenModal !== 'true') {
+            const modalVersion = localStorage.getItem('welcomeModalV2');
+            if (modalVersion !== 'true') {
                 setTimeout(function() { showModal(); }, 600);
             } else {
                 welcomeModal.style.display = 'none';
