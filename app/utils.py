@@ -1,8 +1,12 @@
 from flask import request
 import random
 import string
+import os
 
 def get_base_url():
+    env_url = os.environ.get('BASE_URL')
+    if env_url:
+        return env_url.rstrip('/')
     forwarded_host = request.headers.get('X-Forwarded-Host')
     if forwarded_host:
         forwarded_proto = request.headers.get('X-Forwarded-Proto', 'https')
