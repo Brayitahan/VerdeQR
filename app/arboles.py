@@ -361,10 +361,10 @@ def principal():
         cursor.execute('SELECT COUNT(*) as total FROM Arbol')
         total_arboles = cursor.fetchone()['total']
 
-        cursor.execute('SELECT COUNT(*) as total FROM Usuario WHERE Estado = 1')
+        cursor.execute('SELECT COUNT(*) as total FROM Usuario WHERE Activo = TRUE')
         total_usuarios = cursor.fetchone()['total']
 
-        cursor.execute('SELECT COUNT(*) as total FROM Centro WHERE Estado = 1')
+        cursor.execute('SELECT COUNT(*) as total FROM Centro')
         total_centros = cursor.fetchone()['total']
 
         for arbol in arboles:

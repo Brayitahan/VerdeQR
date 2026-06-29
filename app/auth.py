@@ -60,7 +60,7 @@ def registro():
         cursor = connection.cursor()
         try:
             # Verificar si el correo ya está registrado
-            cursor.execute('SELECT * FROM Usuario WHERE Correo = %s', (correo,))
+            cursor.execute('SELECT * FROM Usuario WHERE CorreoElectronico = %s', (correo,))
             if cursor.fetchone():
                 return jsonify({
                     'success': False,
@@ -73,9 +73,9 @@ def registro():
             # Insertar el nuevo usuario con contraseña hasheada
             contrasena_hash = generate_password_hash(contrasena)
             cursor.execute('''
-                INSERT INTO Usuario (Nombre, Correo, Telefono, Contrasena, Estado, Imagen)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            ''', (nombres + ' ' + apellidos, correo, telefono, contrasena_hash, 1, avatar_predeterminado))  # Estado 1 = Activo
+                INSERT INTO Usuario (Nombre, CorreoElectronico, Contrasena, AvatarURL, Activo)
+                VALUES (%s, %s, %s, %s, TRUE)
+            ''', (nombres + ' ' + apellidos, correo, contrasena_hash, avatar_predeterminado))
             connection.commit()
             flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
             return jsonify({
@@ -117,7 +117,7 @@ def iniciar_sesion():
             FROM Usuario u
             LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.IDUsuario
             LEFT JOIN Rol r ON ur.IDRol = r.IDRol
-            WHERE u.Correo = %s AND u.Estado = 1
+            WHERE u.CorreoElectronico = %s AND u.Activo = TRUE
             GROUP BY u.IDUsuario
             """, (correo,))
             usuario = cursor.fetchone()
@@ -133,14 +133,14 @@ def iniciar_sesion():
                 apellidos = partes_nombre[1] if len(partes_nombre) > 1 else ''
 
                 # Si el usuario no tiene imagen, asignar un avatar predeterminado
-                imagen_usuario = usuario['Imagen']
+                imagen_usuario = usuario.get('AvatarURL')
                 if not imagen_usuario:
                     # Determinar el avatar predeterminado basado en el nombre
                     imagen_usuario = obtener_avatar_predeterminado(nombres)
 
                     # Actualizar la imagen del usuario en la base de datos
                     try:
-                        cursor.execute('UPDATE Usuario SET Imagen = %s WHERE IDUsuario = %s',
+                        cursor.execute('UPDATE Usuario SET AvatarURL = %s WHERE IDUsuario = %s',
                                       (imagen_usuario, usuario['IDUsuario']))
                         get_db().commit()
                     except Exception as e:
@@ -151,8 +151,7 @@ def iniciar_sesion():
                     'Nombre': nombre_completo,
                     'Nombres': nombres,
                     'Apellidos': apellidos,
-                    'Correo': usuario['Correo'],
-                    'Telefono': usuario['Telefono'],
+                    'Correo': usuario['CorreoElectronico'],
                     'Imagen': imagen_usuario,
                     'roles': usuario['roles'].split(',') if usuario['roles'] else []
                 }
@@ -201,7 +200,7 @@ def olvidar_contrasena():
         cursor = connection.cursor()
 
         try:
-            cursor.execute('SELECT IDUsuario, Nombre FROM Usuario WHERE Correo = %s AND Estado = 1', (correo,))
+            cursor.execute('SELECT IDUsuario, Nombre FROM Usuario WHERE CorreoElectronico = %s AND Activo = TRUE', (correo,))
             usuario = cursor.fetchone()
 
             if not usuario:
@@ -218,8 +217,8 @@ def olvidar_contrasena():
 
             # Guardar el token en la base de datos
             cursor.execute('''
-                INSERT INTO tokens_recuperacion (Usuario, Token, FechaExpiracion, Estado)
-                VALUES (%s, %s, %s, 1)
+                INSERT INTO TokenRecuperacion (IDUsuario, Token, FechaExpiracion, Usado)
+                VALUES (%s, %s, %s, FALSE)
             ''', (usuario['IDUsuario'], token, fecha_expiracion))
             connection.commit()
 
@@ -312,10 +311,10 @@ def restablecer_contrasena():
         try:
             # Buscar el token en la base de datos
             cursor.execute('''
-                SELECT tr.*, u.Correo
-                FROM tokens_recuperacion tr
-                JOIN Usuario u ON tr.Usuario = u.IDUsuario
-                WHERE tr.Token = %s AND tr.Estado = 1 AND tr.FechaExpiracion > NOW()
+                SELECT tr.*, u.CorreoElectronico
+                FROM TokenRecuperacion tr
+                JOIN Usuario u ON tr.IDUsuario = u.IDUsuario
+                WHERE tr.Token = %s AND tr.Usado = FALSE AND tr.FechaExpiracion > NOW()
             ''', (codigo,))
             token_info = cursor.fetchone()
 
@@ -331,12 +330,12 @@ def restablecer_contrasena():
                 UPDATE Usuario
                 SET Contrasena = %s
                 WHERE IDUsuario = %s
-            ''', (contrasena_hash, token_info['Usuario']))
+            ''', (contrasena_hash, token_info['IDUsuario']))
 
             # Marcar el token como usado
             cursor.execute('''
-                UPDATE tokens_recuperacion
-                SET Estado = 2
+                UPDATE TokenRecuperacion
+                SET Usado = TRUE
                 WHERE IDToken = %s
             ''', (token_info['IDToken'],))
 
@@ -387,9 +386,8 @@ def perfil():
             session['usuario']['Nombre'] = nombre_completo
             session['usuario']['Nombres'] = nombres
             session['usuario']['Apellidos'] = apellidos
-            session['usuario']['Correo'] = usuario_db['Correo']
-            session['usuario']['Telefono'] = usuario_db['Telefono']
-            session['usuario']['Imagen'] = usuario_db['Imagen']
+            session['usuario']['Correo'] = usuario_db['CorreoElectronico']
+            session['usuario']['Imagen'] = usuario_db.get('AvatarURL')
 
             # Imprimir información de depuración
             print(f"Información de usuario actualizada en sesión: {session['usuario']}")
@@ -404,7 +402,7 @@ def perfil():
             # Verificar si el correo ya existe (excluyendo el usuario actual)
             cursor.execute('''
                 SELECT IDUsuario FROM Usuario
-                WHERE Correo = %s AND IDUsuario != %s
+                WHERE CorreoElectronico = %s AND IDUsuario != %s
             ''', (correo, session['usuario']['IDUsuario']))
 
             if cursor.fetchone():
@@ -412,9 +410,9 @@ def perfil():
                 return redirect(url_for('.perfil'))
 
             # Obtener la imagen actual del usuario
-            cursor.execute('SELECT Imagen FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
+            cursor.execute('SELECT AvatarURL FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
             usuario_actual = cursor.fetchone()
-            imagen_actual = usuario_actual['Imagen'] if usuario_actual else None
+            imagen_actual = usuario_actual.get('AvatarURL') if usuario_actual else None
 
             # Procesar la imagen si se ha subido una nueva
             imagen_path = imagen_actual
@@ -442,9 +440,9 @@ def perfil():
 
             cursor.execute('''
                 UPDATE Usuario
-                SET Nombre = %s, Correo = %s, Telefono = %s, Imagen = %s
+                SET Nombre = %s, CorreoElectronico = %s, AvatarURL = %s
                 WHERE IDUsuario = %s
-            ''', (nombre_completo, correo, telefono, imagen_path, session['usuario']['IDUsuario']))
+            ''', (nombre_completo, correo, imagen_path, session['usuario']['IDUsuario']))
             connection.commit()
 
             # Actualizar datos en la sesión solo después de la actualización exitosa
@@ -453,7 +451,6 @@ def perfil():
             # Mantener nombres y apellidos separados en la sesión para la interfaz
             session['usuario']['Nombres'] = nombres
             session['usuario']['Apellidos'] = apellidos
-            session['usuario']['Telefono'] = telefono
             session['usuario']['Imagen'] = imagen_path
 
             # Forzar la actualización de la sesión
@@ -545,9 +542,9 @@ def actualizar_avatar():
         # Obtener la imagen actual del usuario
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute('SELECT Imagen FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
+        cursor.execute('SELECT AvatarURL FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
         usuario_actual = cursor.fetchone()
-        imagen_actual = usuario_actual['Imagen'] if usuario_actual else None
+        imagen_actual = usuario_actual.get('AvatarURL') if usuario_actual else None
 
         # Procesar la nueva imagen
         imagen = request.files['avatar']
@@ -573,7 +570,7 @@ def actualizar_avatar():
         imagen.save(imagen_full_path)
 
         # Actualizar la base de datos
-        cursor.execute('UPDATE Usuario SET Imagen = %s WHERE IDUsuario = %s',
+        cursor.execute('UPDATE Usuario SET AvatarURL = %s WHERE IDUsuario = %s',
                        (imagen_path, session['usuario']['IDUsuario']))
         connection.commit()
 
@@ -620,7 +617,7 @@ def eliminar_avatar():
         # Actualizar la base de datos
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute('UPDATE Usuario SET Imagen = %s WHERE IDUsuario = %s',
+        cursor.execute('UPDATE Usuario SET AvatarURL = %s WHERE IDUsuario = %s',
                       (avatar_predeterminado, session['usuario']['IDUsuario']))
         connection.commit()
 
@@ -667,7 +664,7 @@ def eliminar_cuenta():
         cursor.execute('SELECT Contrasena FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
         usuario = cursor.fetchone()
 
-        if usuario['Contrasena'] != contrasena:
+        if not check_password_hash(usuario['Contrasena'], contrasena):
             flash('Contrasena incorrecta', 'error')
             cursor.close()
             connection.close()

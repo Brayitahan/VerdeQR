@@ -21,26 +21,25 @@ def gestion_usuarios():
 
             # Verificar si el correo ya existe
             cursor = get_db().cursor()
-            cursor.execute("SELECT IDUsuario FROM Usuario WHERE Correo = %s", (correo,))
+            cursor.execute("SELECT IDUsuario FROM Usuario WHERE CorreoElectronico = %s", (correo,))
             if cursor.fetchone():
                 flash('El correo electrónico ya está registrado', 'error')
                 return redirect(url_for('.gestion_usuarios'))
 
             # Insertar nuevo usuario
             cursor.execute("""
-                INSERT INTO Usuario (Nombre, Correo, Telefono, Contrasena, Estado)
-                VALUES (%s, %s, %s, %s, 1)
-            """, (nombres, correo, telefono, contrasena))
+                INSERT INTO Usuario (Nombre, CorreoElectronico, Contrasena, Activo)
+                VALUES (%s, %s, %s, TRUE)
+                RETURNING IDUsuario
+            """, (nombres, correo, contrasena))
+            id_usuario = cursor.fetchone()['IDUsuario']
             get_db().commit()
-
-            # Obtener el ID del usuario recién creado
-            id_usuario = cursor.lastrowid
 
             # Asignar rol al usuario
             cursor.execute("SELECT IDRol FROM Rol WHERE NombreRol = %s", (rol,))
             id_rol = cursor.fetchone()['IDRol']
             cursor.execute("""
-                INSERT INTO UsuarioRol (Usuario, Rol)
+                INSERT INTO UsuarioRol (IDUsuario, IDRol)
                 VALUES (%s, %s)
             """, (id_usuario, id_rol))
             get_db().commit()
@@ -511,7 +510,7 @@ def editar_usuario(id):
             # Verificar si el correo ya existe (excluyendo el usuario actual)
             cursor.execute("""
                 SELECT IDUsuario FROM Usuario
-                WHERE Correo = %s AND IDUsuario != %s
+                WHERE CorreoElectronico = %s AND IDUsuario != %s
             """, (correo, id))
             if cursor.fetchone():
                 flash('El correo electrónico ya está registrado', 'error')
@@ -520,9 +519,9 @@ def editar_usuario(id):
             # Actualizar datos del usuario
             cursor.execute("""
                 UPDATE Usuario
-                SET Nombre = %s, Correo = %s, Telefono = %s
+                SET Nombre = %s, CorreoElectronico = %s
                 WHERE IDUsuario = %s
-            """, (nombres + ' ' + apellidos, correo, telefono, id))
+            """, (nombres + ' ' + apellidos, correo, id))
 
             # Actualizar rol del usuario
             cursor.execute("SELECT IDRol FROM Rol WHERE NombreRol = %s", (rol,))
@@ -531,15 +530,15 @@ def editar_usuario(id):
                 id_rol = resultado['IDRol']
 
                 # Verificar si ya existe un rol para este usuario
-                cursor.execute("SELECT COUNT(*) as count FROM UsuarioRol WHERE Usuario = %s", (id,))
+                cursor.execute("SELECT COUNT(*) as count FROM UsuarioRol WHERE IDUsuario = %s", (id,))
                 existe_rol = cursor.fetchone()['count'] > 0
 
                 if existe_rol:
                     # Actualizar el rol existente
-                    cursor.execute("UPDATE UsuarioRol SET Rol = %s WHERE Usuario = %s", (id_rol, id))
+                    cursor.execute("UPDATE UsuarioRol SET IDRol = %s WHERE IDUsuario = %s", (id_rol, id))
                 else:
                     # Insertar nuevo rol
-                    cursor.execute("INSERT INTO UsuarioRol (Usuario, Rol) VALUES (%s, %s)", (id, id_rol))
+                    cursor.execute("INSERT INTO UsuarioRol (IDUsuario, IDRol) VALUES (%s, %s)", (id, id_rol))
 
             get_db().commit()
             flash('Usuario actualizado exitosamente', 'success')
