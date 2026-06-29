@@ -1971,8 +1971,13 @@
                 }
             });
 
-            // Modal solo se abre al hacer clic en el logo, no automáticamente
-            welcomeModal.style.display = 'none';
+            // Mostrar modal automáticamente en primera visita
+            const hasSeenModal = localStorage.getItem('welcomeModalShown');
+            if (hasSeenModal !== 'true') {
+                setTimeout(function() { showModal(); }, 600);
+            } else {
+                welcomeModal.style.display = 'none';
+            }
         });
     </script>
 
