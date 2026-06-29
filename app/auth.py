@@ -224,9 +224,6 @@ Si no solicitaste este cambio, puedes ignorar este correo.
 Saludos,
 El equipo de VerdeQR
 '''
-                # Para pruebas, imprimimos el token en la consola
-                print(f"TOKEN DE RECUPERACIÓN PARA {correo}: {token}")
-
                 try:
                     mail.send(msg)
                 except Exception as e:

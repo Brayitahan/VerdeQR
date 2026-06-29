@@ -1,680 +1,1173 @@
----
-name: ui-ux-pro-max
-description: "UI/UX design intelligence for web and mobile. Includes 50+ styles, 161 color palettes, 57 font pairings, 161 product types, 99 UX guidelines, and 25 chart types across 10 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, and HTML/CSS). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, and check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, and mobile app. Elements: button, modal, navbar, sidebar, card, table, form, and chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, and flat design. Topics: color systems, accessibility, animation, layout, typography, font pairing, spacing, interaction states, shadow, and gradient. Integrations: shadcn/ui MCP for component search and examples."
----
+# Guía Avanzada de CSS — Frontend Notebook
 
-# UI/UX Pro Max - Design Intelligence
-
-Comprehensive design guide for web and mobile applications. Contains 50+ styles, 161 color palettes, 57 font pairings, 161 product types with reasoning rules, 99 UX guidelines, and 25 chart types across 10 technology stacks. Searchable database with priority-based recommendations.
-
-## When to Apply
-
-This Skill should be used when the task involves **UI structure, visual design decisions, interaction patterns, or user experience quality control**.
-
-### Must Use
-
-This Skill must be invoked in the following situations:
-
-- Designing new pages (Landing Page, Dashboard, Admin, SaaS, Mobile App)
-- Creating or refactoring UI components (buttons, modals, forms, tables, charts, etc.)
-- Choosing color schemes, typography systems, spacing standards, or layout systems
-- Reviewing UI code for user experience, accessibility, or visual consistency
-- Implementing navigation structures, animations, or responsive behavior
-- Making product-level design decisions (style, information hierarchy, brand expression)
-- Improving perceived quality, clarity, or usability of interfaces
-
-### Recommended
-
-This Skill is recommended in the following situations:
-
-- UI looks "not professional enough" but the reason is unclear
-- Receiving feedback on usability or experience
-- Pre-launch UI quality optimization
-- Aligning cross-platform design (Web / iOS / Android)
-- Building design systems or reusable component libraries
-
-### Skip
-
-This Skill is not needed in the following situations:
-
-- Pure backend logic development
-- Only involving API or database design
-- Performance optimization unrelated to the interface
-- Infrastructure or DevOps work
-- Non-visual scripts or automation tasks
-
-**Decision criteria**: If the task will change how a feature **looks, feels, moves, or is interacted with**, this Skill should be used.
-
-## Rule Categories by Priority
-
-*For human/AI reference: follow priority 1→10 to decide which rule category to focus on first; use `--domain <Domain>` to query details when needed. Scripts do not read this table.*
-
-| Priority | Category | Impact | Domain | Key Checks (Must Have) | Anti-Patterns (Avoid) |
-|----------|----------|--------|--------|------------------------|------------------------|
-| 1 | Accessibility | CRITICAL | `ux` | Contrast 4.5:1, Alt text, Keyboard nav, Aria-labels | Removing focus rings, Icon-only buttons without labels |
-| 2 | Touch & Interaction | CRITICAL | `ux` | Min size 44×44px, 8px+ spacing, Loading feedback | Reliance on hover only, Instant state changes (0ms) |
-| 3 | Performance | HIGH | `ux` | WebP/AVIF, Lazy loading, Reserve space (CLS &lt; 0.1) | Layout thrashing, Cumulative Layout Shift |
-| 4 | Style Selection | HIGH | `style`, `product` | Match product type, Consistency, SVG icons (no emoji) | Mixing flat & skeuomorphic randomly, Emoji as icons |
-| 5 | Layout & Responsive | HIGH | `ux` | Mobile-first breakpoints, Viewport meta, No horizontal scroll | Horizontal scroll, Fixed px container widths, Disable zoom |
-| 6 | Typography & Color | MEDIUM | `typography`, `color` | Base 16px, Line-height 1.5, Semantic color tokens | Text &lt; 12px body, Gray-on-gray, Raw hex in components |
-| 7 | Animation | MEDIUM | `ux` | Duration 150–300ms, Motion conveys meaning, Spatial continuity | Decorative-only animation, Animating width/height, No reduced-motion |
-| 8 | Forms & Feedback | MEDIUM | `ux` | Visible labels, Error near field, Helper text, Progressive disclosure | Placeholder-only label, Errors only at top, Overwhelm upfront |
-| 9 | Navigation Patterns | HIGH | `ux` | Predictable back, Bottom nav ≤5, Deep linking | Overloaded nav, Broken back behavior, No deep links |
-| 10 | Charts & Data | LOW | `chart` | Legends, Tooltips, Accessible colors | Relying on color alone to convey meaning |
-
-## Quick Reference
-
-### 1. Accessibility (CRITICAL)
-
-- `color-contrast` - Minimum 4.5:1 ratio for normal text (large text 3:1); Material Design
-- `focus-states` - Visible focus rings on interactive elements (2–4px; Apple HIG, MD)
-- `alt-text` - Descriptive alt text for meaningful images
-- `aria-labels` - aria-label for icon-only buttons; accessibilityLabel in native (Apple HIG)
-- `keyboard-nav` - Tab order matches visual order; full keyboard support (Apple HIG)
-- `form-labels` - Use label with for attribute
-- `skip-links` - Skip to main content for keyboard users
-- `heading-hierarchy` - Sequential h1→h6, no level skip
-- `color-not-only` - Don't convey info by color alone (add icon/text)
-- `dynamic-type` - Support system text scaling; avoid truncation as text grows (Apple Dynamic Type, MD)
-- `reduced-motion` - Respect prefers-reduced-motion; reduce/disable animations when requested (Apple Reduced Motion API, MD)
-- `voiceover-sr` - Meaningful accessibilityLabel/accessibilityHint; logical reading order for VoiceOver/screen readers (Apple HIG, MD)
-- `escape-routes` - Provide cancel/back in modals and multi-step flows (Apple HIG)
-- `keyboard-shortcuts` - Preserve system and a11y shortcuts; offer keyboard alternatives for drag-and-drop (Apple HIG)
-
-### 2. Touch & Interaction (CRITICAL)
-
-- `touch-target-size` - Min 44×44pt (Apple) / 48×48dp (Material); extend hit area beyond visual bounds if needed
-- `touch-spacing` - Minimum 8px/8dp gap between touch targets (Apple HIG, MD)
-- `hover-vs-tap` - Use click/tap for primary interactions; don't rely on hover alone
-- `loading-buttons` - Disable button during async operations; show spinner or progress
-- `error-feedback` - Clear error messages near problem
-- `cursor-pointer` - Add cursor-pointer to clickable elements (Web)
-- `gesture-conflicts` - Avoid horizontal swipe on main content; prefer vertical scroll
-- `tap-delay` - Use touch-action: manipulation to reduce 300ms delay (Web)
-- `standard-gestures` - Use platform standard gestures consistently; don't redefine (e.g. swipe-back, pinch-zoom) (Apple HIG)
-- `system-gestures` - Don't block system gestures (Control Center, back swipe, etc.) (Apple HIG)
-- `press-feedback` - Visual feedback on press (ripple/highlight; MD state layers)
-- `haptic-feedback` - Use haptic for confirmations and important actions; avoid overuse (Apple HIG)
-- `gesture-alternative` - Don't rely on gesture-only interactions; always provide visible controls for critical actions
-- `safe-area-awareness` - Keep primary touch targets away from notch, Dynamic Island, gesture bar and screen edges
-- `no-precision-required` - Avoid requiring pixel-perfect taps on small icons or thin edges
-- `swipe-clarity` - Swipe actions must show clear affordance or hint (chevron, label, tutorial)
-- `drag-threshold` - Use a movement threshold before starting drag to avoid accidental drags
-
-### 3. Performance (HIGH)
-
-- `image-optimization` - Use WebP/AVIF, responsive images (srcset/sizes), lazy load non-critical assets
-- `image-dimension` - Declare width/height or use aspect-ratio to prevent layout shift (Core Web Vitals: CLS)
-- `font-loading` - Use font-display: swap/optional to avoid invisible text (FOIT); reserve space to reduce layout shift (MD)
-- `font-preload` - Preload only critical fonts; avoid overusing preload on every variant
-- `critical-css` - Prioritize above-the-fold CSS (inline critical CSS or early-loaded stylesheet)
-- `lazy-loading` - Lazy load non-hero components via dynamic import / route-level splitting
-- `bundle-splitting` - Split code by route/feature (React Suspense / Next.js dynamic) to reduce initial load and TTI
-- `third-party-scripts` - Load third-party scripts async/defer; audit and remove unnecessary ones (MD)
-- `reduce-reflows` - Avoid frequent layout reads/writes; batch DOM reads then writes
-- `content-jumping` - Reserve space for async content to avoid layout jumps (Core Web Vitals: CLS)
-- `lazy-load-below-fold` - Use loading="lazy" for below-the-fold images and heavy media
-- `virtualize-lists` - Virtualize lists with 50+ items to improve memory efficiency and scroll performance
-- `main-thread-budget` - Keep per-frame work under ~16ms for 60fps; move heavy tasks off main thread (HIG, MD)
-- `progressive-loading` - Use skeleton screens / shimmer instead of long blocking spinners for >1s operations (Apple HIG)
-- `input-latency` - Keep input latency under ~100ms for taps/scrolls (Material responsiveness standard)
-- `tap-feedback-speed` - Provide visual feedback within 100ms of tap (Apple HIG)
-- `debounce-throttle` - Use debounce/throttle for high-frequency events (scroll, resize, input)
-- `offline-support` - Provide offline state messaging and basic fallback (PWA / mobile)
-- `network-fallback` - Offer degraded modes for slow networks (lower-res images, fewer animations)
-
-### 4. Style Selection (HIGH)
-
-- `style-match` - Match style to product type (use `--design-system` for recommendations)
-- `consistency` - Use same style across all pages
-- `no-emoji-icons` - Use SVG icons (Heroicons, Lucide), not emojis
-- `color-palette-from-product` - Choose palette from product/industry (search `--domain color`)
-- `effects-match-style` - Shadows, blur, radius aligned with chosen style (glass / flat / clay etc.)
-- `platform-adaptive` - Respect platform idioms (iOS HIG vs Material): navigation, controls, typography, motion
-- `state-clarity` - Make hover/pressed/disabled states visually distinct while staying on-style (Material state layers)
-- `elevation-consistent` - Use a consistent elevation/shadow scale for cards, sheets, modals; avoid random shadow values
-- `dark-mode-pairing` - Design light/dark variants together to keep brand, contrast, and style consistent
-- `icon-style-consistent` - Use one icon set/visual language (stroke width, corner radius) across the product
-- `system-controls` - Prefer native/system controls over fully custom ones; only customize when branding requires it (Apple HIG)
-- `blur-purpose` - Use blur to indicate background dismissal (modals, sheets), not as decoration (Apple HIG)
-- `primary-action` - Each screen should have only one primary CTA; secondary actions visually subordinate (Apple HIG)
-
-### 5. Layout & Responsive (HIGH)
-
-- `viewport-meta` - width=device-width initial-scale=1 (never disable zoom)
-- `mobile-first` - Design mobile-first, then scale up to tablet and desktop
-- `breakpoint-consistency` - Use systematic breakpoints (e.g. 375 / 768 / 1024 / 1440)
-- `readable-font-size` - Minimum 16px body text on mobile (avoids iOS auto-zoom)
-- `line-length-control` - Mobile 35–60 chars per line; desktop 60–75 chars
-- `horizontal-scroll` - No horizontal scroll on mobile; ensure content fits viewport width
-- `spacing-scale` - Use 4pt/8dp incremental spacing system (Material Design)
-- `touch-density` - Keep component spacing comfortable for touch: not cramped, not causing mis-taps
-- `container-width` - Consistent max-width on desktop (max-w-6xl / 7xl)
-- `z-index-management` - Define layered z-index scale (e.g. 0 / 10 / 20 / 40 / 100 / 1000)
-- `fixed-element-offset` - Fixed navbar/bottom bar must reserve safe padding for underlying content
-- `scroll-behavior` - Avoid nested scroll regions that interfere with the main scroll experience
-- `viewport-units` - Prefer min-h-dvh over 100vh on mobile
-- `orientation-support` - Keep layout readable and operable in landscape mode
-- `content-priority` - Show core content first on mobile; fold or hide secondary content
-- `visual-hierarchy` - Establish hierarchy via size, spacing, contrast — not color alone
-
-### 6. Typography & Color (MEDIUM)
-
-- `line-height` - Use 1.5-1.75 for body text
-- `line-length` - Limit to 65-75 characters per line
-- `font-pairing` - Match heading/body font personalities
-- `font-scale` - Consistent type scale (e.g. 12 14 16 18 24 32)
-- `contrast-readability` - Darker text on light backgrounds (e.g. slate-900 on white)
-- `text-styles-system` - Use platform type system: iOS 11 Dynamic Type styles / Material 5 type roles (display, headline, title, body, label) (HIG, MD)
-- `weight-hierarchy` - Use font-weight to reinforce hierarchy: Bold headings (600–700), Regular body (400), Medium labels (500) (MD)
-- `color-semantic` - Define semantic color tokens (primary, secondary, error, surface, on-surface) not raw hex in components (Material color system)
-- `color-dark-mode` - Dark mode uses desaturated / lighter tonal variants, not inverted colors; test contrast separately (HIG, MD)
-- `color-accessible-pairs` - Foreground/background pairs must meet 4.5:1 (AA) or 7:1 (AAA); use tools to verify (WCAG, MD)
-- `color-not-decorative-only` - Functional color (error red, success green) must include icon/text; avoid color-only meaning (HIG, MD)
-- `truncation-strategy` - Prefer wrapping over truncation; when truncating use ellipsis and provide full text via tooltip/expand (Apple HIG)
-- `letter-spacing` - Respect default letter-spacing per platform; avoid tight tracking on body text (HIG, MD)
-- `number-tabular` - Use tabular/monospaced figures for data columns, prices, and timers to prevent layout shift
-- `whitespace-balance` - Use whitespace intentionally to group related items and separate sections; avoid visual clutter (Apple HIG)
-
-### 7. Animation (MEDIUM)
-
-- `duration-timing` - Use 150–300ms for micro-interactions; complex transitions ≤400ms; avoid >500ms (MD)
-- `transform-performance` - Use transform/opacity only; avoid animating width/height/top/left
-- `loading-states` - Show skeleton or progress indicator when loading exceeds 300ms
-- `excessive-motion` - Animate 1-2 key elements per view max
-- `easing` - Use ease-out for entering, ease-in for exiting; avoid linear for UI transitions
-- `motion-meaning` - Every animation must express a cause-effect relationship, not just be decorative (Apple HIG)
-- `state-transition` - State changes (hover / active / expanded / collapsed / modal) should animate smoothly, not snap
-- `continuity` - Page/screen transitions should maintain spatial continuity (shared element, directional slide) (Apple HIG)
-- `parallax-subtle` - Use parallax sparingly; must respect reduced-motion and not cause disorientation (Apple HIG)
-- `spring-physics` - Prefer spring/physics-based curves over linear or cubic-bezier for natural feel (Apple HIG fluid animations)
-- `exit-faster-than-enter` - Exit animations shorter than enter (~60–70% of enter duration) to feel responsive (MD motion)
-- `stagger-sequence` - Stagger list/grid item entrance by 30–50ms per item; avoid all-at-once or too-slow reveals (MD)
-- `shared-element-transition` - Use shared element / hero transitions for visual continuity between screens (MD, HIG)
-- `interruptible` - Animations must be interruptible; user tap/gesture cancels in-progress animation immediately (Apple HIG)
-- `no-blocking-animation` - Never block user input during an animation; UI must stay interactive (Apple HIG)
-- `fade-crossfade` - Use crossfade for content replacement within the same container (MD)
-- `scale-feedback` - Subtle scale (0.95–1.05) on press for tappable cards/buttons; restore on release (HIG, MD)
-- `gesture-feedback` - Drag, swipe, and pinch must provide real-time visual response tracking the finger (MD Motion)
-- `hierarchy-motion` - Use translate/scale direction to express hierarchy: enter from below = deeper, exit upward = back (MD)
-- `motion-consistency` - Unify duration/easing tokens globally; all animations share the same rhythm and feel
-- `opacity-threshold` - Fading elements should not linger below opacity 0.2; either fade fully or remain visible
-- `modal-motion` - Modals/sheets should animate from their trigger source (scale+fade or slide-in) for spatial context (HIG, MD)
-- `navigation-direction` - Forward navigation animates left/up; backward animates right/down — keep direction logically consistent (HIG)
-- `layout-shift-avoid` - Animations must not cause layout reflow or CLS; use transform for position changes
-
-### 8. Forms & Feedback (MEDIUM)
-
-- `input-labels` - Visible label per input (not placeholder-only)
-- `error-placement` - Show error below the related field
-- `submit-feedback` - Loading then success/error state on submit
-- `required-indicators` - Mark required fields (e.g. asterisk)
-- `empty-states` - Helpful message and action when no content
-- `toast-dismiss` - Auto-dismiss toasts in 3-5s
-- `confirmation-dialogs` - Confirm before destructive actions
-- `input-helper-text` - Provide persistent helper text below complex inputs, not just placeholder (Material Design)
-- `disabled-states` - Disabled elements use reduced opacity (0.38–0.5) + cursor change + semantic attribute (MD)
-- `progressive-disclosure` - Reveal complex options progressively; don't overwhelm users upfront (Apple HIG)
-- `inline-validation` - Validate on blur (not keystroke); show error only after user finishes input (MD)
-- `input-type-keyboard` - Use semantic input types (email, tel, number) to trigger the correct mobile keyboard (HIG, MD)
-- `password-toggle` - Provide show/hide toggle for password fields (MD)
-- `autofill-support` - Use autocomplete / textContentType attributes so the system can autofill (HIG, MD)
-- `undo-support` - Allow undo for destructive or bulk actions (e.g. "Undo delete" toast) (Apple HIG)
-- `success-feedback` - Confirm completed actions with brief visual feedback (checkmark, toast, color flash) (MD)
-- `error-recovery` - Error messages must include a clear recovery path (retry, edit, help link) (HIG, MD)
-- `multi-step-progress` - Multi-step flows show step indicator or progress bar; allow back navigation (MD)
-- `form-autosave` - Long forms should auto-save drafts to prevent data loss on accidental dismissal (Apple HIG)
-- `sheet-dismiss-confirm` - Confirm before dismissing a sheet/modal with unsaved changes (Apple HIG)
-- `error-clarity` - Error messages must state cause + how to fix (not just "Invalid input") (HIG, MD)
-- `field-grouping` - Group related fields logically (fieldset/legend or visual grouping) (MD)
-- `read-only-distinction` - Read-only state should be visually and semantically different from disabled (MD)
-- `focus-management` - After submit error, auto-focus the first invalid field (WCAG, MD)
-- `error-summary` - For multiple errors, show summary at top with anchor links to each field (WCAG)
-- `touch-friendly-input` - Mobile input height ≥44px to meet touch target requirements (Apple HIG)
-- `destructive-emphasis` - Destructive actions use semantic danger color (red) and are visually separated from primary actions (HIG, MD)
-- `toast-accessibility` - Toasts must not steal focus; use aria-live="polite" for screen reader announcement (WCAG)
-- `aria-live-errors` - Form errors use aria-live region or role="alert" to notify screen readers (WCAG)
-- `contrast-feedback` - Error and success state colors must meet 4.5:1 contrast ratio (WCAG, MD)
-- `timeout-feedback` - Request timeout must show clear feedback with retry option (MD)
-
-### 9. Navigation Patterns (HIGH)
-
-- `bottom-nav-limit` - Bottom navigation max 5 items; use labels with icons (Material Design)
-- `drawer-usage` - Use drawer/sidebar for secondary navigation, not primary actions (Material Design)
-- `back-behavior` - Back navigation must be predictable and consistent; preserve scroll/state (Apple HIG, MD)
-- `deep-linking` - All key screens must be reachable via deep link / URL for sharing and notifications (Apple HIG, MD)
-- `tab-bar-ios` - iOS: use bottom Tab Bar for top-level navigation (Apple HIG)
-- `top-app-bar-android` - Android: use Top App Bar with navigation icon for primary structure (Material Design)
-- `nav-label-icon` - Navigation items must have both icon and text label; icon-only nav harms discoverability (MD)
-- `nav-state-active` - Current location must be visually highlighted (color, weight, indicator) in navigation (HIG, MD)
-- `nav-hierarchy` - Primary nav (tabs/bottom bar) vs secondary nav (drawer/settings) must be clearly separated (MD)
-- `modal-escape` - Modals and sheets must offer a clear close/dismiss affordance; swipe-down to dismiss on mobile (Apple HIG)
-- `search-accessible` - Search must be easily reachable (top bar or tab); provide recent/suggested queries (MD)
-- `breadcrumb-web` - Web: use breadcrumbs for 3+ level deep hierarchies to aid orientation (MD)
-- `state-preservation` - Navigating back must restore previous scroll position, filter state, and input (HIG, MD)
-- `gesture-nav-support` - Support system gesture navigation (iOS swipe-back, Android predictive back) without conflict (HIG, MD)
-- `tab-badge` - Use badges on nav items sparingly to indicate unread/pending; clear after user visits (HIG, MD)
-- `overflow-menu` - When actions exceed available space, use overflow/more menu instead of cramming (MD)
-- `bottom-nav-top-level` - Bottom nav is for top-level screens only; never nest sub-navigation inside it (MD)
-- `adaptive-navigation` - Large screens (≥1024px) prefer sidebar; small screens use bottom/top nav (Material Adaptive)
-- `back-stack-integrity` - Never silently reset the navigation stack or unexpectedly jump to home (HIG, MD)
-- `navigation-consistency` - Navigation placement must stay the same across all pages; don't change by page type
-- `avoid-mixed-patterns` - Don't mix Tab + Sidebar + Bottom Nav at the same hierarchy level
-- `modal-vs-navigation` - Modals must not be used for primary navigation flows; they break the user's path (HIG)
-- `focus-on-route-change` - After page transition, move focus to main content region for screen reader users (WCAG)
-- `persistent-nav` - Core navigation must remain reachable from deep pages; don't hide it entirely in sub-flows (HIG, MD)
-- `destructive-nav-separation` - Dangerous actions (delete account, logout) must be visually and spatially separated from normal nav items (HIG, MD)
-- `empty-nav-state` - When a nav destination is unavailable, explain why instead of silently hiding it (MD)
-
-### 10. Charts & Data (LOW)
-
-- `chart-type` - Match chart type to data type (trend → line, comparison → bar, proportion → pie/donut)
-- `color-guidance` - Use accessible color palettes; avoid red/green only pairs for colorblind users (WCAG, MD)
-- `data-table` - Provide table alternative for accessibility; charts alone are not screen-reader friendly (WCAG)
-- `pattern-texture` - Supplement color with patterns, textures, or shapes so data is distinguishable without color (WCAG, MD)
-- `legend-visible` - Always show legend; position near the chart, not detached below a scroll fold (MD)
-- `tooltip-on-interact` - Provide tooltips/data labels on hover (Web) or tap (mobile) showing exact values (HIG, MD)
-- `axis-labels` - Label axes with units and readable scale; avoid truncated or rotated labels on mobile
-- `responsive-chart` - Charts must reflow or simplify on small screens (e.g. horizontal bar instead of vertical, fewer ticks)
-- `empty-data-state` - Show meaningful empty state when no data exists ("No data yet" + guidance), not a blank chart (MD)
-- `loading-chart` - Use skeleton or shimmer placeholder while chart data loads; don't show an empty axis frame
-- `animation-optional` - Chart entrance animations must respect prefers-reduced-motion; data should be readable immediately (HIG)
-- `large-dataset` - For 1000+ data points, aggregate or sample; provide drill-down for detail instead of rendering all (MD)
-- `number-formatting` - Use locale-aware formatting for numbers, dates, currencies on axes and labels (HIG, MD)
-- `touch-target-chart` - Interactive chart elements (points, segments) must have ≥44pt tap area or expand on touch (Apple HIG)
-- `no-pie-overuse` - Avoid pie/donut for >5 categories; switch to bar chart for clarity
-- `contrast-data` - Data lines/bars vs background ≥3:1; data text labels ≥4.5:1 (WCAG)
-- `legend-interactive` - Legends should be clickable to toggle series visibility (MD)
-- `direct-labeling` - For small datasets, label values directly on the chart to reduce eye travel
-- `tooltip-keyboard` - Tooltip content must be keyboard-reachable and not rely on hover alone (WCAG)
-- `sortable-table` - Data tables must support sorting with aria-sort indicating current sort state (WCAG)
-- `axis-readability` - Axis ticks must not be cramped; maintain readable spacing, auto-skip on small screens
-- `data-density` - Limit information density per chart to avoid cognitive overload; split into multiple charts if needed
-- `trend-emphasis` - Emphasize data trends over decoration; avoid heavy gradients/shadows that obscure the data
-- `gridline-subtle` - Grid lines should be low-contrast (e.g. gray-200) so they don't compete with data
-- `focusable-elements` - Interactive chart elements (points, bars, slices) must be keyboard-navigable (WCAG)
-- `screen-reader-summary` - Provide a text summary or aria-label describing the chart's key insight for screen readers (WCAG)
-- `error-state-chart` - Data load failure must show error message with retry action, not a broken/empty chart
-- `export-option` - For data-heavy products, offer CSV/image export of chart data
-- `drill-down-consistency` - Drill-down interactions must maintain a clear back-path and hierarchy breadcrumb
-- `time-scale-clarity` - Time series charts must clearly label time granularity (day/week/month) and allow switching
-
-## How to Use
-
-Search specific domains using the CLI tool below.
+> **Autor:** Asistente IA · **Formato:** Guía de estudio avanzada  
+> **Público:** Desarrolladores frontend con experiencia básica en CSS  
+> **Versión:** 1.0 — Junio 2026
 
 ---
 
-## Prerequisites
-
-Check if Python is installed:
-
-```bash
-python3 --version || python --version
-```
-
-If Python is not installed, install it based on user's OS:
-
-**macOS:**
-```bash
-brew install python3
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt update && sudo apt install python3
-```
-
-**Windows:**
-```powershell
-winget install Python.Python.3.12
-```
-
-> **Note:** On Windows, use `python` instead of `python3` to run scripts (e.g., `python scripts/search.py` instead of `python3 scripts/search.py`).
+# 1. CSS AVANZADO
 
 ---
 
-## How to Use This Skill
+## 1.1 CSS Grid Avanzado
 
-Use this skill when the user requests any of the following:
+### grid-template-areas — Nombres de Áreas
 
-| Scenario | Trigger Examples | Start From |
-|----------|-----------------|------------|
-| **New project / page** | "Build a landing page", "Build a dashboard" | Step 1 → Step 2 (design system) |
-| **New component** | "Create a pricing card", "Add a modal" | Step 3 (domain search: style, ux) |
-| **Choose style / color / font** | "What style fits a fintech app?", "Recommend a color palette" | Step 2 (design system) |
-| **Review existing UI** | "Review this page for UX issues", "Check accessibility" | Quick Reference checklist above |
-| **Fix a UI bug** | "Button hover is broken", "Layout shifts on load" | Quick Reference → relevant section |
-| **Improve / optimize** | "Make this faster", "Improve mobile experience" | Step 3 (domain search: ux, react) |
-| **Implement dark mode** | "Add dark mode support" | Step 3 (domain: style "dark mode") |
-| **Add charts / data viz** | "Add an analytics dashboard chart" | Step 3 (domain: chart) |
-| **Stack best practices** | "React performance tips"、"SwiftUI navigation" | Step 4 (stack search) |
+La propiedad `grid-template-areas` permite nombrar celdas de la cuadrícula y asignar elementos a ellas usando el nombre en `grid-area`. Es la forma más legible de definir layouts complejos.
 
-Follow this workflow:
+```css
+.layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header  header"
+    "sidebar main"
+    "footer  footer";
+  min-height: 100vh;
+}
 
-### Step 1: Analyze User Requirements
-
-Extract key information from user request:
-- **Product type**: Entertainment (social, video, music, gaming), Tool (scanner, editor, converter), Productivity (task manager, notes, calendar), or hybrid
-- **Target audience**: C-end consumer users; consider age group, usage context (commute, leisure, work)
-- **Style keywords**: playful, vibrant, minimal, dark mode, content-first, immersive, etc.
-- **Stack**: Match the project's framework. The engine ships guidance for many stacks (see [Available Stacks](#available-stacks) below) — pass the matching `--stack` (e.g. `nextjs`, `react`, `shadcn`, `vue`, `svelte`, `astro`, `swiftui`, `flutter`, `react-native`).
-
-### Step 2: Generate Design System (REQUIRED)
-
-**Always start with `--design-system`** to get comprehensive recommendations with reasoning:
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<product_type> <industry> <keywords>" --design-system [-p "Project Name"]
+.header  { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main    { grid-area: main; }
+.footer  { grid-area: footer; }
 ```
 
-This command:
-1. Searches domains in parallel (product, style, color, landing, typography)
-2. Applies reasoning rules from `ui-reasoning.csv` to select best matches
-3. Returns complete design system: pattern, style, colors, typography, effects
-4. Includes anti-patterns to avoid
+**Reglas clave:**
+- Cada fila se define entre comillas, cada columna es un nombre separado por espacio.
+- Usa un punto `.` para dejar una celda vacía.
+- Los nombres deben ser contiguos en forma rectangular — no se permiten formas en L.
 
-**Example:**
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "beauty spa wellness service" --design-system -p "Serenity Spa"
+**Ejercicio:** Crea un layout de dashboard con: navbar superior, sidebar izquierdo, contenido principal, panel derecho de estadísticas y footer. Usa `grid-template-areas` con 3 columnas.
+
+---
+
+### auto-fill vs auto-fit — La Diferencia Exacta
+
+Ambos trabajan con `repeat(auto-fill, ...)` o `repeat(auto-fit, ...)`. La diferencia es **qué pasa con el espacio sobrante**:
+
+```css
+/* auto-fill: CREA tracks vacíos para ocupar el espacio */
+.grid-fill {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+/* auto-fit: COLAPSA tracks vacíos a 0, el contenido se expande */
+.grid-fit {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
 ```
 
-### Step 2b: Persist Design System (Master + Overrides Pattern)
+- **auto-fill**: Genera tracks fantasma aunque no haya elementos. Útil cuando quieres mantener la estructura aunque falten ítems.
+- **auto-fit**: Colapsa los tracks vacíos a 0. Los elementos existentes ocupan el espacio disponible. Es el más usado en la práctica.
 
-To save the design system for **hierarchical retrieval across sessions**, add `--persist`:
+**Ejercicio:** Crea dos grids de 6 tarjetas cada uno, uno con auto-fill y otro con auto-fit. Redimensiona el viewport y observa cómo se comportan cuando solo hay 4 tarjetas visibles.
 
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name"
+---
+
+### minmax() y fit-content()
+
+**minmax(min, max):** Define un rango de tamaño para los tracks. El navegador elige dentro del rango según el espacio disponible.
+
+```css
+grid-template-columns: minmax(200px, 1fr) 2fr minmax(100px, 300px);
 ```
 
-This creates:
-- `design-system/MASTER.md` — Global Source of Truth with all design rules
-- `design-system/pages/` — Folder for page-specific overrides
+**Usos comunes:**
+- `minmax(0, 1fr)` — Evita que el desbordamiento de contenido rompa el fr.
+- `minmax(auto, 1fr)` — Mínimo el contenido máximo, máximo el espacio disponible.
 
-**With page-specific override:**
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persist -p "Project Name" --page "dashboard"
-```
+**fit-content(valor):** Actúa como `min(max-content, max(min-content, valor))`. El track crece hasta el valor máximo que le asignes, pero no más que el contenido.
 
-This also creates:
-- `design-system/pages/dashboard.md` — Page-specific deviations from Master
-
-**How hierarchical retrieval works:**
-1. When building a specific page (e.g., "Checkout"), first check `design-system/pages/checkout.md`
-2. If the page file exists, its rules **override** the Master file
-3. If not, use `design-system/MASTER.md` exclusively
-
-**Context-aware retrieval prompt:**
-```
-I am building the [Page Name] page. Please read design-system/MASTER.md.
-Also check if design-system/pages/[page-name].md exists.
-If the page file exists, prioritize its rules.
-If not, use the Master rules exclusively.
-Now, generate the code...
-```
-
-### Step 3: Supplement with Detailed Searches (as needed)
-
-After getting the design system, use domain searches to get additional details:
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n <max_results>]
-```
-
-**When to use detailed searches:**
-
-| Need | Domain | Example |
-|------|--------|---------|
-| Product type patterns | `product` | `--domain product "entertainment social"` |
-| More style options | `style` | `--domain style "glassmorphism dark"` |
-| Color palettes | `color` | `--domain color "entertainment vibrant"` |
-| Font pairings | `typography` | `--domain typography "playful modern"` |
-| Chart recommendations | `chart` | `--domain chart "real-time dashboard"` |
-| UX best practices | `ux` | `--domain ux "animation accessibility"` |
-| Alternative fonts | `typography` | `--domain typography "elegant luxury"` |
-| Individual Google Fonts | `google-fonts` | `--domain google-fonts "sans serif popular variable"` |
-| Landing structure | `landing` | `--domain landing "hero social-proof"` |
-| React Native perf | `react` | `--domain react "rerender memo list"` |
-| App interface a11y | `web` | `--domain web "accessibilityLabel touch safe-areas"` |
-| AI prompt / CSS keywords | `prompt` | `--domain prompt "minimalism"` |
-
-### Step 4: Stack Guidelines (match your framework)
-
-Get implementation-specific best practices for the stack you're building in.
-Pass the `--stack` that matches the project's framework:
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack <your-stack>
-# e.g. --stack nextjs | react | shadcn | vue | svelte | astro | swiftui | flutter | react-native
+```css
+.sidebar {
+  grid-template-columns: fit-content(300px) 1fr;
+}
+/* La sidebar crece hasta 300px, pero se encoge si el contenido */
+/* es más pequeño. Nunca se expande más allá del contenido + 300px */
 ```
 
 ---
 
-## Search Reference
+### Grid Implícito vs Explícito
 
-### Available Domains
+El **grid explícito** es el que declaras con `grid-template-columns` y `grid-template-rows`. El **grid implícito** son los tracks que el navegador crea automáticamente cuando colocas elementos fuera del explícito.
 
-| Domain | Use For | Example Keywords |
-|--------|---------|------------------|
-| `product` | Product type recommendations | SaaS, e-commerce, portfolio, healthcare, beauty, service |
-| `style` | UI styles, colors, effects | glassmorphism, minimalism, dark mode, brutalism |
-| `typography` | Font pairings, Google Fonts | elegant, playful, professional, modern |
-| `color` | Color palettes by product type | saas, ecommerce, healthcare, beauty, fintech, service |
-| `landing` | Page structure, CTA strategies | hero, hero-centric, testimonial, pricing, social-proof |
-| `chart` | Chart types, library recommendations | trend, comparison, timeline, funnel, pie |
-| `ux` | Best practices, anti-patterns | animation, accessibility, z-index, loading |
-| `google-fonts` | Individual Google Fonts lookup | sans serif, monospace, japanese, variable font, popular |
-| `react` | React/Next.js performance | waterfall, bundle, suspense, memo, rerender, cache |
-| `web` | App interface guidelines (iOS/Android/React Native) | accessibilityLabel, touch targets, safe areas, Dynamic Type |
-| `prompt` | AI prompts, CSS keywords | (style name) |
+```css
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* Explícito: 3 columnas */
+  grid-template-rows: 100px 100px;         /* Explícito: 2 filas */
+  grid-auto-rows: 200px;                   /* Implícito: filas extra de 200px */
+  grid-auto-columns: 100px;                /* Implícito: columnas extra de 100px */
+  grid-auto-flow: row;                     /* Cómo se colocan: row (default), column, dense */
+}
+```
 
-### Available Stacks
+**Propiedades clave del implícito:**
+- `grid-auto-rows`: Tamaño de filas implícitas.
+- `grid-auto-columns`: Tamaño de columnas implícitas.
+- `grid-auto-flow`: Dirección de auto-colocación. Con `dense`, rellena huecos automáticamente.
 
-Run `ls <skill>/data/stacks/` to see the live set. Shipped stacks:
-
-| Stack | Focus |
-|-------|-------|
-| `react` | Components, hooks, render performance |
-| `nextjs` | App Router, RSC, Server Actions, rendering |
-| `vue` | Components, Composition API, reactivity |
-| `nuxtjs` | Nuxt app patterns, SSR data fetching |
-| `nuxt-ui` | Nuxt UI component patterns |
-| `svelte` | Components, stores, transitions |
-| `astro` | Islands, content, partial hydration |
-| `shadcn` | shadcn/ui primitives, composition |
-| `html-tailwind` | Tailwind utility patterns |
-| `angular` | Components, signals, services |
-| `laravel` | Blade / server-rendered UI patterns |
-| `swiftui` | Views, state, navigation (iOS/macOS) |
-| `flutter` | Widgets, state, navigation |
-| `jetpack-compose` | Composables, state, navigation (Android) |
-| `react-native` | Components, Navigation, Lists |
-| `threejs` | 3D scenes, materials, performance |
+**Ejercicio:** Crea un grid de 3 columnas con 4 elementos. Asigna solo posiciones explícitas a los primeros 2. Observa cómo el navegador coloca los otros 2 en el grid implícito. Cambia `grid-auto-rows` y `grid-auto-flow: dense` para ver los efectos.
 
 ---
 
-## Example Workflow
+### place-items, place-content, place-self
 
-**User request:** "Make an AI search homepage."
+Son **shorthands** que combinan align (eje cruzado/columna) y justify (eje principal/fila):
 
-### Step 1: Analyze Requirements
-- Product type: Tool (AI search engine)
-- Target audience: C-end users looking for fast, intelligent search
-- Style keywords: modern, minimal, content-first, dark mode
-- Stack: Next.js (a homepage is a web surface; use a web `--stack`)
+| Propiedad | Shorthand de | Afecta a |
+|-----------|-------------|----------|
+| `place-items` | `align-items` + `justify-items` | Todos los ítems del contenedor |
+| `place-content` | `align-content` + `justify-content` | El contenido del grid (espacio sobrante) |
+| `place-self` | `align-self` + `justify-self` | Un ítem específico |
 
-### Step 2: Generate Design System (REQUIRED)
+```css
+.contenedor {
+  display: grid;
+  place-items: center;          /* Centra todo vertical y horizontalmente */
+  place-content: space-evenly;  /* Distribuye el espacio sobrante */
+}
 
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "AI search tool modern minimal" --design-system -p "AI Search"
+.item-especial {
+  place-self: start end;        /* align: start, justify: end */
+}
 ```
 
-**Output:** Complete design system with pattern, style, colors, typography, effects, and anti-patterns.
-
-### Step 3: Supplement with Detailed Searches (as needed)
-
-```bash
-# Get style options for a modern tool product
-python3 skills/ui-ux-pro-max/scripts/search.py "minimalism dark mode" --domain style
-
-# Get UX best practices for search interaction and loading
-python3 skills/ui-ux-pro-max/scripts/search.py "search loading animation" --domain ux
-```
-
-### Step 4: Stack Guidelines
-
-```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "list performance navigation" --stack nextjs
-```
-
-**Then:** Synthesize design system + detailed searches and implement the design.
+**Ejercicio:** Crea un grid de 3×3. Centra todos los elementos con `place-items: center`. L haz que el elemento central use `place-self: stretch stretch` para que ocupe toda su celda.
 
 ---
 
-## Output Formats
+### Grid Anidado
 
-The `--design-system` flag supports two output formats:
+Un grid anidado es simplemente un elemento del grid que tiene `display: grid`. No hereda propiedades del padre — cada grid es independiente.
 
-```bash
-# ASCII box (default) - best for terminal display
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system
+```css
+.padre {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
 
-# Markdown - best for documentation
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system -f markdown
+.hijo {
+  display: grid;
+  grid-template-columns: subgrid; /* Experimental — hereda tracks del padre */
+  gap: 10px;
+}
+```
+
+**Nota:** `subgrid` funciona en Firefox y Chromium (2024+). Permite que los hijos del grid anidado se alineen con los tracks del grid padre. Sin `subgrid`, los grids anidados son independientes.
+
+```css
+/* Cards con imagen + texto, alineadas por subgrid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3; /* La card ocupa 3 filas del padre */
+}
 ```
 
 ---
 
-## Tips for Better Results
+## 1.2 CSS Custom Properties (Variables)
 
-### Query Strategy
+### Definición y Uso Básico
 
-- Use **multi-dimensional keywords** — combine product + industry + tone + density: `"entertainment social vibrant content-dense"` not just `"app"`
-- Try different keywords for the same need: `"playful neon"` → `"vibrant dark"` → `"content-first minimal"`
-- Use `--design-system` first for full recommendations, then `--domain` to deep-dive any dimension you're unsure about
-- Add the `--stack` that matches the project's framework for implementation-specific guidance
+Las Custom Properties se definen con doble guion `--` y se leen con `var()`:
 
-### Common Sticking Points
+```css
+:root {
+  --color-primario: #22c55e;
+  --color-secundario: #3b82f6;
+  --fuente-base: 16px;
+  --espaciado: 1rem;
+}
 
-| Problem | What to Do |
-|---------|------------|
-| Can't decide on style/color | Re-run `--design-system` with different keywords |
-| Dark mode contrast issues | Quick Reference §6: `color-dark-mode` + `color-accessible-pairs` |
-| Animations feel unnatural | Quick Reference §7: `spring-physics` + `easing` + `exit-faster-than-enter` |
-| Form UX is poor | Quick Reference §8: `inline-validation` + `error-clarity` + `focus-management` |
-| Navigation feels confusing | Quick Reference §9: `nav-hierarchy` + `bottom-nav-limit` + `back-behavior` |
-| Layout breaks on small screens | Quick Reference §5: `mobile-first` + `breakpoint-consistency` |
-| Performance / jank | Quick Reference §3: `virtualize-lists` + `main-thread-budget` + `debounce-throttle` |
+.boton {
+  background: var(--color-primario);
+  font-size: var(--fuente-base);
+  padding: var(--espaciado) calc(var(--espaciado) * 2);
+}
+```
 
-### Pre-Delivery Checklist
+**Fallback:** El segundo argumento de `var()` se usa si la variable no está definida.
 
-- Run `--domain ux "animation accessibility z-index loading"` as a UX validation pass before implementation
-- Run through Quick Reference **§1–§3** (CRITICAL + HIGH) as a final review
-- Test on 375px (small phone) and landscape orientation
-- Verify behavior with **reduced-motion** enabled and **Dynamic Type** at largest size
-- Check dark mode contrast independently (don't assume light mode values work)
-- Confirm all touch targets ≥44pt and no content hidden behind safe areas
-
----
-
-## Common Rules for Professional UI
-
-These are frequently overlooked issues that make UI look unprofessional:
-Scope notice: The rules below are for App UI (iOS/Android/React Native/Flutter), not desktop-web interaction patterns.
-
-### Icons & Visual Elements
-
-| Rule | Standard | Avoid | Why It Matters |
-|------|----------|--------|----------------|
-| **No Emoji as Structural Icons** | Use vector-based icons (e.g., Lucide, react-native-vector-icons, @expo/vector-icons). | Using emojis (🎨 🚀 ⚙️) for navigation, settings, or system controls. | Emojis are font-dependent, inconsistent across platforms, and cannot be controlled via design tokens. |
-| **Vector-Only Assets** | Use SVG or platform vector icons that scale cleanly and support theming. | Raster PNG icons that blur or pixelate. | Ensures scalability, crisp rendering, and dark/light mode adaptability. |
-| **Stable Interaction States** | Use color, opacity, or elevation transitions for press states without changing layout bounds. | Layout-shifting transforms that move surrounding content or trigger visual jitter. | Prevents unstable interactions and preserves smooth motion/perceived quality on mobile. |
-| **Correct Brand Logos** | Use official brand assets and follow their usage guidelines (spacing, color, clear space). | Guessing logo paths, recoloring unofficially, or modifying proportions. | Prevents brand misuse and ensures legal/platform compliance. |
-| **Consistent Icon Sizing** | Define icon sizes as design tokens (e.g., icon-sm, icon-md = 24pt, icon-lg). | Mixing arbitrary values like 20pt / 24pt / 28pt randomly. | Maintains rhythm and visual hierarchy across the interface. |
-| **Stroke Consistency** | Use a consistent stroke width within the same visual layer (e.g., 1.5px or 2px). | Mixing thick and thin stroke styles arbitrarily. | Inconsistent strokes reduce perceived polish and cohesion. |
-| **Filled vs Outline Discipline** | Use one icon style per hierarchy level. | Mixing filled and outline icons at the same hierarchy level. | Maintains semantic clarity and stylistic coherence. |
-| **Touch Target Minimum** | Minimum 44×44pt interactive area (use hitSlop if icon is smaller). | Small icons without expanded tap area. | Meets accessibility and platform usability standards. |
-| **Icon Alignment** | Align icons to text baseline and maintain consistent padding. | Misaligned icons or inconsistent spacing around them. | Prevents subtle visual imbalance that reduces perceived quality. |
-| **Icon Contrast** | Follow WCAG contrast standards: 4.5:1 for small elements, 3:1 minimum for larger UI glyphs. | Low-contrast icons that blend into the background. | Ensures accessibility in both light and dark modes. |
-
-
-### Interaction (App)
-
-| Rule | Do | Don't |
-|------|----|----- |
-| **Tap feedback** | Provide clear pressed feedback (ripple/opacity/elevation) within 80-150ms | No visual response on tap |
-| **Animation timing** | Keep micro-interactions around 150-300ms with platform-native easing | Instant transitions or slow animations (>500ms) |
-| **Accessibility focus** | Ensure screen reader focus order matches visual order and labels are descriptive | Unlabeled controls or confusing focus traversal |
-| **Disabled state clarity** | Use disabled semantics (`disabled`/native disabled props), reduced emphasis, and no tap action | Controls that look tappable but do nothing |
-| **Touch target minimum** | Keep tap areas >=44x44pt (iOS) or >=48x48dp (Android), expand hit area when icon is smaller | Tiny tap targets or icon-only hit areas without padding |
-| **Gesture conflict prevention** | Keep one primary gesture per region and avoid nested tap/drag conflicts | Overlapping gestures causing accidental actions |
-| **Semantic native controls** | Prefer native interactive primitives (`Button`, `Pressable`, platform equivalents) with proper accessibility roles | Generic containers used as primary controls without semantics |
-
-### Light/Dark Mode Contrast
-
-| Rule | Do | Don't |
-|------|----|----- |
-| **Surface readability (light)** | Keep cards/surfaces clearly separated from background with sufficient opacity/elevation | Overly transparent surfaces that blur hierarchy |
-| **Text contrast (light)** | Maintain body text contrast >=4.5:1 against light surfaces | Low-contrast gray body text |
-| **Text contrast (dark)** | Maintain primary text contrast >=4.5:1 and secondary text >=3:1 on dark surfaces | Dark mode text that blends into background |
-| **Border and divider visibility** | Ensure separators are visible in both themes (not just light mode) | Theme-specific borders disappearing in one mode |
-| **State contrast parity** | Keep pressed/focused/disabled states equally distinguishable in light and dark themes | Defining interaction states for one theme only |
-| **Token-driven theming** | Use semantic color tokens mapped per theme across app surfaces/text/icons | Hardcoded per-screen hex values |
-| **Scrim and modal legibility** | Use a modal scrim strong enough to isolate foreground content (typically 40-60% black) | Weak scrim that leaves background visually competing |
-
-### Layout & Spacing
-
-| Rule | Do | Don't |
-|------|----|----- |
-| **Safe-area compliance** | Respect top/bottom safe areas for all fixed headers, tab bars, and CTA bars | Placing fixed UI under notch, status bar, or gesture area |
-| **System bar clearance** | Add spacing for status/navigation bars and gesture home indicator | Let tappable content collide with OS chrome |
-| **Consistent content width** | Keep predictable content width per device class (phone/tablet) | Mixing arbitrary widths between screens |
-| **8dp spacing rhythm** | Use a consistent 4/8dp spacing system for padding/gaps/section spacing | Random spacing increments with no rhythm |
-| **Readable text measure** | Keep long-form text readable on large devices (avoid edge-to-edge paragraphs on tablets) | Full-width long text that hurts readability |
-| **Section spacing hierarchy** | Define clear vertical rhythm tiers (e.g., 16/24/32/48) by hierarchy | Similar UI levels with inconsistent spacing |
-| **Adaptive gutters by breakpoint** | Increase horizontal insets on larger widths and in landscape | Same narrow gutter on all device sizes/orientations |
-| **Scroll and fixed element coexistence** | Add bottom/top content insets so lists are not hidden behind fixed bars | Scroll content obscured by sticky headers/footers |
+```css
+.texto {
+  color: var(--color-inexistente, #333); /* Usa #333 si --color-inexistente no existe */
+}
+```
 
 ---
 
-## Pre-Delivery Checklist
+### Variables en Media Queries
 
-Before delivering UI code, verify these items:
-Scope notice: This checklist is for App UI (iOS/Android/React Native/Flutter).
+**Limitación importante:** Las custom properties **no funcionan dentro de** `@media` para el valor de la query misma. Ejemplo INCORRECTO:
 
-### Visual Quality
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons come from a consistent icon family and style
-- [ ] Official brand assets are used with correct proportions and clear space
-- [ ] Pressed-state visuals do not shift layout bounds or cause jitter
-- [ ] Semantic theme tokens are used consistently (no ad-hoc per-screen hardcoded colors)
+```css
+:root { --breakpoint: 768px; }
+/* ❌ NO funciona: */
+@media (min-width: var(--breakpoint)) { ... }
+```
 
-### Interaction
-- [ ] All tappable elements provide clear pressed feedback (ripple/opacity/elevation)
-- [ ] Touch targets meet minimum size (>=44x44pt iOS, >=48x48dp Android)
-- [ ] Micro-interaction timing stays in the 150-300ms range with native-feeling easing
-- [ ] Disabled states are visually clear and non-interactive
-- [ ] Screen reader focus order matches visual order, and interactive labels are descriptive
-- [ ] Gesture regions avoid nested/conflicting interactions (tap/drag/back-swipe conflicts)
+Pero sí funcionan **dentro** de los bloques de media query:
 
-### Light/Dark Mode
-- [ ] Primary text contrast >=4.5:1 in both light and dark mode
-- [ ] Secondary text contrast >=3:1 in both light and dark mode
-- [ ] Dividers/borders and interaction states are distinguishable in both modes
-- [ ] Modal/drawer scrim opacity is strong enough to preserve foreground legibility (typically 40-60% black)
-- [ ] Both themes are tested before delivery (not inferred from a single theme)
+```css
+:root {
+  --gap: 2rem;
+  --columnas: 3;
+}
 
-### Layout
-- [ ] Safe areas are respected for headers, tab bars, and bottom CTA bars
-- [ ] Scroll content is not hidden behind fixed/sticky bars
-- [ ] Verified on small phone, large phone, and tablet (portrait + landscape)
-- [ ] Horizontal insets/gutters adapt correctly by device size and orientation
-- [ ] 4/8dp spacing rhythm is maintained across component, section, and page levels
-- [ ] Long-form text measure remains readable on larger devices (no edge-to-edge paragraphs)
+@media (max-width: 768px) {
+  :root {
+    --gap: 1rem;
+    --columnas: 1;
+  }
+}
 
-### Accessibility
-- [ ] All meaningful images/icons have accessibility labels
-- [ ] Form fields have labels, hints, and clear error messages
-- [ ] Color is not the only indicator
-- [ ] Reduced motion and dynamic text size are supported without layout breakage
-- [ ] Accessibility traits/roles/states (selected, disabled, expanded) are announced correctly
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columnas), 1fr);
+  gap: var(--gap);
+}
+```
+
+---
+
+### Temas Dinámicos (Dark Mode)
+
+Las custom properties hacen trivial el cambio de temas:
+
+```css
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --surface: #f5f5f5;
+  --border: #e0e0e0;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1a1a;
+  --text: #e0e0e0;
+  --surface: #2d2d2d;
+  --border: #404040;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+```
+
+**Con JavaScript:**
+```js
+const toggle = document.getElementById('theme-toggle');
+toggle.addEventListener('click', () => {
+  const html = document.documentElement;
+  const theme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme); // Persistencia
+});
+```
+
+**Ejercicio:** Construye un sistema de 3 temas (claro, oscuro, sepia) usando custom properties. Incluye colores de fondo, texto, enlaces y bordes. Añade un selector de temas con botones de radio.
+
+---
+
+## 1.3 Animaciones Avanzadas
+
+### @keyframes con Múltiples Pasos
+
+```css
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.8);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(20px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.elemento {
+  animation: slide-in 0.8s ease-out forwards;
+}
+```
+
+**Puntos clave:**
+- Puedes usar tantos `%` como necesites (`0%`, `25%`, `50%`, `75%`, `100%`).
+- `from` equivale a `0%`, `to` equivale a `100%`.
+- Las propiedades que no se animan saltan al valor final.
+
+---
+
+### cubic-bezier() — Curvas Personalizadas
+
+```css
+.elemento {
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+```
+
+**Curvas predefinidas:**
+- `ease`: `cubic-bezier(0.25, 0.1, 0.25, 1.0)` — inicio suave, final suave
+- `ease-in`: `cubic-bezier(0.42, 0.0, 1.0, 1.0)` — lento al inicio
+- `ease-out`: `cubic-bezier(0.0, 0.0, 0.58, 1.0)` — lento al final
+- `ease-in-out`: `cubic-bezier(0.42, 0.0, 0.58, 1.0)` — lento en ambos extremos
+- `linear`: `cubic-bezier(0.0, 0.0, 1.0, 1.0)` — velocidad constante
+
+**Ejercicio:** Crea 4 cajas que se muevan de izquierda a derecha, cada una con una curva diferente (ease, ease-in, ease-out, cubic-bezier personalizada). Observa la diferencia.
+
+---
+
+### animation-fill-mode — ¿Qué pasa antes/después?
+
+```css
+.elemento {
+  /* Valores: none | forwards | backwards | both */
+  animation: fade-in 1s ease-in forwards;
+}
+```
+
+- `none` (default): No aplica estilos antes ni después. El elemento vuelve a su estado original.
+- `forwards`: Mantiene los estilos del último keyframe (`100%`) al terminar.
+- `backwards`: Aplica los estilos del primer keyframe (`0%`) durante el delay.
+- `both`: Combina forwards + backwards.
+
+---
+
+### animation-delay y animation-iteration-count
+
+```css
+.loading-dot {
+  animation: bounce 0.6s ease-in-out infinite alternate;
+}
+
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-20px); }
+}
+```
+
+**Propiedades:**
+- `animation-iteration-count: infinite | 3 | 2.5` — Número de repeticiones.
+- `animation-direction: normal | reverse | alternate | alternate-reverse`.
+- `animation-play-state: running | paused` — Pausar/reanudar.
+
+---
+
+### will-change — Optimización de Rendimiento
+
+```css
+.elemento {
+  will-change: transform, opacity;
+}
+```
+
+**Reglas de uso:**
+- Usar solo en elementos que efectivamente van a animarse pronto.
+- No aplicar en demasiados elementos — consume memoria GPU.
+- El navegador prepara la capa de renderizado anticipadamente.
+- Quitar con JS después de la animación si es posible.
+
+```js
+element.addEventListener('mouseenter', () => {
+  element.style.willChange = 'transform';
+});
+element.addEventListener('animationend', () => {
+  element.style.willChange = 'auto';
+});
+```
+
+---
+
+### Transiciones vs Animaciones — ¿Cuándo Usar Cada Una?
+
+| Criterio | Transiciones | Animaciones |
+|----------|-------------|-------------|
+| Disparo | Cambio de estado (hover, focus, clase) | Inicio automático o con clase |
+| Control | Inicio y fin | Múltiples pasos (keyframes) |
+| Loop | No nativamente | Sí (`infinite`) |
+| Pausa | No | Sí (`animation-play-state`) |
+| Rebote | Con cubic-bezier | Con keyframes |
+| Complejidad | Cambios simples | Secuencias complejas |
+
+**Regla práctica:** Usa **transiciones** para micro-interacciones (hover en botones, focus en inputs, aparecer/desaparecer). Usa **animaciones** para secuencias coreografiadas (loading spinners, entradas de página, sliders automáticos).
+
+---
+
+## 1.4 Responsive Avanzado
+
+### Container Queries (@container)
+
+Las container queries permiten que un elemento responda al tamaño de su **contenedor padre**, no al viewport. Esto es revolucionario para componentes reutilizables.
+
+```css
+/* 1. Definir un context de contención */
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+/* 2. Usar @container (equivalente a @media pero para el contenedor) */
+@container card (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+@container card (max-width: 399px) {
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+}
+```
+
+**Propiedades:**
+- `container-type`: `inline-size` (solo ancho), `size` (ancho+alto), `normal` (no establece contención).
+- `container-name`: Nombre para referenciar en `@container`.
+- `container`: Shorthand de `container-name` + `container-type`.
+
+**Ejercicio:** Crea un componente "tarjeta de producto" que se muestre horizontal (imagen + info lado a lado) cuando el contenedor tenga más de 500px, y vertical cuando tenga menos. Coloca 3 instancias del mismo componente en diferentes tamaños de contenedor.
+
+---
+
+### clamp() Profundo
+
+`clamp(MIN, PREFERIDO, MAX)` es la función más útil para diseño responsive fluido:
+
+```css
+/* Tipografía fluida */
+h1 {
+  font-size: clamp(2rem, 5vw + 1rem, 4rem);
+}
+
+/* Margen fluido */
+.container {
+  padding-inline: clamp(1rem, 3vw, 4rem);
+}
+
+/* Grid fluido */
+.grid {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 30%, 400px), 1fr));
+}
+```
+
+**Fórmula recomendada para tipografía:**
+```css
+/* Calculadora: https://clamp.vittorio.cc/ */
+h1 { font-size: clamp(2rem, 1.5rem + 2vw, 4rem); }
+h2 { font-size: clamp(1.5rem, 1.2rem + 1.5vw, 3rem); }
+p  { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); }
+```
+
+**Ventajas:**
+- Sin breakpoints para cambios graduales.
+- Combina unidades relativas y absolutas.
+- El navegador resuelve el valor ideal dentro del rango.
+
+---
+
+### Mobile-First vs Desktop-First
+
+| Enfoque | Media Queries | Ventaja |
+|---------|---------------|---------|
+| **Mobile-first** | `min-width` | Progresivo, base mobile, se expande |
+| **Desktop-first** | `max-width` | Base desktop, se contrae |
+
+**Mobile-first (recomendado):**
+```css
+/* Base: móvil */
+.layout { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Tablet+ */
+@media (min-width: 768px) {
+  .layout { display: grid; grid-template-columns: 1fr 2fr; }
+}
+
+/* Desktop+ */
+@media (min-width: 1200px) {
+  .layout { grid-template-columns: 1fr 3fr 1fr; }
+}
+```
+
+**Desktop-first:**
+```css
+/* Base: desktop */
+.layout { display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 2rem; }
+
+/* Tablet */
+@media (max-width: 1199px) {
+  .layout { grid-template-columns: 1fr 2fr; }
+}
+
+/* Móvil */
+@media (max-width: 767px) {
+  .layout { display: flex; flex-direction: column; }
+}
+```
+
+**¿Cuál elegir?** Mobile-first es el estándar de la industria. Produce CSS más limpio, se alinea con el crecimiento del tráfico móvil, y fuerza decisiones de diseño progresivas.
+
+---
+
+## 1.5 Frameworks CSS
+
+### Tailwind CSS vs Bootstrap vs CSS Propio
+
+| Criterio | Tailwind CSS | Bootstrap | CSS Propio |
+|----------|-------------|-----------|------------|
+| Filosofía | Utility-first | Component-based | Artesanal |
+| Curva de aprendizaje | Media (aprender clases) | Baja | Alta (dominar CSS) |
+| Personalización | Alta (config) | Media (SASS vars) | Total |
+| Tamaño (prod) | Muy pequeño (purga) | Mediano | El que escribas |
+| Prototipado | Rápido | Rápidísimo | Lento |
+| Consistencia | Garantizada | Garantizada | Bajo disciplina |
+| Bundle JS | No | Sí (Bootstrap JS) | No |
+| Mantenibilidad | Debate abierto | Buena | Depende del equipo |
+
+**Ejemplo Tailwind:**
+```html
+<div class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+  <img class="w-12 h-12 rounded-full object-cover" src="avatar.jpg" alt="">
+  <div>
+    <h3 class="text-lg font-semibold text-gray-900">Juan Pérez</h3>
+    <p class="text-sm text-gray-500">Desarrollador Frontend</p>
+  </div>
+</div>
+```
+
+**Ejemplo Bootstrap:**
+```html
+<div class="card shadow-sm">
+  <div class="card-body d-flex align-items-center gap-3">
+    <img src="avatar.jpg" class="rounded-circle" width="48" height="48" alt="">
+    <div>
+      <h5 class="card-title mb-0">Juan Pérez</h5>
+      <p class="card-text text-muted">Desarrollador Frontend</p>
+    </div>
+  </div>
+</div>
+```
+
+**Ejemplo CSS propio:**
+```html
+<div class="profile-card">
+  <img class="profile-card__avatar" src="avatar.jpg" alt="">
+  <div class="profile-card__info">
+    <h3 class="profile-card__name">Juan Pérez</h3>
+    <p class="profile-card__role">Desarrollador Frontend</p>
+  </div>
+</div>
+```
+```css
+.profile-card {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem; background: #fff; border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s;
+}
+.profile-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+.profile-card__avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.profile-card__name { font-size: 1.125rem; font-weight: 600; color: #111; }
+.profile-card__role { font-size: 0.875rem; color: #666; }
+```
+
+---
+
+### Utility-First vs Component-Based
+
+**Utility-first (Tailwind):**
+- Ventajas: No inventas nombres de clases, tamaño en producción mínimo, consistente, no hay conflictos CSS.
+- Desventajas: HTML verboso, curva de aprendizaje de las clases, puede sentirse "feo" al inicio.
+
+**Component-based (Bootstrap, Material UI):**
+- Ventajas: HTML limpio y semántico, componentes pre-diseñados, ideal para prototipado.
+- Desventajas: Personalización limitada, sitios "iguales", bundle grande si no se purga.
+
+**¿Cuál usar?** Utility-first para proyectos con diseño único y personalizado. Component-based para prototipos rápidos o productos con diseño estándar. CSS propio para equipos pequeños que quieren control total sin dependencias.
+
+---
+
+# 2. HERRAMIENTAS Y ECOSISTEMA
+
+---
+
+## 2.1 npm y package.json
+
+### Comandos Esenciales
+
+```bash
+npm init -y                  # Crea package.json con valores por defecto
+npm install <paquete>        # Instala en dependencies (--save es implícito)
+npm i -D <paquete>           # Instala en devDependencies
+npm uninstall <paquete>      # Desinstala
+npm run <script>             # Ejecuta script del package.json
+npx <comando>                # Ejecuta binario sin instalarlo globalmente
+```
+
+### package.json — Estructura Típica
+
+```json
+{
+  "name": "mi-proyecto",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .js,.jsx",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.css": ["prettier --write"]
+  }
+}
+```
+
+### npm vs yarn vs pnpm
+
+| Característica | npm | yarn | pnpm |
+|---------------|-----|------|------|
+| Instalación | Lenta (legacy) | Rápida | Muy rápida |
+| Disco | Duplicado | Duplicado | Hard links (eficiente) |
+| Lockfile | package-lock.json | yarn.lock | pnpm-lock.yaml |
+| Plug\'n\'Play | No | Sí (PnP) | Sí (store) |
+| Monorepos | Workspaces | Workspaces | Built-in (poderoso) |
+| Popularidad | Estándar | Alta | Creciendo |
+
+**Recomendación:** Usa pnpm para proyectos nuevos (ahorra espacio, más rápido, estricto). Usa npm si trabajas en equipo (estándar). Usa yarn si ya estás en un proyecto existente con yarn.
+
+---
+
+## 2.2 Bundlers
+
+### ¿Qué Hace un Bundler?
+
+Un **bundler** (empaquetador) toma múltiples archivos JS, CSS, imágenes, fuentes, etc., y los combina en uno o pocos archivos optimizados para producción. También:
+
+1. **Resuelve dependencias**: Convierte imports/requires en un grafo de dependencias.
+2. **Transpila**: Convierte JS moderno a compatible, SCSS a CSS, JSX a JS.
+3. **Optimiza**: Minifica, tree-shakes (elimina código muerto), divide código (code splitting).
+4. **Sirve en desarrollo**: Hot Module Replacement (HMR) — cambias código, se refleja al instante.
+
+### Vite — El Estándar Moderno
+
+**Ventajas:**
+- Usa ES modules nativos en desarrollo (sin bundling en caliente).
+- HMR instantáneo independientemente del tamaño del proyecto.
+- Configuración mínima (cero config para proyectos vanilla).
+- Construcción con Rollup para producción (optimizado).
+
+```bash
+npm create vite@latest mi-proyecto -- --template vanilla
+npm create vite@latest mi-proyecto -- --template react
+```
+
+**Configuración típica (vite.config.js):**
+```js
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  root: '.',
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: { vendor: ['react', 'react-dom'] }
+      }
+    }
+  },
+  server: {
+    port: 3000,
+    open: true
+  }
+});
+```
+
+### Webpack — Concepto General
+
+Webpack fue el estándar antes de Vite. Su configuración es verbosa pero increíblemente flexible:
+
+```js
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js',
+  output: { path: path.resolve(__dirname, 'dist'), filename: 'bundle.js' },
+  module: {
+    rules: [
+      { test: /\.jsx?$/, exclude: /node_modules/, use: 'babel-loader' },
+      { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+    ]
+  },
+  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' })],
+  devServer: { port: 3000, hot: true }
+};
+```
+
+### Desarrollo vs Producción — Diferencias Clave
+
+| Aspecto | Desarrollo | Producción |
+|---------|-----------|------------|
+| Source maps | Sí (completos) | Opcional (o ninguno) |
+| Minificación | No | Sí (esbuild/Terser) |
+| HMR | Sí | No |
+| Tree-shaking | No | Sí |
+| Code splitting | No | Sí |
+| Cache busting | No | Hashes en archivos |
+| Tiempo de build | Segundos | Minutos (grandes proyectos) |
+
+---
+
+## 2.3 Linters y Formatters
+
+### ESLint — Reglas y Configuración
+
+ESLint analiza el código JS/JSX/TS en busca de errores, malas prácticas e inconsistencias de estilo.
+
+```bash
+npm i -D eslint
+npx eslint --init  # Configuración guiada
+```
+
+**Configuración (.eslintrc.json o eslint.config.js):**
+```json
+{
+  "env": { "browser": true, "es2022": true },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "react/prop-types": "error",
+    "semi": ["error", "always"]
+    // "off" | "warn" | "error"
+  }
+}
+```
+
+### Prettier — Formateo Automático
+
+Prettier elimina las discusiones de estilo formateando automáticamente el código.
+
+```bash
+npm i -D prettier
+```
+
+**Configuración (.prettierrc):**
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "bracketSpacing": true,
+  "arrowParens": "always"
+}
+```
+
+**Integración VSCode:** Instalar extensión Prettier, configurar como formateador por defecto:
+```json
+// settings.json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}
+```
+
+### Husky + lint-staged — Git Hooks Automáticos
+
+Ejecuta linters y formateadores antes de cada commit:
+
+```bash
+npm i -D husky lint-staged
+npx husky init
+```
+
+Esto crea `.husky/pre-commit`. Modifícalo para que ejecute:
+```bash
+# .husky/pre-commit
+npx lint-staged
+```
+
+Con `lint-staged` configurado en `package.json` (ver sección 2.1), solo revisa los archivos modificados en el commit, no todo el proyecto. Así los commits son rápidos y siempre pasan por el lint.
+
+---
+
+## 2.4 React — Conceptos Básicos
+
+### Componentes Funcionales y JSX
+
+```jsx
+function Saludo({ nombre, edad }) {
+  return (
+    <div className="saludo">
+      <h1>Hola, {nombre}!</h1>
+      {edad >= 18 && <p>Eres mayor de edad</p>}
+    </div>
+  );
+}
+```
+
+**JSX**: Sintaxis similar a HTML que se transpila a `React.createElement()`. Reglas:
+- `class` → `className`
+- `for` → `htmlFor`
+- Atributos en camelCase (`onClick`, `onChange`)
+- Las expresiones van entre `{}`
+
+### Props y State
+
+```jsx
+import { useState } from 'react';
+
+function Contador({ valorInicial = 0 }) {
+  // Props: datos que vienen del padre (inmutables)
+  // State: datos internos (mutables con setter)
+  const [contador, setContador] = useState(valorInicial);
+
+  return (
+    <div>
+      <p>Valor: {contador}</p>
+      <button onClick={() => setContador(c => c + 1)}>+1</button>
+    </div>
+  );
+}
+```
+
+### useEffect — Efectos Secundarios
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function DatosUsuario({ userId }) {
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    async function fetchUsuario() {
+      setCargando(true);
+      const res = await fetch(`/api/usuarios/${userId}`);
+      const data = await res.json();
+      setUsuario(data);
+      setCargando(false);
+    }
+    fetchUsuario();
+  }, [userId]); // Solo se re-ejecuta si userId cambia
+
+  if (cargando) return <p>Cargando...</p>;
+  return <h2>{usuario.nombre}</h2>;
+}
+```
+
+### ¿Por Qué React y No JS Vanilla?
+
+| Escenario | JS Vanilla | React |
+|-----------|-----------|-------|
+| 3 botones y un contador | Bien | Overkill |
+| Dashboard con 20 componentes | Infierno de DOM | Organizado |
+| Estado compartido (user, theme) | Global vars frágiles | Context/State management |
+| Actualizaciones en tiempo real | Reflow manual | Virtual DOM eficiente |
+| Equipo de 5+ personas | Sin estructura | Componentes predecibles |
+| SEO/SSR | Posible | Next.js lo resuelve |
+
+**Regla práctica:** Usa React cuando el estado de la UI es complejo (múltiples componentes que cambian según datos). Usa JS vanilla para páginas estáticas o micro-interacciones.
+
+---
+
+# 3. RENDIMIENTO FRONTEND
+
+---
+
+## 3.1 Core Web Vitals
+
+Son las métricas que Google usa para medir la experiencia de usuario:
+
+| Métrica | Qué Mide | Bueno | Malo | Cómo Mejorar |
+|---------|----------|-------|------|--------------|
+| **LCP** (Largest Contentful Paint) | Tiempo de carga del elemento más grande | < 2.5s | > 4s | Optimizar imágenes, server-side rendering, CDN |
+| **FID** (First Input Delay) | Tiempo de respuesta al primer clic/toque | < 100ms | > 300ms | Code splitting, lazy loading JS, eliminar bloqueantes |
+| **CLS** (Cumulative Layout Shift) | Estabilidad visual (elementos que se mueven) | < 0.1 | > 0.25 | Dimensiones explícitas en imágenes, fuentes con fallback |
+
+```html
+<!-- Prevenir CLS: Siempre dar dimensiones a imágenes -->
+<img src="hero.jpg" alt="" width="800" height="450" style="aspect-ratio: 16/9">
+```
+
+---
+
+## 3.2 Lazy Loading
+
+Carga diferida de recursos que no están visibles inmediatamente:
+
+```html
+<!-- Imágenes: loading="lazy" (nativo, soporte moderno) -->
+<img src="galeria/foto-10.jpg" loading="lazy" alt="">
+
+<!-- Iframes: loading="lazy" -->
+<iframe src="mapa.html" loading="lazy"></iframe>
+
+<!-- Intersection Observer (alternativa + control) -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const img = entry.target;
+      img.src = img.dataset.src;
+      observer.unobserve(img);
+    }
+  });
+});
+
+document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+</script>
+```
+
+---
+
+## 3.3 Defer vs Async
+
+```html
+<!-- ❌ Bloquea el renderizado -->
+<script src="app.js"></script>
+
+<!-- ✅ No bloquea, ejecuta en cuanto descarga (orden no garantizado) -->
+<script async src="analytics.js"></script>
+
+<!-- ✅ No bloquea, ejecuta cuando el DOM está listo (orden respetado) -->
+<script defer src="app.js"></script>
+```
+
+| Atributo | Orden | Cuándo ejecuta | Ideal para |
+|----------|-------|---------------|------------|
+| (ninguno) | Secuencial | Inmediatamente al descargar | Scripts pequeños y críticos |
+| `async` | No garantizado | En cuanto termina la descarga | Analytics, scripts independientes |
+| `defer` | Garantizado (orden HTML) | Cuando el DOM está listo (DOMContentLoaded) | Scripts que dependen del DOM |
+
+---
+
+## 3.4 Minificación y Compresión
+
+**Minificación:** Elimina espacios, comentarios, renombra variables. Reduce ~60% el tamaño.
+
+```bash
+# Herramientas
+npx terser archivo.js -o archivo.min.js
+npx cssnano estilos.css > estilos.min.css
+# Vite y Webpack lo hacen automáticamente en build
+```
+
+**Compresión (servidor):**
+- **Gzip**: Estándar, ~70% reducción.
+- **Brotli**: Moderno, mejor ratio (~80%), soportado por todos los navegadores modernos.
+
+```nginx
+# Nginx
+gzip on;
+brotli on;
+```
+
+**Con Vite:** Minificación con esbuild (rápido) o terser (más completo). Compresión se configura en el servidor.
+
+---
+
+## 3.5 Service Workers (Concepto)
+
+Un **Service Worker** es un script que el navegador ejecuta en segundo plano, independiente de la página. Permite:
+
+- **Estrategias de caché** (offline-first, network-first, stale-while-revalidate)
+- **Notificaciones push**
+- **Sincronización en segundo plano**
+
+```js
+// service-worker.js — Estrategia Cache First
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cacheResponse) => {
+      return cacheResponse || fetch(event.request);
+    })
+  );
+});
+```
+
+```js
+// Registro en la página
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+```
+
+---
+
+# 4. ACCESIBILIDAD (a11y)
+
+---
+
+## 4.1 Roles ARIA
+
+Los roles ARIA (`role`) describen el propósito de un elemento para tecnologías asistivas:
+
+```html
+<!-- Roles semánticos -->
+<div role="navigation">...</div>
+<div role="banner">...</div>
+<div role="main">...</div>
+<div role="complementary">...</div>
+
+<!-- Mejor: usar elementos HTML5 semánticos en lugar de divs -->
+<nav>...</nav>
+<header>...</header>
+<main>...</main>
+<aside>...</aside>
+
+<!-- Roles para widgets -->
+<button role="tab">Pestaña 1</button>
+<div role="tabpanel">...</div>
+<div role="alert">Error al guardar</div>
+```
+
+**Principio:** No uses ARIA cuando los elementos HTML nativos ya tienen semántica implícita. `<button>` ya es un botón, no necesitas `role="button"`.
+
+---
+
+## 4.2 Navegación por Teclado
+
+```css
+/* Siempre visible, nunca outline: none sin alternativa */
+:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* Para elementos personalizados (div como botón) */
+.custom-button:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-primario);
+}
+```
+
+**Reglas de navegación:**
+- Todos los elementos interactivos deben ser accesibles por tabulación.
+- `tabindex="0"` hace un elemento focusable (en orden natural).
+- `tabindex="-1"` lo hace focusable solo con JS (`.focus()`).
+- Usa `aria-label` para dar nombres a elementos sin texto visible.
+
+```html
+<button aria-label="Cerrar ventana" onclick="closeModal()">
+  ✕
+</button>
+```
+
+---
+
+## 4.3 Contraste WCAG
+
+| Nivel | Ratio de contraste | Para |
+|-------|-------------------|------|
+| AA (mínimo) | 4.5:1 | Texto normal |
+| AA | 3:1 | Texto grande (>18px bold o >24px) |
+| AAA (reforzado) | 7:1 | Texto normal |
+
+```css
+/* Verificación con JS */
+function checkContrast(foreground, background) {
+  // Usar librería: https://webaim.org/resources/contrastchecker/
+  const ratio = getContrastRatio(foreground, background);
+  console.log(ratio >= 4.5 ? '✅ Pasa AA' : '❌ No pasa AA');
+}
+```
+
+**Herramientas:** WebAIM Contrast Checker, axe DevTools, Lighthouse.
+
+---
+
+## 4.4 Lectores de Pantalla
+
+**Prácticas esenciales:**
+- Texto alternativo en imágenes: `alt` descriptivo (no "imagen", sino "Gráfico de crecimiento de ventas 2025").
+- Encabezados jerárquicos: `h1` → `h2` → `h3`, sin saltos.
+- Formularios con `<label>` asociado:
+
+```html
+<!-- ✅ Correcto -->
+<label for="email">Correo electrónico</label>
+<input type="email" id="email" name="email" required>
+
+<!-- ✅ También correcto (aria-label) -->
+<input type="email" aria-label="Correo electrónico" required>
+```
+
+- Estados dinámicos con `aria-live`:
+
+```html
+<div aria-live="polite" id="notificaciones">
+  <!-- Los cambios aquí se anuncian automáticamente -->
+</div>
+```
+
+- Skip to content (salto de navegación):
+
+```html
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+```
+
+---
+
+# Recursos y Enlaces
+
+**Documentación oficial:**
+- CSS Grid: https://developer.mozilla.org/es/docs/Web/CSS/CSS_Grid_Layout
+- Custom Properties: https://developer.mozilla.org/es/docs/Web/CSS/--*
+- Container Queries: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries
+- WCAG 2.2: https://www.w3.org/TR/WCAG22/
+- Core Web Vitals: https://web.dev/vitals/
+
+**Herramientas:**
+- Can I Use: https://caniuse.com
+- CSS Grid Generator: https://cssgridgenerator.io
+- Clamp Calculator: https://clamp.vittorio.cc
+- WebAIM Contrast: https://webaim.org/resources/contrastchecker/
+- axe DevTools (extensión Chrome/Firefox): https://www.deque.com/axe/
+
+---
+
+> **Fin de la guía.** Este documento cubre ~95% de los temas avanzados de CSS y frontend que un desarrollador senior debe conocer. Estudia los conceptos, completa los ejercicios y consulta la documentación oficial para profundizar.

@@ -43,11 +43,6 @@
   }
 
   /* Ajustes para los grids */
-  .grid-container-arboles {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 30px !important;
-  }
-
   .grid-container-tipos {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 30px !important;
@@ -117,10 +112,6 @@
   }
 
   /* Ajustes para los grids en pantallas extremadamente grandes */
-  .grid-container-arboles {
-    grid-template-columns: repeat(8, 1fr) !important;
-    gap: 25px !important;
-  }
 
   /* Estilos para grid-container-tipos movidos a especies_large.css */
 
@@ -168,12 +159,6 @@
     padding-right: 60px !important;
   }
 
-  /* Mejorar la visualización de las tarjetas */
-  .grid-item-arbol,
-  .grid-item-tipo,
-  .grid-item-centro {
-    padding: 20px !important;
-  }
 }
 
 /* Asegurar que el menú superior ocupe todo el ancho */
@@ -202,25 +187,4 @@
   margin-right: auto !important;
 }
 
-/* Asegurar que las imágenes se adapten correctamente */
-.grid-item-arbol img,
-.grid-item-tipo img,
-.grid-item-centro img {
-  width: 100% !important;
-  height: auto !important;
-  object-fit: cover !important;
-}
 
-/* Mejorar la visualización de las tarjetas */
-.grid-item-arbol,
-.grid-item-tipo,
-.grid-item-centro {
-  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-}
-
-.grid-item-arbol:hover,
-.grid-item-tipo:hover,
-.grid-item-centro:hover {
-  transform: translateY(-5px) !important;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-}

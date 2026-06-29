@@ -411,11 +411,6 @@ body {
     max-width: 500px;
   }
 
-  .grid-container-arboles {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
-  }
-
   .grid-container-tipos {
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
@@ -436,11 +431,6 @@ body {
   .quinta-pantalla,
   .beneficios-pantalla {
     max-width: 1140px;
-  }
-
-  .grid-container-arboles {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
   }
 
   .grid-container-tipos {
@@ -473,10 +463,6 @@ body {
     width: 100%;
     padding: 0;
     margin-bottom: 30px;
-  }
-
-  .grid-container-arboles {
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .grid-container-tipos {
@@ -539,10 +525,6 @@ body {
 
   .cuadro-qr {
     padding: 20px;
-  }
-
-  .grid-container-arboles {
-    grid-template-columns: 1fr;
   }
 
   .grid-container-beneficios {

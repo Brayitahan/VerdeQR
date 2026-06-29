@@ -449,7 +449,7 @@ img {
 
 .grid-container-arboles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
 
@@ -478,7 +478,7 @@ img {
 /* Contenedor de imagen igual que en principal */
 .imagen-arbol-inicio {
   position: relative;
-  height: 200px;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
 }
@@ -818,6 +818,10 @@ img {
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   }
 
+  .grid-container-arboles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
   .imagen-tipo {
     width: 120px;
     min-width: 120px;
@@ -865,6 +869,10 @@ img {
 
   .grid-container-centros {
     justify-content: center;
+  }
+
+  .grid-container-arboles {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -955,6 +963,10 @@ img {
   }
 
   .grid-container-beneficios {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-container-arboles {
     grid-template-columns: 1fr;
   }
 
