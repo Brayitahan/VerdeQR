@@ -115,7 +115,7 @@ def iniciar_sesion():
             cursor.execute("""
             SELECT u.*, STRING_AGG(r.NombreRol, ',') as roles
             FROM Usuario u
-            LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.Usuario
+            LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.IDUsuario
             LEFT JOIN Rol r ON ur.Rol = r.IDRol
             WHERE u.Correo = %s AND u.Estado = 1
             GROUP BY u.IDUsuario
