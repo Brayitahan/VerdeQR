@@ -27,6 +27,14 @@ def init_db_config():
     }
 
 
+def get_db_connection():
+    if DB_CONFIG is None:
+        init_db_config()
+    if 'dsn' in DB_CONFIG:
+        return psycopg2.connect(DB_CONFIG['dsn'], connection_factory=DictConnection)
+    return psycopg2.connect(connection_factory=DictConnection, **DB_CONFIG)
+
+
 def get_db():
     if 'db' not in g:
         if DB_CONFIG is None:
