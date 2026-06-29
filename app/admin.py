@@ -59,7 +59,7 @@ def gestion_usuarios():
         SELECT u.*, STRING_AGG(r.NombreRol, ',') as roles
         FROM Usuario u
         LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.IDUsuario
-        LEFT JOIN Rol r ON ur.Rol = r.IDRol
+        LEFT JOIN Rol r ON ur.IDRol = r.IDRol
         GROUP BY u.IDUsuario
     """)
     usuarios = cursor.fetchall()
@@ -555,7 +555,7 @@ def editar_usuario(id):
         SELECT u.*, r.NombreRol as rol_actual
         FROM Usuario u
         LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.IDUsuario
-        LEFT JOIN Rol r ON ur.Rol = r.IDRol
+        LEFT JOIN Rol r ON ur.IDRol = r.IDRol
         WHERE u.IDUsuario = %s
     """, (id,))
     usuario = cursor.fetchone()
@@ -585,7 +585,7 @@ def eliminar_usuario(id):
     cursor.execute("""
         SELECT r.NombreRol
         FROM UsuarioRol ur
-        JOIN Rol r ON ur.Rol = r.IDRol
+        JOIN Rol r ON ur.IDRol = r.IDRol
         WHERE ur.IDUsuario = %s AND r.NombreRol = 'Administrador'
     """, (session['usuario']['IDUsuario'],))
     es_admin = cursor.fetchone() is not None
