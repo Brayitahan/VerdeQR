@@ -528,7 +528,118 @@
         <a href="#centros" class="nav-btn">Únete</a>
     </div>
 
-
+    <!-- Barra de bienvenida (cerrable) -->
+    {% if not 'usuario' in session %}
+    <div class="welcome-bar" id="welcomeBar">
+        <div class="welcome-bar-content">
+            <i class="fas fa-tree welcome-bar-icon"></i>
+            <span class="welcome-bar-text">Bienvenido a <strong>VerdeQR</strong> — Un dendrólogo en tu bolsillo</span>
+            <span class="welcome-bar-stats">
+                <span><i class="fas fa-check-circle"></i> Identifica árboles al instante</span>
+                <span><i class="fas fa-book-open"></i> Información detallada</span>
+                <span><i class="fas fa-leaf"></i> Contribuye a la conservación</span>
+            </span>
+        </div>
+        <button type="button" class="welcome-bar-close" onclick="cerrarWelcomeBar()" title="Cerrar">&times;</button>
+    </div>
+    <style>
+        .welcome-bar {
+            max-width: 1100px;
+            margin: 8px auto 4px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #05966922, #04785711);
+            border: 1px solid rgba(5,150,105,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .welcome-bar-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .welcome-bar-icon {
+            font-size: 1rem;
+            color: #059669;
+        }
+        .welcome-bar-text {
+            font-size: 0.85rem;
+            color: #065f46;
+            white-space: nowrap;
+        }
+        .welcome-bar-text strong {
+            font-weight: 700;
+        }
+        .welcome-bar-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .welcome-bar-stats span {
+            font-size: 0.75rem;
+            color: #047857;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+        }
+        .welcome-bar-stats span i {
+            font-size: 0.7rem;
+            color: #059669;
+        }
+        .welcome-bar-close {
+            background: none;
+            border: none;
+            color: #065f46;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .welcome-bar-close:hover {
+            opacity: 1;
+        }
+        .welcome-bar.dismissed {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .welcome-bar {
+                margin: 4px 6px;
+                padding: 6px 10px;
+                flex-wrap: wrap;
+            }
+            .welcome-bar-stats {
+                display: none;
+            }
+            .welcome-bar-text {
+                font-size: 0.78rem;
+            }
+            .welcome-bar-icon {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    <script>
+        function cerrarWelcomeBar() {
+            const bar = document.getElementById('welcomeBar');
+            bar.classList.add('dismissed');
+            try { localStorage.setItem('welcomeBarCerrada', 'true'); } catch(e) {}
+        }
+        (function() {
+            try {
+                if (localStorage.getItem('welcomeBarCerrada') === 'true') {
+                    document.getElementById('welcomeBar').classList.add('dismissed');
+                }
+            } catch(e) {}
+        })();
+    </script>
+    {% endif %}
 
     <!-- Primera pantalla: Código QR -->
     <div id="inicio" class="contenido-principal">
