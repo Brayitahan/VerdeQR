@@ -213,11 +213,10 @@ def agregar_uso(especie_id):
 
             # Verificar si la columna Categoria existe en la tabla UsoArbol
             cursor.execute('''
-                SELECT COUNT(*) AS column_exists
-                FROM information_schema.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME = 'UsoArbol'
-                  AND COLUMN_NAME = 'Categoria'
+            SELECT COUNT(*) AS column_exists
+            FROM information_schema.COLUMNS
+            WHERE TABLE_NAME = 'UsoArbol'
+              AND COLUMN_NAME = 'Categoria'
             ''')
             column_exists = cursor.fetchone()['column_exists'] > 0
 

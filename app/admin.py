@@ -28,7 +28,7 @@ def gestion_usuarios():
 
             # Insertar nuevo usuario
             cursor.execute("""
-                INSERT INTO Usuario (Nombre, Correo, Telefono, Contraseña, Estado)
+                INSERT INTO Usuario (Nombre, Correo, Telefono, Contrasena, Estado)
                 VALUES (%s, %s, %s, %s, 1)
             """, (nombres, correo, telefono, contrasena))
             get_db().commit()
@@ -56,7 +56,7 @@ def gestion_usuarios():
     # Obtener lista de usuarios con sus roles
     cursor = get_db().cursor()
     cursor.execute("""
-        SELECT u.*, GROUP_CONCAT(r.NombreRol) as roles
+        SELECT u.*, STRING_AGG(r.NombreRol, ',') as roles
         FROM Usuario u
         LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.Usuario
         LEFT JOIN Rol r ON ur.Rol = r.IDRol

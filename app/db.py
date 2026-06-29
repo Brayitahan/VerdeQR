@@ -1,7 +1,7 @@
 from flask import g
-import pymysql
+import psycopg2
+import psycopg2.extras
 import os
-import re
 
 DB_CONFIG = None
 
@@ -9,34 +9,40 @@ def init_db_config():
     global DB_CONFIG
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
-        match = re.match(r'mysql://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)', database_url)
-        if match:
-            user, password, host, port, database = match.groups()
-            DB_CONFIG = {
-                'host': host,
-                'user': user,
-                'password': password,
-                'database': database,
-                'port': int(port),
-                'cursorclass': pymysql.cursors.DictCursor
-            }
-            return
+        DB_CONFIG = {
+            'dsn': database_url,
+            'cursor_factory': psycopg2.extras.RealDictCursor
+        }
+        return
     DB_CONFIG = {
         'host': os.environ.get('DB_HOST', 'localhost'),
-        'user': os.environ.get('DB_USER', 'root'),
-        'password': os.environ.get('DB_PASSWORD', ''),
-        'database': os.environ.get('DB_NAME', 'VerdeQR'),
-        'cursorclass': pymysql.cursors.DictCursor
+        'user': os.environ.get('DB_USER', 'postgres'),
+        'password': os.environ.get('DB_PASSWORD', 'postgres'),
+        'dbname': os.environ.get('DB_NAME', 'VerdeQR'),
+        'port': int(os.environ.get('DB_PORT', 5432)),
+        'cursor_factory': psycopg2.extras.RealDictCursor
     }
 
 def get_db_connection():
     if DB_CONFIG is None:
         init_db_config()
-    return pymysql.connect(**DB_CONFIG)
+    if 'dsn' in DB_CONFIG:
+        return psycopg2.connect(DB_CONFIG['dsn'])
+    config = {k: v for k, v in DB_CONFIG.items() if k != 'cursor_factory'}
+    conn = psycopg2.connect(**config)
+    conn.cursor_factory = psycopg2.extras.RealDictCursor
+    return conn
 
 def get_db():
     if 'db' not in g:
-        g.db = pymysql.connect(**DB_CONFIG)
+        if DB_CONFIG is None:
+            init_db_config()
+        if 'dsn' in DB_CONFIG:
+            g.db = psycopg2.connect(DB_CONFIG['dsn'])
+        else:
+            config = {k: v for k, v in DB_CONFIG.items() if k != 'cursor_factory'}
+            g.db = psycopg2.connect(**config)
+            g.db.cursor_factory = psycopg2.extras.RealDictCursor
     return g.db
 
 def close_db(error):

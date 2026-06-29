@@ -1,5 +1,5 @@
 Flask==2.3.2
-pymysql==1.1.0
+psycopg2-binary==2.9.10
 qrcode==7.4.2
 Pillow==10.1.0
 pypng==0.20220715.0
@@ -12,3 +12,4 @@ MarkupSafe==2.1.2
 gunicorn==21.2.0
 python-dotenv==1.0.0
 Flask-Mail==0.9.1
+Flask-Limiter==4.1.1

@@ -26,8 +26,7 @@ def uso_arbol():
             cursor.execute('''
                 SELECT COUNT(*) AS column_exists
                 FROM information_schema.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME = 'UsoArbol'
+                WHERE TABLE_NAME = 'UsoArbol'
                   AND COLUMN_NAME = 'Categoria'
             ''')
             column_exists = cursor.fetchone()['column_exists'] > 0
@@ -161,8 +160,7 @@ def editar_uso_arbol(id):
             cursor.execute('''
                 SELECT COUNT(*) AS column_exists
                 FROM information_schema.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME = 'UsoArbol'
+                WHERE TABLE_NAME = 'UsoArbol'
                   AND COLUMN_NAME = 'Categoria'
             ''')
             column_exists = cursor.fetchone()['column_exists'] > 0

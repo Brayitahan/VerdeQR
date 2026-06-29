@@ -1131,8 +1131,8 @@ def ver_arbol(id):
 
         medidas = []
         try:
-            cursor.execute("SHOW TABLES LIKE 'MedidasArbol'")
-            if cursor.fetchone():
+            cursor.execute("SELECT COUNT(*) AS table_exists FROM information_schema.tables WHERE TABLE_NAME = 'MedidasArbol'")
+            if cursor.fetchone()['table_exists'] > 0:
                 cursor.execute('''
                     SELECT *
                     FROM MedidasArbol

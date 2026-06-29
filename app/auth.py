@@ -8,7 +8,22 @@ import re
 import os
 
 # mail is imported from the main app module where it's instantiated
-from app import mail
+from app import mail, limiter
+
+
+def validar_imagen(archivo):
+    """Valida que el archivo sea una imagen real por sus bytes mágicos."""
+    header = archivo.read(32)
+    archivo.seek(0)
+    if header[:8] == b'\x89PNG\r\n\x1a\n':
+        return 'png'
+    if header[:2] in (b'\xff\xd8',):
+        return 'jpeg'
+    if header[:4] == b'GIF8':
+        return 'gif'
+    if header[:4] == b'RIFF' and header[8:12] == b'WEBP':
+        return 'webp'
+    return None
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -17,6 +32,7 @@ PASSWORD_REGEX = re.compile(r'^(?=.*[A-Z]).{8,}$')
 
 # Ruta para el registro de nuevos usuarios
 @auth_bp.route('/registro', methods=['GET', 'POST'])
+@limiter.limit("3 per minute", methods=['POST'])
 def registro():
     if request.method == 'POST':
         nombres = request.form['nombres']
@@ -57,7 +73,7 @@ def registro():
             # Insertar el nuevo usuario con contraseña hasheada
             contrasena_hash = generate_password_hash(contrasena)
             cursor.execute('''
-                INSERT INTO Usuario (Nombre, Correo, Telefono, Contraseña, Estado, Imagen)
+                INSERT INTO Usuario (Nombre, Correo, Telefono, Contrasena, Estado, Imagen)
                 VALUES (%s, %s, %s, %s, %s, %s)
             ''', (nombres + ' ' + apellidos, correo, telefono, contrasena_hash, 1, avatar_predeterminado))  # Estado 1 = Activo
             connection.commit()
@@ -81,6 +97,7 @@ def registro():
 
 # Ruta para la página de inicio de sesión
 @auth_bp.route('/iniciar_sesion', methods=['GET', 'POST'])
+@limiter.limit("10 per minute", methods=['POST'])
 def iniciar_sesion():
     if request.method == 'POST':
         correo = request.form['correo']
@@ -96,15 +113,15 @@ def iniciar_sesion():
         try:
             # Verificar credenciales y obtener roles
             cursor.execute("""
-                SELECT u.*, GROUP_CONCAT(r.NombreRol) as roles
-                FROM Usuario u
-                LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.Usuario
-                LEFT JOIN Rol r ON ur.Rol = r.IDRol
-                WHERE u.Correo = %s AND u.Estado = 1
-                GROUP BY u.IDUsuario
+            SELECT u.*, STRING_AGG(r.NombreRol, ',') as roles
+            FROM Usuario u
+            LEFT JOIN UsuarioRol ur ON u.IDUsuario = ur.Usuario
+            LEFT JOIN Rol r ON ur.Rol = r.IDRol
+            WHERE u.Correo = %s AND u.Estado = 1
+            GROUP BY u.IDUsuario
             """, (correo,))
             usuario = cursor.fetchone()
-            if not usuario or not check_password_hash(usuario['Contraseña'], contrasena):
+            if not usuario or not check_password_hash(usuario['Contrasena'], contrasena):
                 usuario = None
 
             if usuario:
@@ -174,6 +191,7 @@ def cerrar_sesion():
 
 # Ruta para olvidar contraseña
 @auth_bp.route('/olvidar_contrasena', methods=['GET', 'POST'])
+@limiter.limit("5 per minute", methods=['POST'])
 def olvidar_contrasena():
     if request.method == 'POST':
         correo = request.form['correo']
@@ -255,6 +273,7 @@ El equipo de VerdeQR
 
 # Ruta para restablecer contraseña
 @auth_bp.route('/restablecer_contrasena', methods=['GET', 'POST'])
+@limiter.limit("5 per minute", methods=['POST'])
 def restablecer_contrasena():
     if request.method == 'POST':
         print("Recibida solicitud POST para restablecer contraseña")
@@ -270,7 +289,7 @@ def restablecer_contrasena():
             contrasena = request.form.get('contrasena')
             confirmar_contrasena = request.form.get('confirmar_contrasena')
 
-        print(f"Código: {codigo}, Contraseña: {contrasena}, Confirmar: {confirmar_contrasena}")
+        print(f"Código: {codigo}, Contrasena: {contrasena}, Confirmar: {confirmar_contrasena}")
 
         # Verificar que las contraseñas coincidan
         if contrasena != confirmar_contrasena:
@@ -310,7 +329,7 @@ def restablecer_contrasena():
             contrasena_hash = generate_password_hash(contrasena)
             cursor.execute('''
                 UPDATE Usuario
-                SET Contraseña = %s
+                SET Contrasena = %s
                 WHERE IDUsuario = %s
             ''', (contrasena_hash, token_info['Usuario']))
 
@@ -325,7 +344,7 @@ def restablecer_contrasena():
 
             return jsonify({
                 'success': True,
-                'message': 'Contraseña actualizada exitosamente',
+                'message': 'Contrasena actualizada exitosamente',
                 'redirect': url_for('.iniciar_sesion')
             })
         except Exception as e:
@@ -401,6 +420,12 @@ def perfil():
             imagen_path = imagen_actual
             if 'avatar' in request.files and request.files['avatar'].filename != '':
                 imagen = request.files['avatar']
+
+                tipo = validar_imagen(imagen)
+                if not tipo:
+                    flash('El archivo no es una imagen válida (solo PNG, JPG, GIF, WebP)', 'error')
+                    return redirect(url_for('.perfil'))
+
                 # Crear directorio para imágenes si no existe
                 upload_folder = os.path.join('static', 'uploads', 'usuarios')
                 if not os.path.exists(upload_folder):
@@ -448,7 +473,7 @@ def perfil():
     try:
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute('SELECT DATE_FORMAT(FechaRegistro, "%d/%m/%Y") as FechaRegistro FROM Usuario WHERE IDUsuario = %s',
+        cursor.execute("""SELECT TO_CHAR(FechaRegistro, 'DD/MM/YYYY') as FechaRegistro FROM Usuario WHERE IDUsuario = %s""",
                        (session['usuario']['IDUsuario'],))
         resultado = cursor.fetchone()
         fecha_registro = resultado['FechaRegistro'] if resultado and 'FechaRegistro' in resultado else 'No disponible'
@@ -478,10 +503,10 @@ def cambiar_contrasena():
 
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute('SELECT Contraseña FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
+        cursor.execute('SELECT Contrasena FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
         usuario = cursor.fetchone()
 
-        if not usuario or not check_password_hash(usuario['Contraseña'], contrasena_actual):
+        if not usuario or not check_password_hash(usuario['Contrasena'], contrasena_actual):
             flash('La contraseña actual es incorrecta', 'error')
             cursor.close()
             connection.close()
@@ -489,14 +514,14 @@ def cambiar_contrasena():
 
         nueva_contrasena_hash = generate_password_hash(nueva_contrasena)
         cursor.execute('''
-            UPDATE Usuario SET Contraseña = %s
+            UPDATE Usuario SET Contrasena = %s
             WHERE IDUsuario = %s
         ''', (nueva_contrasena_hash, session['usuario']['IDUsuario']))
         connection.commit()
         cursor.close()
         connection.close()
 
-        flash('Contraseña actualizada exitosamente', 'success')
+        flash('Contrasena actualizada exitosamente', 'success')
     except Exception as e:
         flash(f'Error al cambiar la contraseña: {str(e)}', 'error')
     return redirect(url_for('.perfil'))
@@ -526,6 +551,14 @@ def actualizar_avatar():
 
         # Procesar la nueva imagen
         imagen = request.files['avatar']
+
+        tipo = validar_imagen(imagen)
+        if not tipo:
+            return jsonify({
+                'success': False,
+                'message': 'El archivo no es una imagen válida (solo PNG, JPG, GIF, WebP)'
+            }), 400
+
         # Crear directorio para imágenes si no existe
         upload_folder = os.path.join('static', 'uploads', 'usuarios')
         if not os.path.exists(upload_folder):
@@ -631,11 +664,11 @@ def eliminar_cuenta():
 
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute('SELECT Contraseña FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
+        cursor.execute('SELECT Contrasena FROM Usuario WHERE IDUsuario = %s', (session['usuario']['IDUsuario'],))
         usuario = cursor.fetchone()
 
-        if usuario['Contraseña'] != contrasena:
-            flash('Contraseña incorrecta', 'error')
+        if usuario['Contrasena'] != contrasena:
+            flash('Contrasena incorrecta', 'error')
             cursor.close()
             connection.close()
             return redirect(url_for('.perfil'))

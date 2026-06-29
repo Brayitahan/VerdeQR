@@ -1,8 +1,11 @@
 from flask import Flask
 from flask_mail import Mail
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import os
 
 mail = Mail()
+limiter = Limiter(key_func=get_remote_address)
 
 _root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -11,7 +14,7 @@ def create_app():
         template_folder=os.path.join(_root_dir, 'templates'),
         static_folder=os.path.join(_root_dir, 'static'))
 
-    app.secret_key = os.environ.get('SECRET_KEY', 'tu_clave_secreta_aqui_para_desarrollo')
+    app.secret_key = os.environ.get('SECRET_KEY', os.urandom(32).hex())
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
@@ -22,6 +25,8 @@ def create_app():
     app.config['MAIL_SUPPRESS_SEND'] = os.environ.get('MAIL_SUPPRESS_SEND', 'False').lower() not in ('false', '0', 'no')
 
     mail.init_app(app)
+
+    limiter.init_app(app)
 
     from .db import init_db_config
     init_db_config()
@@ -44,6 +49,12 @@ def create_app():
     app.register_blueprint(usos_bp)
     app.register_blueprint(qr_bp)
     app.register_blueprint(info_bp)
+
+    @app.after_request
+    def add_security_headers(response):
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        return response
 
     from .db import close_db
     app.teardown_appcontext(close_db)
