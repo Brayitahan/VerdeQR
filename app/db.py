@@ -6,9 +6,58 @@ import os
 DB_CONFIG = None
 
 
+class CaseInsensitiveDictRow(dict):
+    def __getitem__(self, key):
+        if isinstance(key, str):
+            try:
+                return super().__getitem__(key)
+            except KeyError:
+                key_lower = key.lower()
+                for k in self:
+                    if k.lower() == key_lower:
+                        return super().__getitem__(k)
+                raise KeyError(key)
+        return super().__getitem__(key)
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __contains__(self, key):
+        if isinstance(key, str) and super().__contains__(key):
+            return True
+        try:
+            self[key]
+            return True
+        except KeyError:
+            return False
+
+
+class CaseInsensitiveRealDictCursor(psycopg2.extras.RealDictCursor):
+    def _convert_to_case_insensitive(self, row):
+        if row is not None:
+            return CaseInsensitiveDictRow(row)
+        return None
+
+    def fetchone(self):
+        return self._convert_to_case_insensitive(super().fetchone())
+
+    def fetchall(self):
+        rows = super().fetchall()
+        return [self._convert_to_case_insensitive(r) for r in rows]
+
+    def fetchmany(self, size=None):
+        if size is None:
+            size = self.arraysize
+        rows = super().fetchmany(size)
+        return [self._convert_to_case_insensitive(r) for r in rows]
+
+
 class DictConnection(psycopg2.extensions.connection):
     def cursor(self, *args, **kwargs):
-        kwargs.setdefault('cursor_factory', psycopg2.extras.RealDictCursor)
+        kwargs.setdefault('cursor_factory', CaseInsensitiveRealDictCursor)
         return super().cursor(*args, **kwargs)
 
 
