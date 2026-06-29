@@ -1,2 +1,2 @@
-[phases.install]
+[phases.setup]
 aptPkgs = ["libpq-dev"]
