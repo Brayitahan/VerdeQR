@@ -608,18 +608,20 @@
         }
         .bienvenida-card-stats {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px 18px;
+            flex-direction: column;
+            gap: 3px;
         }
         .bienvenida-card-stats span {
             color: rgba(255,255,255,0.85);
             font-size: 0.8rem;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 5px;
+            white-space: nowrap;
         }
         .bienvenida-card-stats span i {
             color: rgba(255,255,255,0.9);
+            flex-shrink: 0;
         }
         @media (max-width: 768px) {
             .bienvenida-card {
@@ -2005,17 +2007,8 @@
                 }
             });
 
-            // Verificar si el usuario ya vio el modal anteriormente
-            const hasSeenModal = localStorage.getItem('welcomeModalShown');
-            if (hasSeenModal !== 'true') {
-                // Solo mostrar automáticamente si es la primera vez
-                setTimeout(function() {
-                    showModal();
-                }, 500);
-            } else {
-                // Asegurarse de que el modal esté oculto inicialmente
-                welcomeModal.style.display = 'none';
-            }
+            // Modal solo se abre al hacer clic en el logo, no automáticamente
+            welcomeModal.style.display = 'none';
         });
     </script>
 
