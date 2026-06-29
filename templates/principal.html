@@ -303,7 +303,7 @@
                     <div class="carrusel-sugerencias">
                         {% if sugerencias %}
                             {% for sugerencia in sugerencias %}
-                            <div class="sugerencia-card" data-delay="{{ loop.index0 * 0.1 }}">
+                            <div class="sugerencia-card" data-delay="{{ loop.index0 * 0.1 }}" data-id="{{ sugerencia.IDSugerencia }}">
                                 <div class="sugerencia-header">
                                     <div class="usuario-info">
                                         <i class="fas fa-user-circle"></i>
@@ -314,9 +314,19 @@
                                         {{ sugerencia.Fecha.strftime('%d/%m/%Y') }}
                                     </div>
                                 </div>
-                                <div class="sugerencia-contenido">
+                                <div class="sugerencia-contenido" id="texto-sug-{{ sugerencia.IDSugerencia }}">
                                     {{ sugerencia.Sugerencia }}
                                 </div>
+                                {% if 'usuario' in session and session.usuario.Correo == sugerencia.Email %}
+                                <div class="sugerencia-acciones">
+                                    <button type="button" class="btn-sugerencia btn-editar" onclick="editarSugerencia({{ sugerencia.IDSugerencia }})" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn-sugerencia btn-eliminar" onclick="eliminarSugerencia({{ sugerencia.IDSugerencia }})" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
                             </div>
                             {% endfor %}
                         {% else %}
@@ -387,6 +397,7 @@
                         const carrusel = document.querySelector('.carrusel-sugerencias');
                         const nuevaSugerencia = document.createElement('div');
                         nuevaSugerencia.className = 'sugerencia-card';
+                        nuevaSugerencia.setAttribute('data-id', data.nuevaSugerencia.ID);
                         nuevaSugerencia.innerHTML = `
                             <div class="sugerencia-header">
                                 <div class="usuario-info">
@@ -398,8 +409,16 @@
                                     ${data.nuevaSugerencia.Fecha}
                                 </div>
                             </div>
-                            <div class="sugerencia-contenido">
+                            <div class="sugerencia-contenido" id="texto-sug-${data.nuevaSugerencia.ID}">
                                 ${data.nuevaSugerencia.Sugerencia}
+                            </div>
+                            <div class="sugerencia-acciones">
+                                <button type="button" class="btn-sugerencia btn-editar" onclick="editarSugerencia(${data.nuevaSugerencia.ID})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn-sugerencia btn-eliminar" onclick="eliminarSugerencia(${data.nuevaSugerencia.ID})" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         `;
                         carrusel.insertBefore(nuevaSugerencia, carrusel.firstChild);
@@ -426,6 +445,56 @@
                     );
                 });
             });
+
+            function eliminarSugerencia(id) {
+                if (!confirm('¿Eliminar esta sugerencia?')) return;
+                fetch('/eliminar_sugerencia/' + id, { method: 'POST' })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            const card = document.querySelector('.sugerencia-card[data-id="' + id + '"]');
+                            if (card) card.remove();
+                            showSuccess(d.message);
+                        } else {
+                            showError(d.message);
+                        }
+                    })
+                    .catch(() => showError('Error al eliminar'));
+            }
+
+            function editarSugerencia(id) {
+                const contenedor = document.getElementById('texto-sug-' + id);
+                const textoOriginal = contenedor.textContent.trim();
+                contenedor.innerHTML = '<textarea class="sugerencia-edit-textarea" id="edit-textarea-' + id + '">' + textoOriginal + '</textarea>' +
+                    '<div class="sugerencia-edit-actions">' +
+                    '<button class="btn-sugerencia btn-editar" onclick="guardarEdicion(' + id + ')"><i class="fas fa-save"></i> Guardar</button>' +
+                    '<button class="btn-sugerencia" onclick="cancelarEdicion(' + id + ', \'' + textoOriginal.replace(/'/g, "\\'") + '\')"><i class="fas fa-times"></i> Cancelar</button>' +
+                    '</div>';
+            }
+
+            function guardarEdicion(id) {
+                const texto = document.getElementById('edit-textarea-' + id).value.trim();
+                if (!texto) { showError('El texto no puede estar vacío'); return; }
+                fetch('/editar_sugerencia/' + id, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'sugerencia=' + encodeURIComponent(texto)
+                })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            document.getElementById('texto-sug-' + id).textContent = texto;
+                            showSuccess(d.message);
+                        } else {
+                            showError(d.message);
+                        }
+                    })
+                    .catch(() => showError('Error al editar'));
+            }
+
+            function cancelarEdicion(id, textoOriginal) {
+                document.getElementById('texto-sug-' + id).textContent = textoOriginal;
+            }
         });
     </script>
 
@@ -601,6 +670,56 @@
             opacity: 1;
             transform: translateX(0);
             position: relative;
+        }
+        .sugerencia-acciones {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            justify-content: flex-end;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+        }
+        .btn-sugerencia {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-editar {
+            color: #3498db;
+        }
+        .btn-editar:hover {
+            background: #3498db10;
+            border-color: #3498db;
+        }
+        .btn-eliminar {
+            color: #e74c3c;
+        }
+        .btn-eliminar:hover {
+            background: #e74c3c10;
+            border-color: #e74c3c;
+        }
+        .sugerencia-edit-textarea {
+            width: 100%;
+            min-height: 60px;
+            border: 1px solid #3498db;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.85rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .sugerencia-edit-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            justify-content: flex-end;
         }
 
         .carrusel-btn {

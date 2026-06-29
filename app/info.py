@@ -91,10 +91,12 @@ def registrar_sugerencia():
 
         fecha_actual = datetime.now().strftime('%d/%m/%Y')
 
+        nuevo_id = cursor.lastrowid
         return jsonify({
             'success': True,
             'message': 'Gracias por tu sugerencia!',
             'nuevaSugerencia': {
+                'ID': nuevo_id,
                 'Nombre': nombre,
                 'Fecha': fecha_actual,
                 'Sugerencia': sugerencia
@@ -115,6 +117,55 @@ def registrar_sugerencia():
         if connection:
             connection.close()
 
+
+@info_bp.route('/eliminar_sugerencia/<int:id>', methods=['POST'])
+def eliminar_sugerencia_usuario(id):
+    if not session.get('usuario'):
+        return jsonify({'success': False, 'message': 'Debes iniciar sesion'}), 401
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute('SELECT Email FROM sugerencias WHERE IDSugerencia=%s', (id,))
+        s = cursor.fetchone()
+        if not s:
+            return jsonify({'success': False, 'message': 'Sugerencia no encontrada'}), 404
+        if s['Email'] != session['usuario']['Correo']:
+            return jsonify({'success': False, 'message': 'No puedes eliminar sugerencias de otros usuarios'}), 403
+        cursor.execute('DELETE FROM sugerencias WHERE IDSugerencia=%s', (id,))
+        connection.commit()
+        return jsonify({'success': True, 'message': 'Sugerencia eliminada'})
+    except Exception as e:
+        connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+@info_bp.route('/editar_sugerencia/<int:id>', methods=['POST'])
+def editar_sugerencia_usuario(id):
+    if not session.get('usuario'):
+        return jsonify({'success': False, 'message': 'Debes iniciar sesion'}), 401
+    nuevo_texto = request.form.get('sugerencia', '').strip()
+    if not nuevo_texto:
+        return jsonify({'success': False, 'message': 'El texto no puede estar vacio'}), 400
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute('SELECT Email FROM sugerencias WHERE IDSugerencia=%s', (id,))
+        s = cursor.fetchone()
+        if not s:
+            return jsonify({'success': False, 'message': 'Sugerencia no encontrada'}), 404
+        if s['Email'] != session['usuario']['Correo']:
+            return jsonify({'success': False, 'message': 'No puedes editar sugerencias de otros usuarios'}), 403
+        cursor.execute('UPDATE sugerencias SET Sugerencia=%s WHERE IDSugerencia=%s', (nuevo_texto, id))
+        connection.commit()
+        return jsonify({'success': True, 'message': 'Sugerencia actualizada'})
+    except Exception as e:
+        connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 @info_bp.route('/api/sugerencias_busqueda')
 def sugerencias_busqueda():
