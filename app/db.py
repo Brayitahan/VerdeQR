@@ -1,49 +1,67 @@
 from flask import g
-import psycopg2
-import psycopg2.extras
+import pg8000
+import pg8000.native
 import os
 
 DB_CONFIG = None
+
+class DictRow:
+    def __init__(self, columns, values):
+        self._columns = columns
+        self._mapping = dict(zip(columns, values))
+
+    def __getitem__(self, key):
+        if isinstance(key, (int, slice)):
+            return self._mapping[self._columns[key]]
+        return self._mapping[key]
+
+    def get(self, key, default=None):
+        return self._mapping.get(key, default)
+
+    def __contains__(self, key):
+        return key in self._mapping
+
+
+def _row_to_dict(row, cursor):
+    if row is None:
+        return None
+    columns = [desc[0] for desc in cursor.columns]
+    return DictRow(columns, row)
+
 
 def init_db_config():
     global DB_CONFIG
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
-        DB_CONFIG = {
-            'dsn': database_url,
-            'cursor_factory': psycopg2.extras.RealDictCursor
-        }
+        DB_CONFIG = {'dsn': database_url}
         return
     DB_CONFIG = {
         'host': os.environ.get('DB_HOST', 'localhost'),
         'user': os.environ.get('DB_USER', 'postgres'),
         'password': os.environ.get('DB_PASSWORD', 'postgres'),
-        'dbname': os.environ.get('DB_NAME', 'VerdeQR'),
+        'database': os.environ.get('DB_NAME', 'VerdeQR'),
         'port': int(os.environ.get('DB_PORT', 5432)),
-        'cursor_factory': psycopg2.extras.RealDictCursor
     }
+
 
 def get_db_connection():
     if DB_CONFIG is None:
         init_db_config()
     if 'dsn' in DB_CONFIG:
-        return psycopg2.connect(DB_CONFIG['dsn'])
-    config = {k: v for k, v in DB_CONFIG.items() if k != 'cursor_factory'}
-    conn = psycopg2.connect(**config)
-    conn.cursor_factory = psycopg2.extras.RealDictCursor
-    return conn
+        return pg8000.native.Connection(DB_CONFIG['dsn'])
+    return pg8000.native.Connection(**DB_CONFIG)
+
 
 def get_db():
     if 'db' not in g:
         if DB_CONFIG is None:
             init_db_config()
         if 'dsn' in DB_CONFIG:
-            g.db = psycopg2.connect(DB_CONFIG['dsn'])
+            g.db = pg8000.native.Connection(DB_CONFIG['dsn'])
         else:
-            config = {k: v for k, v in DB_CONFIG.items() if k != 'cursor_factory'}
-            g.db = psycopg2.connect(**config)
-            g.db.cursor_factory = psycopg2.extras.RealDictCursor
+            g.db = pg8000.native.Connection(**DB_CONFIG)
     return g.db
+
 
 def close_db(error):
     if hasattr(g, 'db'):
