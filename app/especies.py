@@ -332,9 +332,8 @@ def tipo_bosque():
 
     # Obtener tipos de bosque con información de estado
     cursor.execute('''
-        SELECT tb.*, e.NombreEstado as EstadoNombre
+        SELECT tb.*
         FROM TipoBosque tb
-        LEFT JOIN Estado e ON tb.Estado = e.IDEstado
         ORDER BY tb.IDTipoBosque DESC
     ''')
     tipos = cursor.fetchall()
