@@ -1,9 +1,0 @@
-import psycopg2
-import psycopg2.extras
-conn = psycopg2.connect("postgresql://postgres:ERYZCryosPAllvzaUKgQSERlUpBoXPKo@reseau.proxy.rlwy.net:34771/railway?connect_timeout=10", cursor_factory=psycopg2.extras.RealDictCursor)
-cur = conn.cursor()
-cur.execute("SELECT idarbol, idespecie, especie, centro, estado, imagen FROM Arbol")
-for r in cur.fetchall():
-    print(dict(r))
-cur.close()
-conn.close()
