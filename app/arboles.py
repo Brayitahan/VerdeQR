@@ -915,6 +915,8 @@ def ver_arbol(id):
 
         cursor.execute('''
             SELECT
+                e.NombreCientifico as NombreCientifico,
+                e.NombreVulgar as NombreVulgar,
                 e.NombreCientifico as EspecieNombreCientifico,
                 e.NombreVulgar as EspecieNombreVulgar,
                 tb.Nombre as TipoBosqueNombre,
