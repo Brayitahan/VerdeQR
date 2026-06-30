@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, send_file
-from app.db import get_db, get_db_connection
+from app.db import get_db, get_db_connection, CaseInsensitiveDictRow
 import os
 from datetime import datetime, timedelta
 
@@ -930,7 +930,7 @@ def ver_arbol(id):
 
         datos_relacionados = cursor.fetchone()
 
-        arbol = {}
+        arbol = CaseInsensitiveDictRow(arbol_base)
 
         for campo, valor in arbol_base.items():
             arbol[campo] = valor
