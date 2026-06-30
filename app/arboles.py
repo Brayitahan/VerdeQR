@@ -422,9 +422,10 @@ def arbol():
             cursor.execute('''
                 INSERT INTO Arbol (Especie, Caracteristicas, ServiciosEcosistemicos, TipoBosque, Centro, Imagen, Descripcion, Estado)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING IDArbol
             ''', (especie, caracteristicas, servicios_ecosistemicos, tipo_bosque, centro, imagen_path, descripcion, estado))
 
-            arbol_id = cursor.lastrowid
+            arbol_id = cursor.fetchone()['IDArbol']
 
             try:
                 import qrcode

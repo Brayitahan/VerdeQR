@@ -36,15 +36,17 @@ def uso_arbol():
                 cursor.execute('''
                     INSERT INTO UsoArbol (Especie, Nombre, Categoria, Estado)
                     VALUES (%s, %s, %s, %s)
+                    RETURNING IDUsoArbol
                 ''', (especie, nombre, categoria, estado))
             else:
                 cursor.execute('''
                     INSERT INTO UsoArbol (Especie, Nombre, Estado)
                     VALUES (%s, %s, %s)
+                    RETURNING IDUsoArbol
                 ''', (especie, nombre, estado))
 
             # Obtener el ID del uso recién insertado
-            uso_id = cursor.lastrowid
+            uso_id = cursor.fetchone()['IDUsoArbol']
 
             # Insertar en DetalleUso (tabla normalizada para todas las categorías)
             cursor.execute('''

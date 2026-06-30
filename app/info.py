@@ -86,12 +86,13 @@ def registrar_sugerencia():
         cursor.execute('''
             INSERT INTO sugerencias (Nombre, Email, Sugerencia, Estado)
             VALUES (%s, %s, %s, %s)
+            RETURNING IDSugerencia
         ''', (nombre, email, sugerencia, 1))
         connection.commit()
 
         fecha_actual = datetime.now().strftime('%d/%m/%Y')
 
-        nuevo_id = cursor.lastrowid
+        nuevo_id = cursor.fetchone()['IDSugerencia']
         return jsonify({
             'success': True,
             'message': 'Gracias por tu sugerencia!',
