@@ -45,3 +45,5 @@
 | 2026-06-29 | Railway deploy intent 1: pg8000 con DictRow falló. Solución: psycopg2 con RealDictCursor. nixpacks.toml corregido a [phases.setup]. | app/db.py, requirements.txt, nixpacks.toml | Completado |
 | 2026-06-29 | Railway: app.py renombrado a wsgi.py para evitar conflicto con paquete app/. Gunicorn wsgi:app. | wsgi.py, railway.json | Completado |
 | 2026-06-29 | Railway: Postgres corrupto por railway up mal dirigido. Creado nuevo Postgres-dCU8, migrado schema + datos semilla. App funcionando en https://web-production-46be6.up.railway.app (HTTP 200). | Railway dashboard, scripts/seed_railway.py | Completado |
+| 2026-06-30 | Hero de árbol responsive: nombre (h1) escalado con clamp(2.8rem, 8vw, 7rem) con overflow-wrap, break-word para móviles. Breakpoints 480px y 360px con tamaños reducidos. Científico también responsivo con clamp. | templates/ver_arbol.html | Completado |
+| 2026-06-30 | Edición inline de sugerencias en panel admin: botón Editar en tabla, textarea inline con Guardar/Cancelar vía AJAX. Backend permite a administradores editar cualquier sugerencia (no solo propias). | templates/sugerencias.html, app/info.py | Completado |

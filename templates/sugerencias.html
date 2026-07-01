@@ -120,7 +120,9 @@
                             <td>{{ sugerencia.IDSugerencia }}</td>
                             <td>{{ sugerencia.Nombre }}</td>
                             <td>{{ sugerencia.Email }}</td>
-                            <td>{{ sugerencia.Sugerencia }}</td>
+                            <td class="sugerencia-texto" data-id="{{ sugerencia.IDSugerencia }}">
+                                <span class="sugerencia-texto-span">{{ sugerencia.Sugerencia }}</span>
+                            </td>
                             <td>{{ sugerencia.Fecha }}</td>
                             <td>
                                 <span class="badge {% if sugerencia.Estado == 1 %}badge-success{% else %}badge-secondary{% endif %}">
@@ -129,6 +131,11 @@
                             </td>
                             <td class="acciones-cell">
                                 <div class="acciones-botones">
+                                    <button class="btn btn-primary btn-sm btn-editar-sugerencia"
+                                            data-id="{{ sugerencia.IDSugerencia }}"
+                                            onclick="editarSugerencia(this)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
                                     <a href="{{ url_for('admin.eliminar_sugerencia', id=sugerencia.IDSugerencia) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta sugerencia?')">
                                         <i class="fas fa-trash"></i> Eliminar
                                     </a>
@@ -168,12 +175,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Actualizar el badge de estado
                         const badge = this.closest('tr').querySelector('.badge');
                         badge.className = `badge ${nuevoEstado == 1 ? 'badge-success' : 'badge-secondary'}`;
                         badge.textContent = nuevoEstado == 1 ? 'Activo' : 'Inactivo';
-
-                        // Mostrar notificación de éxito con el sistema de notificaciones animadas
                         showSuccess(data.message);
                     } else {
                         showError(data.message);
@@ -186,7 +190,6 @@
             });
         });
 
-        // Convertir los mensajes flash a notificaciones animadas
         const flashMessages = document.querySelectorAll('.flash-message');
         flashMessages.forEach(message => {
             const type = message.dataset.type || 'info';
@@ -202,16 +205,89 @@
             }
             message.remove();
         });
-
     });
 
-    // Función para el menú desplegable (solo móviles)
+    function editarSugerencia(btn) {
+        const id = btn.dataset.id;
+        const td = document.querySelector(`.sugerencia-texto[data-id="${id}"]`);
+        const span = td.querySelector('.sugerencia-texto-span');
+        const textoActual = span.textContent.trim();
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'form-control';
+        textarea.rows = 3;
+        textarea.value = textoActual;
+        textarea.style.width = '100%';
+
+        const guardarBtn = document.createElement('button');
+        guardarBtn.className = 'btn btn-success btn-sm';
+        guardarBtn.innerHTML = '<i class="fas fa-check"></i> Guardar';
+        guardarBtn.style.marginRight = '4px';
+
+        const cancelarBtn = document.createElement('button');
+        cancelarBtn.className = 'btn btn-secondary btn-sm';
+        cancelarBtn.innerHTML = '<i class="fas fa-times"></i> Cancelar';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.gap = '4px';
+        wrapper.style.marginTop = '4px';
+        wrapper.appendChild(guardarBtn);
+        wrapper.appendChild(cancelarBtn);
+
+        td.innerHTML = '';
+        td.appendChild(textarea);
+        td.appendChild(wrapper);
+
+        textarea.focus();
+
+        guardarBtn.addEventListener('click', function() {
+            const nuevoTexto = textarea.value.trim();
+            if (!nuevoTexto) {
+                showError('El texto no puede estar vacío');
+                return;
+            }
+
+            fetch(`/editar_sugerencia/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `sugerencia=${encodeURIComponent(nuevoTexto)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newSpan = document.createElement('span');
+                    newSpan.className = 'sugerencia-texto-span';
+                    newSpan.textContent = nuevoTexto;
+                    td.innerHTML = '';
+                    td.appendChild(newSpan);
+                    showSuccess(data.message);
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Error al guardar la sugerencia');
+            });
+        });
+
+        cancelarBtn.addEventListener('click', function() {
+            const newSpan = document.createElement('span');
+            newSpan.className = 'sugerencia-texto-span';
+            newSpan.textContent = textoActual;
+            td.innerHTML = '';
+            td.appendChild(newSpan);
+        });
+    }
+
     function toggleDropdown() {
         const dropdown = document.getElementById('dropdownContent');
         dropdown.classList.toggle('show');
     }
 
-    // Cerrar el dropdown si se hace clic fuera de él
     window.onclick = function(event) {
         if (!event.target.matches('.dropdown-toggle') && !event.target.matches('.dropdown-toggle i')) {
             const dropdowns = document.getElementsByClassName('dropdown-content');

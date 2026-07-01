@@ -149,6 +149,7 @@ def editar_sugerencia_usuario(id):
     nuevo_texto = request.form.get('sugerencia', '').strip()
     if not nuevo_texto:
         return jsonify({'success': False, 'message': 'El texto no puede estar vacio'}), 400
+    es_admin = 'Administrador' in session['usuario'].get('roles', '')
     connection = get_db_connection()
     cursor = connection.cursor()
     try:
@@ -156,7 +157,7 @@ def editar_sugerencia_usuario(id):
         s = cursor.fetchone()
         if not s:
             return jsonify({'success': False, 'message': 'Sugerencia no encontrada'}), 404
-        if s['Email'] != session['usuario']['Correo']:
+        if not es_admin and s['Email'] != session['usuario']['Correo']:
             return jsonify({'success': False, 'message': 'No puedes editar sugerencias de otros usuarios'}), 403
         cursor.execute('UPDATE sugerencias SET Sugerencia=%s WHERE IDSugerencia=%s', (nuevo_texto, id))
         connection.commit()

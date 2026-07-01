@@ -106,16 +106,19 @@
     }
 
     .arbol-hero-text h1 {
-        font-size: clamp(3.5rem, 15vw, 9rem);
+        font-size: clamp(2.8rem, 8vw, 7rem);
         font-weight: 900;
         margin: 0 0 8px;
         text-shadow: 0 4px 30px rgba(0,0,0,0.6);
-        letter-spacing: -3px;
-        line-height: 1.0;
+        letter-spacing: -2px;
+        line-height: 1.05;
         background: linear-gradient(135deg, #fff 20%, #a7f3d0 50%, #fff 80%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-width: 100%;
     }
 
     .arbol-hero-text h1::after {
@@ -129,13 +132,15 @@
     }
 
     .arbol-hero-text .cientifico {
-        font-size: 1.6rem;
+        font-size: clamp(1rem, 2.5vw, 1.6rem);
         font-style: italic;
         opacity: 0.95;
         margin: 0 0 12px;
         font-weight: 500;
         text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         letter-spacing: 0.5px;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
     .arbol-hero-text .cientifico i {
@@ -199,7 +204,7 @@
             text-align: left;
         }
         .arbol-hero-text h1 {
-            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-size: clamp(2.8rem, 8vw, 7rem);
         }
         .arbol-hero-badge {
             justify-content: flex-start;
@@ -220,29 +225,51 @@
             height: 380px;
         }
         .arbol-hero-text h1 {
-            font-size: clamp(4rem, 10vw, 9rem);
+            font-size: clamp(3.2rem, 8vw, 8rem);
         }
     }
 
     @media (max-width: 480px) {
         .arbol-hero {
             min-height: 420px;
-            padding: 30px 16px;
+            padding: 20px 12px;
         }
         .arbol-portada-container {
-            width: 200px;
-            height: 200px;
+            width: 170px;
+            height: 170px;
         }
         .arbol-hero-text h1 {
-            font-size: 2.8rem;
+            font-size: clamp(1.8rem, 7vw, 2.4rem);
             letter-spacing: -1px;
         }
         .arbol-hero-text .cientifico {
-            font-size: 1.2rem;
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
         }
         .arbol-hero-badge span {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .arbol-hero {
+            padding: 16px 10px;
+            min-height: 360px;
+        }
+        .arbol-portada-container {
+            width: 130px;
+            height: 130px;
+        }
+        .arbol-hero-text h1 {
+            font-size: clamp(1.4rem, 6vw, 1.8rem);
+            letter-spacing: 0;
+        }
+        .arbol-hero-text .cientifico {
+            font-size: clamp(0.75rem, 3vw, 0.9rem);
+        }
+        .arbol-hero-text .vulgar {
             font-size: 0.8rem;
-            padding: 6px 12px;
+            padding: 6px 14px;
         }
     }
 
